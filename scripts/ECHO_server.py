@@ -36,10 +36,10 @@ from astropy.time import Time
 
 o = optparse.OptionParser()
 o.set_description('Reads in GPS positional data in realtime from a user specified text file.\
-  Starts a server which is queryable by a user on the same or another machine.\
-  The query returns an interpolated GPS position which can be read by the querier\
-  and used to accumulate GPS and spectral data into one output file.\
-  See ECHO_accumulate.py for the output file format.')
+    Starts a server which is queryable by a user on the same or another machine.\
+    The query returns an interpolated GPS position which can be read by the querier\
+    and used to accumulate GPS and spectral data into one output file.\
+    See ECHO_accumulate.py for the output file format.')
 o.add_option('--gps_file',type=str,
     help='File name for GPS positional data to be read')
 o.add_option('--dt',type=float,default=0.5,
@@ -146,20 +146,18 @@ yourThread = threading.Thread()
 app = create_app()
 @app.route('/ECHO/lms/v1.0/pos/<float:query_time>', methods=['GET'])
 def get_gps_pos(query_time):
-    #query_time = Time(query_time,scale='utc',format='unix').gps
-    if np.logical_and(query_time>=gps_raw[0][0],query_time<=gps_raw[-1][0]):
-        #print tbins,query_time
-        #print np.abs(tbins-query_time).argmin()
-        #print counts[np.abs(tbins-query_time).argmin()]
+    if np.logical_and(query_time>=gps_raw[0,0],query_time<=gps_raw[-1,0]):
         if counts[np.abs(tbins-query_time).argmin()] > 0:
             # Return a dictionary of latitude, longitude, and altitude at query time
             lat,lon,alt = float(lati(query_time)),float(loni(query_time)),float(alti(query_time))
             pos = {'lat': lat, 'lon': lon, 'alt': alt}
             return jsonify(pos)
         else:
-            return 'Error: No GPS data for time ' + str(query_time)
+            pos = {'lat': -1, 'lon': -1, 'alt': -1}
+            return jsonify(pos)
     else:
-        return 'Error: Query time ' + str(query_time) + ' outside range ' + str(gps_raw[0,0]) + 'to' + str(gps_raw[-1,0])
+        return 'Error: Query time '+str(query_time)+' outside range '+\
+                    str(gps_raw[0,0])+'to'+str(gps_raw[-1,0])
 
 if opts.host:
     app.run(debug=True,host=opts.host,port=5000)

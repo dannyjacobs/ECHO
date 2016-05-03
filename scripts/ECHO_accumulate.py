@@ -38,33 +38,50 @@ import numpy as np
 import time
 
 o = optparse.OptionParser()
-o.set_description('Queries ground station server for interpolated GPS position')
-o.add_option('--host',type=str,help='Host for server (string)')
+o.set_description('ECHO_accumulate queries ground station server for \
+                          interpolated GPS positions of the drone and combines \
+                          them with spectral data into one output file.')
+o.add_option('--host',type=str,default='10.1.1.1',
+                    help='Host for server (string).  Default is 10.1.1.1')
 o.add_option('--spec_file',type=str,help='Radio spectrum file')
 o.add_option('--lat0',type=str,help='Latitude of antenna under test')
 o.add_option('--lon0',type=str,help='Longitude of antenna under test')
-o.add_option('--realtime',action='store_true',help='Specify realtime or not')
+o.add_option('--realtime',action='store_true',
+                    help='Specify realtime accumulation of data')
 o.add_option('--gps_file',type=str,help='GPS position file')
+o.add_option('--freq',type=float,default=137.554,
+                    help='Frequency of importance')
 opts,args = o.parse_args(sys.argv[1:])
 
-def get_spec(inFile):
-    global peak_chan,freqs
+def get_spec(inFile,freq_chan,freqs):
+    spec_times = []
+    spec_raw = []
     lines = open(inFile).readlines()
     count = len(lines)
     if count != 0:
-        if len(freqs) ==0:
+        if len(freqs) == 0:
             freqs = np.array(map(float,lines[1].rstrip('\n').split(',')[1:]))
-            peak_chan = np.argmax(freqs == opts.freq) # Get index of opts.freq for gridding
-            freqs = freqs[peak_chan-10:peak_chan+10] # opts.freq is freqs[10]
-        spec_times = [float(line.split(',')[0]) for line in lines[2:] if not line.startswith('#')]
-        spec_raw = [map(float,line.rstrip('\n').split(',')[peak_chan-10:peak_chan+10]) for line in lines[2:]\
-                            if not line.startswith('#')] # channel for opts.freq is spec_raw[i,10]
-        return np.array(spec_times),np.array(spec_raw)
+            freq_chan = np.argmax(freqs == opts.freq) # Get index of opts.freq for gridding
+            freqs = freqs[freq_chan-10:freq_chan+10] # opts.freq is freqs[10]
+        for line in lines:
+            if line.startswith('#'):
+                continue
+            line = line.rstrip('\n').split(',')
+            if len(line) == 4097: # Make sure line has finished printing
+                spec_times.append(float(line[0]))
+                spec_raw.append(map(float,line[1:]))
+    return np.array(spec_times),np.array(spec_raw),freq_chan,np.array(freqs)
+
+#spec_times = [float(line.split(',')[0]) for line in lines[2:] if not line.startswith('#')]
+#spec_raw = [map(float,line.rstrip('\n').split(',')[desired_chan-10:desired_chan+10]) for line in lines[2:]\
+#                    if not line.startswith('#')] # channel for opts.freq is spec_raw[i,10]
+
 
 dt = 0.3 # Time delay between queries of ECHO_server.py
-i = 0 # Index for SH time queries
-peak_chan = 0 # Index in spectrum of Valon synth peak freq
+last_row_index = 0 # Index for SH time queries
+freq_chan = 0 # Index in spectrum of Valon synth peak freq
 freqs = [] # Store frequencies in SH spectrum
+add_chans = 10 # Number of bins left/right of freq_chan to keep
 
 
 '''####################################################
@@ -72,6 +89,21 @@ freqs = [] # Store frequencies in SH spectrum
 ####################################################'''
 
 if opts.realtime:
+    # Check for valid gps_file
+    if not opts.gps_file:
+        print '\nPlease pass a valid GPS position file (--gps_file)...\n'
+        sys.exit()
+
+    # Check for valid spec_file
+    if not opts.spec_file:
+        print '\nPlease pass a valid spectrum file (--spec_file)...\n'
+        sys.exit()
+
+    # Check for latitude and longitude of antenna under test
+    if not np.logical_and(opts.lat0,opts.lon0):
+        print '\nLatitude (--lat0) and Longitude (--lon0) required...\n'
+        sys.exit()
+
     start_timestr = time.strftime('%H:%M:%S') # Current time in Hours:Min:Sec
     start_datestr = time.strftime('%d_%m_%Y') # Current date in Day_Month_Yr
     outfile_str = 'accumulated_'+start_datestr+'_'+start_timestr+'.txt'
@@ -85,7 +117,8 @@ if opts.realtime:
         outfile.write(headstr+'\n'+colfmtstr+'\n'+latlonstr+'\n')
 
     # Read in initial SH data
-    spec_times,spec_raw = get_spec(opts.spec_file)
+    spec_times,spec_raw,freq_chan,freqs = get_spec(opts.spec_file,freq_chan,freqs)
+    print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
     with open(outfile_str,'ab') as outfile:
         # Write frequencies to output file for indexing in ECHO_plot.py
         outfile.write('# Freqs: '+','.join(map(str,freqs))+'\n')
@@ -95,29 +128,38 @@ if opts.realtime:
     while True:
         if not spec_times.shape[0] == curr_size:
             curr_size = spec_times.shape[0]
-            print curr_size
-        while i < spec_times.shape[0]:
-            qtime = Time(spec_times[i],scale='utc',format='unix').gps # Convert qtime to GPS seconds
+        while last_row_index < spec_times.shape[0]:
+            qtime = Time(spec_times[last_row_index],scale='utc',format='unix').gps
             fileo = urllib2.urlopen('http://'+opts.host+':5000/ECHO/lms/v1.0/pos/'+str(qtime))
             lines = fileo.read()
-            if not 'Error' in lines:
-                pos = json.loads(lines)
-                with open(outfile_str,'ab') as outfile:
-                    outstr = str(qtime)+','+str(pos['lat'])+','+str(pos['lon'])+','+\
-                                 str(pos['alt'])+','+','.join(map(str,raw[i,1:]))
-                    outfile.write(outstr+'\n')
+            pos = json.loads(lines)
+            if not pos['lat'] == -1:
+                outstr = str(qtime)+','+str(pos['lat'])+','+str(pos['lon'])+','+\
+                             str(pos['alt'])+','+','.join(map(str,spec_raw[i,1:]))
+                # Check that output string has the correct number of columns
+                if len(outstr.split(',')) == 24:
+                    with open(outfile_str,'ab') as outfile:
+                        outfile.write(outstr+'\n')
             else:
                 with open(outfile_str,'ab') as outfile:
-                    outfile.write(str(qtime)+','+lines+'\n')
-            i += 1
-            time.sleep(dt)
+                    # Print -1 for all entries with no valid GPS data
+                    outfile.write(str(qtime)+','+','.join(map(str,[-1]*23))+'\n')
+
+        # Update row counter and wait for new data
+        last_row_index += 1
+        time.sleep(dt)
+
+        # Read in new spectrum data
+        spec_times,spec_raw,freq_chan,freqs = get_spec(opts.spec_file,freq_chan,freqs)
+        print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
+
 
 '''####################################################
 #                                                NOT REALTIME                                                 #
 ####################################################'''
 
-'''                                          YOU LEFT OFF HERE BUD                                         '''
 
+'''
 else:
     # do stuff not realtime
     spec_times,spec_raw = get_spec(opts.spec_file)
@@ -130,3 +172,5 @@ else:
     headstr = '# Accumulated data for '+start_datestr+', '+start_timestr
     colfmtstr = '# Column Format: 1 Time [GPS s], 2 Lat [deg], 3 Lon [deg], 4 Rel Alt [m], 5: Radio Spectrum'
     latlonstr = '# lat0,lon0: %s,%s' %(opts.lat0,opts.lon0)
+
+'''
