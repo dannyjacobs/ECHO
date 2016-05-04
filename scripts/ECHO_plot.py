@@ -3,6 +3,7 @@
     Author: Jacob Burba
 
     ECHO_plot.py does useful things for some and pointless things for others.  Such is life.
+    --lat0 and --lon0 optional
 
 '''
 
@@ -20,10 +21,6 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 
 
-'''####################################################
-#                                                OPTION PARSER                                               #
-####################################################'''
-
 o = optparse.OptionParser()
 o.set_description('Queries ground station server for interpolated GPS position')
 o.add_option('--acc_file',type=str,help='Accumulated file for plotting')
@@ -35,41 +32,49 @@ o.add_option('--freq',type=float,help='Peak frequency to look for in data')
 opts,args = o.parse_args(sys.argv[1:])
 
 
-'''####################################################
-#                                             GLOBAL FUNCTIONS                                            #
-####################################################'''
 
 def get_data(inFile):
     # Read in preprocessed file
     # The first two lines contain comment and formatting information
-    # Skip first 2 lines, 3rd line contains lat0 and lon0
-    # Column format is: 0 Time [gps s], 1 lat [deg], 2 lon [deg], 3 alt [m], 4:end spectrum (dB)
+    # Third line contains lat0 and lon0
+    # Column format is: 0 Time [gps s], 1 lat [deg], 2 lon [deg], 3 alt [m], 4: spectrum (dB)
 
     all_Data = []
     freqs = []
-    print 'Reading in %s...' %inFile
+    print '\nReading in %s...' %inFile
     lines = open(inFile).readlines()
+
     # Add information from flight to all_Data array
     if not 'transmitter' in inFile:
-        lat0,lon0 = map(float,lines[2].strip('\n').split(':')[1].strip(' ').split(','))
-        freqs = map(float,lines[3].strip('\n').split(':')[1].strip(' ').split(','))
+        lat0,lon0 = map(float,lines[2].rstrip('\n').split(':')[1].strip(' ').split(','))
+        freqs = map(float,lines[3].rstrip('\n').split(':')[1].strip(' ').split(','))
     for line in lines[4:]: # Data begins on fifth line of accumulated file
-        all_Data.append(map(float,line.strip('\n').split(',')))
+        if not line.split(',')[1] == '-1':
+            all_Data.append(map(float,line.rstrip('\n').split(',')))
 
     all_Data = np.array(all_Data)
     print 'Converted to array with shape %s and type %s' %(all_Data.shape,all_Data.dtype)
+
     # Extract information from all_Data array
     if 'transmitter' in inFile: # Green Bank data
         spec_times,lats,lons,alts = (all_Data[:,1],all_Data[:,2],all_Data[:,3],all_Data[:,4])
-        if 'Nant_NS' in inFile: spec_raw = all_Data[:,12:17] # N antenna, NS dipole
-        if 'Nant_EW' in inFile: spec_raw = all_Data[:,24:29] # N antenna, EW dipole
-        if 'Sant_NS' in inFile: spec_raw = all_Data[:,6:11] # S antenna, NS dipole
-        if 'Sant_EW' in inFile: spec_raw = all_Data[:,18:23] # S antenna, EW dipole
+        if 'Nant' in inFile:
+            lat0,lon0 = (38.4248532,-79.8503723)
+            if 'NS' in inFile:
+                spec_raw = all_Data[:,12:17] # N antenna, NS dipole
+            if 'EW' in inFile:
+                spec_raw = all_Data[:,24:29] # N antenna, EW dipole
+        if 'Sant' in inFile:
+            lat0,lon0 = (38.4239235,-79.8503418)
+            if 'NS' in inFile:
+                spec_raw = all_Data[:,6:11] # S antenna, NS dipole
+            if 'EW' in inFile:
+                spec_raw = all_Data[:,18:23] # S antenna, EW dipole
     else:
         spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],all_Data[:,2],\
                                                                     all_Data[:,3],all_Data[:,4:])
-    return all_Data,spec_times,spec_raw,lats,lons,alts
-# End get_data
+    return all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0
+# end get_data
 
 
 def griddata(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
@@ -144,11 +149,10 @@ def griddata(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
                 return np.ma.masked_invalid(grid), np.ma.masked_invalid(rmsBins), xi, yi, gcounts, grms
             else:
                 return np.ma.masked_invalid(grid), xi, yi, gcounts, grms
-# End griddata
+# end griddata
 
 
-def make_beam(lats,lons,alts,spec_raw,lat0=0,lon0=0):
-
+def make_beam(lats,lons,alts,spec_raw,lat0,lon0,volts=False):
     # Convert lat/lon to x/y
     if opts.lat0 and opts.lon0:
         x,y = latlon2xy(lats,lons,opts.lat0,opts.lon0)
@@ -158,20 +162,24 @@ def make_beam(lats,lons,alts,spec_raw,lat0=0,lon0=0):
     rs,thetas,phis = to_spherical(x,y,alts)
 
     # z (power) will set color value for gridded data
-    freqIndex = np.argmax(spec_raw[0,:])
+    #freqIndex = np.argmax(spec_raw[0,:])
+    freqIndex = 10
     # Only extract information from appropriate column (index = 10)
     z = spec_raw[:,freqIndex]
-    # Distance normalization
-    r0 = 100 # reference position for distance normalization (unit: meters)
-    z = np.log10((2*z**2)*(rs/r0)**2)
-    # log(V^2) -> dB and normalization for healpix plotting range [-inf,0]
-    z = 10*(z-z.max())
+    if volts:
+        # Distance normalization
+        r0 = 100 # reference position for distance normalization (unit: meters)
+        z = 10*np.log10((2*z**2)*(rs/r0)**2)
+        # log(V^2) -> dB
+    # Normalize for plotting [-inf,0]
+    z -= z.max()
 
     # Set binsize (used in function griddata)
     # Affects the apparent size of the pixels on the plot created below.
     binsize=5
     # Obtain gridded data
     grid,bins,rmsBins,binloc,xg,yg,gcounts,grms = griddata(x,y,z,binsize=binsize)
+
     # Healpix things
     nsides = opts.nsides
     nPixels = hp.nside2npix(nsides)
@@ -190,14 +198,14 @@ def make_beam(lats,lons,alts,spec_raw,lat0=0,lon0=0):
     hpx_rms[hpx_rms == 0] = np.nan
 
     return hpx_beam,hpx_counts,hpx_rms
-# End make_beam
+# end make_beam
 
 
 def latlon2xy(lat,lon,lat0,lon0):
     x = r_earth*(lon - lon0)*(np.pi/180)
     y = r_earth*(lat - lat0)*(np.pi/180)
     return x,y
-# End latlon2xy
+# end latlon2xy
 
 
 def to_spherical(x,y,z):
@@ -207,7 +215,7 @@ def to_spherical(x,y,z):
     thetas = np.arccos(z/rhos) # Zentih angle
     phis = np.arctan2(y,x) # Azimuthal angle
     return rhos,thetas,phis
-# End to_spherical
+# end to_spherical
 
 
 # Declare constants
@@ -229,13 +237,13 @@ if opts.realtime: # Realtime mapping and data
         maxfreq = f[fchans[x[fchans].argmax()]]
         peakrms = np.mean(x[fchans.max():fchans.max()+100])
         return maxfreq,peak,peakrms
-    # End find_peak
+    # end find_peak
 
 
     def animate_spectrum(i):
         spec_line.set_ydata(spec_raw[i,:])
         return
-    # End animate_spectrum
+    # end animate_spectrum
 
 
     def animate_peak(i):
@@ -268,13 +276,13 @@ if opts.realtime: # Realtime mapping and data
         pkrms_plot.set_xlim([currtime-time_range,currtime])
         pkrms_plot.autoscale_view(True,True,True)
         return
-    # End animate_peak
+    # end animate_peak
 
 
     def animate_beam(coll):
         hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw)
         coll.set_array(hpx_beam[np.isnan(hpx_beam)==False])
-    # End animate_beam
+    # end animate_beam
 
 
     def adjustErrbarxy(errobj, x, y, y_error):
@@ -289,7 +297,7 @@ if opts.realtime: # Realtime mapping and data
         erry_bot.set_ydata(yerr_bot)
         new_segments_y = [np.array([[x, yt], [x,yb]]) for x, yt, yb in zip(x_base, yerr_top, yerr_bot)]
         barsy[0].set_segments(new_segments_y)
-    # End adjustErrbarxy
+    # end adjustErrbarxy
 
     def animate_cuts():
         beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,alt,az)
@@ -299,7 +307,7 @@ if opts.realtime: # Realtime mapping and data
 
         adjustErrbarxy(cuts_E_line,ell,beam_slice_E,beam_slice_E_err)
         adjustErrbarxy(cuts_H_line,ell,beam_slice_H,beam_slice_H_err)
-    # End animate_cuts
+    # end animate_cuts
 
 
     fmin,fmax = int(opts.freq)-1,int(opts.freq)+1 # MHz; for plotting
@@ -307,7 +315,7 @@ if opts.realtime: # Realtime mapping and data
     rmswindow = 10
 
     # Get initial data from Signal Hound
-    all_Data,spec_times,spec_raw,lats,lons,alts = get_data(opts.acc_file)
+    all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
     if spec_times.shape[0] == 0: # Ensure data in inFile
         print 'Invalid data: array with zero dimension\nExiting...\n'
         sys.exit()
@@ -317,7 +325,7 @@ if opts.realtime: # Realtime mapping and data
     mng = plt.get_current_fig_manager() # Make figure full screen
     # Make background subplot for title for all plots
     ax = fig.add_subplot(111)
-    ax.set_title(r'Real-time ECHO Stuff',y=1.08,size=16)
+    ax.set_title(r'Real-time ECHO Data',y=1.08,size=16)
     ax.spines['top'].set_color('none')
     ax.spines['bottom'].set_color('none')
     ax.spines['left'].set_color('none')
@@ -361,7 +369,7 @@ if opts.realtime: # Realtime mapping and data
 
     # Make beam, counts, and rms from gridded data
     # griddata(...) called in make_beam(...)
-    hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw)
+    hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,lat0,lon0)
 
     # Cuts and beam plot initializations
     gs2 = gridspec.GridSpec(2, 1,height_ratios=[1,2])
@@ -383,7 +391,7 @@ if opts.realtime: # Realtime mapping and data
     # Position colorbar next to plot with same height as plot
     divider = make_axes_locatable(beam_plot)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    fig.colorbar(coll, cax=cax, use_gridspec=True, label='dB') # orientation='horizontal')
+    fig.colorbar(coll, cax=cax, use_gridspec=True, label='dB')
 
     for radius_deg in [20,40,60,80]:
         r = np.sin(radius_deg*np.pi/180.)
@@ -398,13 +406,15 @@ if opts.realtime: # Realtime mapping and data
     ell = np.linspace(-np.pi/2,np.pi/2)
     az = np.zeros_like(ell)
     xticks = [-90,-60,-40,-20,0,20,40,60,90]
-    beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,ell,az) #- tx_beam
+    beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,ell,az)
     beam_slice_E_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az)
-    beam_slice_H = hp.pixelfunc.get_interp_val(hpx_beam,ell,az+np.pi/2) #- tx_beam
+    beam_slice_H = hp.pixelfunc.get_interp_val(hpx_beam,ell,az+np.pi/2)
     beam_slice_H_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az+np.pi/2)
 
-    cuts_E_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_E,beam_slice_E_err,fmt='b.',label='ECHO [E]')
-    cuts_H_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_H,beam_slice_H_err,fmt='r.',label='ECHO [H]')
+    cuts_E_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_E,\
+                                                    beam_slice_E_err,fmt='b.',label='ECHO [E]')
+    cuts_H_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_H,\
+                                                    beam_slice_H_err,fmt='r.',label='ECHO [H]')
     cuts_plot.legend(loc='best')
     cuts_plot.set_ylabel('dB')
     cuts_plot.set_xlabel('Elevation Angle [deg]')
@@ -436,7 +446,7 @@ if opts.realtime: # Realtime mapping and data
                 i = i+1
 
             # Get updated data from Signal Hound
-            all_Data,spec_times,spec_raw,lats,lons,alts = get_data(opts.acc_file)
+            all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
     except KeyboardInterrupt:
         print 'Exiting...\n'
         sys.exit()
@@ -458,8 +468,9 @@ if opts.realtime: # Realtime mapping and data
 else:
 
     # Initialize array to store data
-    all_Data,spec_times,spec_raw,lats,lons,alts = get_data(opts.acc_file)
-    hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw)
+    all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
+    hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,lat0,lon0)
+    print np.nanmax(hpx_beam)
 
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')

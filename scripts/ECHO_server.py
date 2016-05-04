@@ -52,7 +52,7 @@ def get_gps():
     gps_raw = []
     lines = open(opts.gps_file).readlines()
     count = len(lines)
-    gps_raw = [map(float,line.split(',')) for line in lines[2:] if len(line.split(','))==4]
+    gps_raw = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
     return np.array(gps_raw)
 # end get_gps
 

@@ -143,7 +143,7 @@ if opts.realtime:
             else:
                 with open(outfile_str,'ab') as outfile:
                     # Print -1 for all entries with no valid GPS data
-                    outfile.write(str(qtime)+','+','.join(map(str,[-1]*23))+'\n')
+                    outfile.write(str(qtime)+','+','.join(map(str,[-1]*22))+'\n')
 
         # Update row counter and wait for new data
         last_row_index += 1
