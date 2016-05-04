@@ -54,12 +54,16 @@ def get_gps():
     count = len(lines)
     gps_raw = [map(float,line.split(',')) for line in lines[2:] if len(line.split(','))==4]
     return np.array(gps_raw)
+# end get_gps
+
 
 def interp(gps):
     lati = interp1d(gps[:,0],gps[:,1],kind='zero')
     loni = interp1d(gps[:,0],gps[:,2],kind='zero')
     alti = interp1d(gps[:,0],gps[:,3],kind='zero')
     return lati,loni,alti
+# end interp
+
 
 def create_app():
     app = Flask(__name__)
@@ -112,10 +116,12 @@ def create_app():
     # When you kill Flask (SIGTERM), clear the trigger for the next thread
     atexit.register(interrupt)
     return app
+# end create_app
 
-'''####################################################
-#                                                       MAIN                                                        #
-####################################################'''
+
+'''##############################
+                                MAIN
+##############################'''
 
 if not opts.gps_file: # Verify a GPS file was passed by the user
     print '\n Please enter valid file for GPS information\nExiting...\n\n'
@@ -126,14 +132,16 @@ POOL_TIME = 0.3 # Seconds between thread creation/execution
 # Global variables
 gps_raw = get_gps()
 lati,loni,alti = interp(gps_raw)
+
 # Get current number of GPS data points for monitoring of opts.gps_file
 lastlen = gps_raw.shape[0]
 tmin,tmax = gps_raw[:,0].min(),gps_raw[:,0].max()
+
 # Create weights array for check of GPS data when user queries server
 dt = opts.dt
 counts,tbins = np.histogram(gps_raw[:,0],bins=int((tmax-tmin)/dt))
 counts = list(counts)
-counts.append(0) # len(counts) -1 = len(tbins)
+counts.append(0)
 weights = np.column_stack((counts,tbins))
 
 # Create Lock object to access variables on an individual thread
@@ -143,7 +151,10 @@ dataLock = threading.Lock()
 # Thread handler
 yourThread = threading.Thread()
 
+# Initiate app
 app = create_app()
+
+# Assign and create get function for server
 @app.route('/ECHO/lms/v1.0/pos/<float:query_time>', methods=['GET'])
 def get_gps_pos(query_time):
     if np.logical_and(query_time>=gps_raw[0,0],query_time<=gps_raw[-1,0]):
@@ -159,6 +170,7 @@ def get_gps_pos(query_time):
         return 'Error: Query time '+str(query_time)+' outside range '+\
                     str(gps_raw[0,0])+'to'+str(gps_raw[-1,0])
 
+# Run server app
 if opts.host:
     app.run(debug=True,host=opts.host,port=5000)
 else:
