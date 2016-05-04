@@ -120,7 +120,7 @@ def create_app():
 
 
 '''##############################
-                                MAIN
+                                    MAIN
 ##############################'''
 
 if not opts.gps_file: # Verify a GPS file was passed by the user
