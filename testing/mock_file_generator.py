@@ -41,6 +41,6 @@ for i in range(N):
     alt = np.sqrt(max_range**2-x**2-y**2)
     pos_str = str(lat)+','+str(lon)+','+str(alt)
     spec = Guassian(35,0,20,x,y)-35
-    spec_str = ','.join(map(str,[spec]*19))
+    spec_str = ','.join(map(str,[spec]*20))
     with open(outFile,'ab') as f:
         f.write(str(t)+','+pos_str+','+spec_str+'\n')
