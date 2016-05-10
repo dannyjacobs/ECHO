@@ -41,19 +41,22 @@ def get_data(inFile):
 
     all_Data = []
     freqs = []
-    print '\nReading in %s...' %inFile
+    #print '\nReading in %s...' %inFile
     lines = open(inFile).readlines()
 
     # Add information from flight to all_Data array
     if not 'transmitter' in inFile:
         lat0,lon0 = map(float,lines[2].rstrip('\n').split(':')[1].strip(' ').split(','))
         freqs = map(float,lines[3].rstrip('\n').split(':')[1].strip(' ').split(','))
+        freqs = np.array(freqs)
     for line in lines[4:]: # Data begins on fifth line of accumulated file
-        if not line.split(',')[1] == '-1':
-            all_Data.append(map(float,line.rstrip('\n').split(',')))
+        if line.startswith('#'):
+            continue
+        elif not line.split(',')[1] == '-1':
+                all_Data.append(map(float,line.rstrip('\n').split(',')))
 
     all_Data = np.array(all_Data)
-    print 'Converted to array with shape %s and type %s' %(all_Data.shape,all_Data.dtype)
+    #print 'Converted to array with shape %s and type %s' %(all_Data.shape,all_Data.dtype)
 
     # Extract information from all_Data array
     if 'transmitter' in inFile: # Green Bank data
@@ -73,7 +76,7 @@ def get_data(inFile):
     else:
         spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],all_Data[:,2],\
                                                                     all_Data[:,3],all_Data[:,4:])
-    return all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0
+    return all_Data,spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0
 # end get_data
 
 
@@ -240,13 +243,14 @@ if opts.realtime: # Realtime mapping and data
     # end find_peak
 
 
-    def animate_spectrum(i):
+    def animate_spectrum(i,spec_line,spec_raw):
         spec_line.set_ydata(spec_raw[i,:])
         return
     # end animate_spectrum
 
 
-    def animate_peak(i):
+    def animate_peak(i,peak_plot,peak_line,spec_times,spec_raw,peaktimes,peakvals,\
+                               peakfreqs,rmss,peakrmss,freqs,fmin,fmax,rmswindow=10):
         currtime = spec_times[i]
         if currtime == peaktimes[-1]:
             return
@@ -279,9 +283,14 @@ if opts.realtime: # Realtime mapping and data
     # end animate_peak
 
 
-    def animate_beam(coll):
-        hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw)
-        coll.set_array(hpx_beam[np.isnan(hpx_beam)==False])
+    def animate_beam(beam_plot,hpx_beam):
+        pix = np.argwhere(np.isnan(hpx_beam)==False).squeeze()
+        boundaries = hp.boundaries(opts.nsides,pix)
+        verts = np.swapaxes(boundaries[:,0:2,:],1,2)
+        coll = PolyCollection(verts, array=hpx_beam[np.isnan(hpx_beam)==False],\
+                                        cmap=cm.gnuplot,edgecolors='none')
+        beam_plot.collections.remove(beam_plot.collections[-1])
+        beam_plot.add_collection(coll)
     # end animate_beam
 
 
@@ -299,11 +308,11 @@ if opts.realtime: # Realtime mapping and data
         barsy[0].set_segments(new_segments_y)
     # end adjustErrbarxy
 
-    def animate_cuts():
-        beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,alt,az)
-        beam_slice_E_err = hp.pixelfunc.get_interp_val(hpx_rms,alt,az)
-        beam_slice_H = hp.pixelfunc.get_interp_val(hpx_beam,alt,az+np.pi/2)
-        beam_slice_H_err = hp.pixelfunc.get_interp_val(hpx_rms,alt,az+np.pi/2)
+    def animate_cuts(cuts_E_line,cuts_H_line,hpx_beam,ell,az):
+        beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,ell,az)
+        beam_slice_E_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az)
+        beam_slice_H = hp.pixelfunc.get_interp_val(hpx_beam,ell,az+np.pi/2)
+        beam_slice_H_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az+np.pi/2)
 
         adjustErrbarxy(cuts_E_line,ell,beam_slice_E,beam_slice_E_err)
         adjustErrbarxy(cuts_H_line,ell,beam_slice_H,beam_slice_H_err)
@@ -315,13 +324,14 @@ if opts.realtime: # Realtime mapping and data
     rmswindow = 10
 
     # Get initial data from Signal Hound
-    all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
+    all_Data,spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
+    #print freqs.shape,spec_raw.shape
     if spec_times.shape[0] == 0: # Ensure data in inFile
         print 'Invalid data: array with zero dimension\nExiting...\n'
         sys.exit()
 
     # Initialize plotting figure
-    fig = plt.figure(dpi=80,facecolor='w',edgecolor='w') # figsize=(16,9))
+    fig = plt.figure(figsize=(13,9),dpi=80,facecolor='w',edgecolor='w') # figsize=(16,9))
     mng = plt.get_current_fig_manager() # Make figure full screen
     # Make background subplot for title for all plots
     ax = fig.add_subplot(111)
@@ -337,6 +347,8 @@ if opts.realtime: # Realtime mapping and data
     spec_plot = fig.add_subplot(gs1[0]) # Initialize the spectrum plot in figure
     spec_line, = spec_plot.plot(freqs,spec_raw[0,:])
     spec_plot.vlines([fmin,fmax],ymin=-100,ymax=10)
+    freq_labels = [freqs[0],freqs[9],freqs[10],freqs[11],freqs[-1]]
+    plt.xticks(freq_labels,map(str,freq_labels),rotation='vertical')
     spec_plot.set_xlabel("Frequency [Mhz]")
     spec_plot.set_ylabel("Power [dBm]")
     spec_plot.set_xlim([freqs[0],freqs[-1]])
@@ -372,17 +384,27 @@ if opts.realtime: # Realtime mapping and data
     hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,lat0,lon0)
 
     # Cuts and beam plot initializations
-    gs2 = gridspec.GridSpec(2, 1,height_ratios=[1,2])
+    gs2 = gridspec.GridSpec(2, 1,height_ratios=[1,1])
     plot_lim = [-40,5]
 
     # Beam plot initialization
-    gs = gridspec.GridSpec(1, 2) # Sets up grid for placing plots
-    beam_plot = fig.add_subplot(gs[0],aspect='equal')
+    #gs = gridspec.GridSpec(1, 2) # Sets up grid for placing plots
+    #beam_plot = fig.add_subplot(gs[0],aspect='equal')
+    beam_plot = fig.add_subplot(gs2[0],aspect='equal')
+    init_beam = 10*np.ones_like(hpx_beam)
+    init_pix = np.argwhere(init_beam).squeeze()
+    init_boundaries = hp.boundaries(opts.nsides,init_pix)
+    init_verts = np.swapaxes(init_boundaries[:,0:2,:],1,2)
+    init_coll = PolyCollection(init_verts, array=init_beam,\
+                                    cmap=cm.gnuplot,edgecolors='none')
+    init_coll.set_clim(plot_lim)
+    init_coll.cmap.set_over('w')
+    beam_plot.add_collection(init_coll)
 
     pix = np.argwhere(np.isnan(hpx_beam)==False).squeeze()
     boundaries = hp.boundaries(opts.nsides,pix)
     verts = np.swapaxes(boundaries[:,0:2,:],1,2)
-    coll, = PolyCollection(verts, array=hpx_beam[np.isnan(hpx_beam)==False],\
+    coll = PolyCollection(verts, array=hpx_beam[np.isnan(hpx_beam)==False],\
                                     cmap=cm.gnuplot,edgecolors='none')
     coll.set_clim(plot_lim)
     beam_plot.add_collection(coll)
@@ -391,7 +413,7 @@ if opts.realtime: # Realtime mapping and data
     # Position colorbar next to plot with same height as plot
     divider = make_axes_locatable(beam_plot)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    fig.colorbar(coll, cax=cax, use_gridspec=True, label='dB')
+    fig.colorbar(init_coll, cax=cax, use_gridspec=True, label='dB')
 
     for radius_deg in [20,40,60,80]:
         r = np.sin(radius_deg*np.pi/180.)
@@ -400,7 +422,8 @@ if opts.realtime: # Realtime mapping and data
         beam_plot.plot(x,-np.sqrt(r**2-x**2),'w-',linewidth=3)
 
     # Cuts plot initialization
-    cuts_plot = fig.add_subplot(gs[1])
+    #cuts_plot = fig.add_subplot(gs[1])
+    cuts_plot = fig.add_subplot(gs2[1])
 
     #receiver coordinates
     ell = np.linspace(-np.pi/2,np.pi/2)
@@ -415,12 +438,13 @@ if opts.realtime: # Realtime mapping and data
                                                     beam_slice_E_err,fmt='b.',label='ECHO [E]')
     cuts_H_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_H,\
                                                     beam_slice_H_err,fmt='r.',label='ECHO [H]')
-    cuts_plot.legend(loc='best')
+    cuts_plot.legend(loc='lower center')
     cuts_plot.set_ylabel('dB')
     cuts_plot.set_xlabel('Elevation Angle [deg]')
     cuts_plot.set_xlim([-95,95])
     cuts_plot.set_xticks(xticks)
     cuts_plot.set_ylim(plot_lim)
+
 
     with warnings.catch_warnings():
         # This raises warnings since tight layout cannot
@@ -429,26 +453,30 @@ if opts.realtime: # Realtime mapping and data
         warnings.simplefilter("ignore", UserWarning)
         gs2.tight_layout(fig, rect=[0.5, None, None, None])
 
+
     mng.window.state('zoomed')
     plt.draw()
     plt.show(block=False)
 
     try:
         while True:
+            # Get updated data from Signal Hound
+            all_Data,spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
+            hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,lat0,lon0)
+
             while i < spec_times.shape[0]:
                 # Update plotting window
-                animate_spectrum(i)
-                animate_peak(i)
-                animate_beam(coll)
-                animate_cuts()
+                animate_spectrum(i,spec_line,spec_raw)
+                animate_peak(i,peak_plot,peak_line,spec_times,spec_raw,\
+                                     peaktimes,peakvals,peakfreqs,rmss,peakrmss,\
+                                     freqs,fmin,fmax,rmswindow=rmswindow)
+                animate_beam(beam_plot,hpx_beam)
+                animate_cuts(cuts_E_line,cuts_H_line,hpx_beam,ell,az)
                 plt.draw()
-                #plt.show(block=False)
                 i = i+1
 
-            # Get updated data from Signal Hound
-            all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
     except KeyboardInterrupt:
-        print 'Exiting...\n'
+        print '\nExiting...\n'
         sys.exit()
 
 
@@ -458,17 +486,11 @@ if opts.realtime: # Realtime mapping and data
     #                                                NOT REALTIME                                                 #
     ####################################################'''
 
-    '''
-
-            All code in this section works for Green Bank combined files.
-            Needs to be tested on an accumulated text file.
-
-    '''
 
 else:
 
     # Initialize array to store data
-    all_Data,spec_times,spec_raw,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
+    all_Data,spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file)
     hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,lat0,lon0)
     print np.nanmax(hpx_beam)
 
