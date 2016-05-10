@@ -69,7 +69,7 @@ def get_spec(inFile,freq_chan,freqs):
             line = line.rstrip('\n').split(',')
             if len(line) == 4097: # Make sure line has finished printing
                 spec_times.append(float(line[0]))
-                spec_raw.append(map(float,line[1:]))
+                spec_raw.append(map(float,line[freq_chan-10:freq_chan+10]))
     return np.array(spec_times),np.array(spec_raw),freq_chan,np.array(freqs)
 
 #spec_times = [float(line.split(',')[0]) for line in lines[2:] if not line.startswith('#')]
@@ -135,7 +135,7 @@ if opts.realtime:
             pos = json.loads(lines)
             if not pos['lat'] == -1:
                 outstr = str(qtime)+','+str(pos['lat'])+','+str(pos['lon'])+','+\
-                             str(pos['alt'])+','+','.join(map(str,spec_raw[i,1:]))
+                             str(pos['alt'])+','+','.join(map(str,spec_raw[i,:]))
                 # Check that output string has the correct number of columns
                 if len(outstr.split(',')) == 24:
                     with open(outfile_str,'ab') as outfile:
@@ -143,7 +143,7 @@ if opts.realtime:
             else:
                 with open(outfile_str,'ab') as outfile:
                     # Print -1 for all entries with no valid GPS data
-                    outfile.write(str(qtime)+','+','.join(map(str,[-1]*22))+'\n')
+                    outfile.write(str(qtime)+','+','.join(map(str,[-1]*23))+'\n')
 
         # Update row counter and wait for new data
         last_row_index += 1
