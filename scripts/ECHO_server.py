@@ -48,6 +48,21 @@ o.add_option('--dt',type=float,default=0.5,
 o.add_option('--host',type=str,help='Host address')
 opts,args = o.parse_args(sys.argv[1:])
 
+def get_data(source):
+    if source == 'gps':
+        gps_raw = []
+        lines = open(opts.gps_file).readlines()
+        count = len(lines)
+        gps_raw = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
+        return np.array(gps_raw)
+    elif source == 'sh':
+        # Get Signal Hound data?
+        # run c code from python?  why?
+        return []
+    else:
+        # hrmpf
+        return []
+
 def get_gps():
     gps_raw = []
     lines = open(opts.gps_file).readlines()
@@ -67,7 +82,6 @@ def interp(gps):
 
 def create_app():
     app = Flask(__name__)
-
     def interrupt(): # Method called upon script exit
         global yourThread
         if __name__ == yourThread.getName():
@@ -75,7 +89,6 @@ def create_app():
                 logfile.write(strftime('%H:%M:%S')+' - '+yourThread.name()+' closed '+'\n')
         # Close active thread
         yourThread.cancel()
-
     def collection():
         # Call global variables that will be used/modified
         global gps_raw,lati,loni,alti
@@ -103,14 +116,12 @@ def create_app():
         # Set the next thread to happen
         yourThread = threading.Timer(POOL_TIME, collection, ())
         yourThread.start()
-
     def initialize():
         # Do initialisation stuff here
         global yourThread
         # Create your thread
         yourThread = threading.Timer(POOL_TIME, collection, ())
         yourThread.start()
-
     # Initiate
     initialize()
     # When you kill Flask (SIGTERM), clear the trigger for the next thread

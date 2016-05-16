@@ -25,10 +25,19 @@ import numpy as np
 from pymavlink import mavutil
 from astropy.time import Time
 
+# Time functions
+def unix_to_gps(t):
+    return Time(t,scale='utc',format='unix').gps
+
+def gps_to_HMS(t):
+    t = Time(t,scale='utc',format='gps')
+    return t.iso.split(' ')[1]
+
+
 o = optparse.OptionParser()
 o.set_description('Takes raw APM/Orbcomm data and creates an interpolated, combined text file')
 o.add_option('--gps_file',type=str,help='File name for output of GPS data')
-#o.add_option('--trans',type=str,help='Transmitting antenna polarization')
+o.add_option('--trans',type=str,help='Transmitting antenna polarization')
 opts,args = o.parse_args(sys.argv[1:])
 
 # Establish connection with Drone via UDP
@@ -37,24 +46,29 @@ dt = 0.2 # time delay between GPS messages
 date = time.strftime('%m_%d_%Y')
 currtime = time.strftime('%H:%M:%S') # 24 Hr format
 header = '# GPS Positions file for '+date+', '+currtime
-with open(opts.gps_file,'wb') as outfile:
+if opts.trans:
+    outfilename = opts.gps_file.split('.')[0]+'_'+opts.trans+'trans.txt'
+else:
+    outfilename = opts.gps_file
+
+with open(outfilename,'wb') as outfile:
     outfile.write(header+'\n')
     outfile.write('# Col Format: Time [GPS s], Lat [deg], Lon [deg], Rel_alt [m]\n')
 
 try:
     while True:
         loc = udp.location()
-        query_time = Time(time.time(),scale='utc',format='unix').gps
+        query_time = unix_to_gps(time.time())
         if loc:
             loc_str = '%.2f,%.5f,%.5f,%.5f' %(query_time,loc.lat,loc.lng,loc.alt)
-            with open(opts.gps_file,'ab') as outfile:
+            with open(outfilename,'ab') as outfile:
                 outfile.write(loc_str+'\n')
         else:
-            print 'No New GPS point.  Sleeping for %.1f s...' %dt
+            print 'No New GPS data at '+gps_to_HMS(query_time)+'s.'
             time.sleep(dt)
 
 except KeyboardInterrupt:
     outfile.close()
-    print '\n\n'+opts.gps_file+' closed successfully'
+    print '\n\n'+outfilename+' closed successfully'
     print 'Exiting...\n'
     sys.exit()
