@@ -48,57 +48,128 @@ o.add_option('--dt',type=float,default=0.5,
 o.add_option('--host',type=str,help='Host address')
 opts,args = o.parse_args(sys.argv[1:])
 
-def get_data(source):
-    if source == 'gps':
-        gps_raw = []
-        lines = open(opts.gps_file).readlines()
+# Reading functions
+def get_data(infile,filetype=None,freqs=[],freq_chan=None):
+    if filetype == 'gps':
+        '''
+            Read in GPS position file.
+            The first line contains start date/time information for file.
+            The second line contains the column formatting:
+                0 Time [GPS s], 1 Lat [deg], 2 Lon [deg], 3 Alt [m]
+        '''
+        gps_arr = []
+        lines = open(infile).readlines()
         count = len(lines)
-        gps_raw = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
-        return np.array(gps_raw)
-    elif source == 'sh':
-        # Get Signal Hound data?
-        # run c code from python?  why?
-        return []
+        gps_arr = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
+        return np.array(gps_arr)
+
+    elif filetype == 'sh':
+        '''
+            Read in Signal Hound file.
+            The first line contains a comment and is not needed.
+            The second line contains a list of all frequency bins read by the Signal Hound.
+            Column format for subsequent lines is:
+                0 Time [unix sec], 1: Spectrum [dB]
+        '''
+        spec_times = []
+        spec_raw = []
+        lines = open(infile).readlines()
+        count = len(lines)
+        if count != 0:
+            if len(freqs) == 0:
+                freqs = np.array(map(float,lines[1].rstrip('\n').split(',')[1:]))
+                freq_chan = np.argmax(freqs == opts.freq) # Get index of opts.freq for gridding
+                freqs = freqs[freq_chan-10:freq_chan+10] # opts.freq is freqs[10]
+            for line in lines:
+                if line.startswith('#'):
+                    continue
+                line = line.rstrip('\n').split(',')
+                if len(line) == 4097: # Make sure line has finished printing
+                    spec_times.append(float(line[0]))
+                    spec_raw.append(map(float,line[freq_chan-10:freq_chan+10]))
+        return np.array(spec_times),np.array(spec_raw),np.array(freqs),freq_chan
+
+    elif filetype == 'echo':
+        '''
+            Read in ECHO file.
+            The first two lines contain comment and formatting information.
+            Third line contains lat0 and lon0 of antenna under test.
+            Column format for subsequent lines is:
+                0 Time [gps sec], 1 Lat [deg], 2 Lon [deg], 3 Alt [m], 4: Spectrum [dB]
+        '''
+        all_Data = []
+        freqs = []
+        #print '\nReading in %s...' %inFile
+        lines = open(infile).readlines()
+        # Add information from flight to all_Data array
+        if not 'transmitter' in infile:
+            lat0,lon0 = map(float,lines[2].rstrip('\n').split(':')[1].strip(' ').split(','))
+            freqs = map(float,lines[3].rstrip('\n').split(':')[1].strip(' ').split(','))
+            freqs = np.array(freqs)
+        for line in lines[4:]: # Data begins on fifth line of accumulated file
+            if line.startswith('#'):
+                continue
+            elif not line.split(',')[1] == '-1':
+                    all_Data.append(map(float,line.rstrip('\n').split(',')))
+        all_Data = np.array(all_Data)
+        #print 'Converted to array with shape %s and type %s' %(all_Data.shape,all_Data.dtype)
+        # Extract information from all_Data array
+        if 'transmitter' in infile: # Green Bank data
+            spec_times,lats,lons,alts = (all_Data[:,1],all_Data[:,2],all_Data[:,3],all_Data[:,4])
+            if 'Nant' in infile:
+                lat0,lon0 = (38.4248532,-79.8503723)
+                if 'NS' in infile:
+                    spec_raw = all_Data[:,12:17] # N antenna, NS dipole
+                if 'EW' in infile:
+                    spec_raw = all_Data[:,24:29] # N antenna, EW dipole
+            if 'Sant' in infile:
+                lat0,lon0 = (38.4239235,-79.8503418)
+                if 'NS' in infile:
+                    spec_raw = all_Data[:,6:11] # S antenna, NS dipole
+                if 'EW' in infile:
+                    spec_raw = all_Data[:,18:23] # S antenna, EW dipole
+        else:
+            spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],all_Data[:,2],\
+                                                                        all_Data[:,3],all_Data[:,4:])
+        return spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0
+
     else:
-        # hrmpf
-        return []
-
-def get_gps():
-    gps_raw = []
-    lines = open(opts.gps_file).readlines()
-    count = len(lines)
-    gps_raw = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
-    return np.array(gps_raw)
-# end get_gps
+        print '\nNo valid filetype found for %s' %infile
+        print 'Exiting...\n\n'
+        sys.exit()
 
 
-def interp(gps):
+# Time functions
+
+
+# Position functions
+def interp_pos(gps):
     lati = interp1d(gps[:,0],gps[:,1],kind='zero')
     loni = interp1d(gps[:,0],gps[:,2],kind='zero')
     alti = interp1d(gps[:,0],gps[:,3],kind='zero')
     return lati,loni,alti
-# end interp
 
 
+# Server API functions
 def create_app():
     app = Flask(__name__)
     def interrupt(): # Method called upon script exit
         global yourThread
-        if __name__ == yourThread.getName():
-            with open(logfilestr,'ab') as logfile:
-                logfile.write(strftime('%H:%M:%S')+' - '+yourThread.name()+' closed '+'\n')
+        #if __name__ == yourThread.getName():
+        #    with open(logfilestr,'ab') as logfile:
+        #        logfile.write(strftime('%H:%M:%S')+' - '+yourThread.name()+' closed '+'\n')
         # Close active thread
         yourThread.cancel()
     def collection():
         # Call global variables that will be used/modified
         global gps_raw,lati,loni,alti
-        global lastlen,logfilestr
+        global lastlen
         global tmin,tmax,dt
         global counts,tbins,weights
         global yourThread
         with dataLock: # Wait for lock on current thread
-            gps_raw = get_gps()
-            lati,loni,alti = interp(gps_raw)
+            gps_raw = get_data(opts.gps_file,filetype='gps')
+            lati,loni,alti = interp_pos(gps_raw)
             currlen = gps_raw.shape[0]
             if currlen == lastlen:
                 sleep(POOL_TIME)
@@ -110,10 +181,10 @@ def create_app():
                 counts = list(counts)
                 counts.append(0) # len(counts) -1 = len(tbins)
                 weights = np.column_stack((counts,tbins))
-            else:
-                if __name__=='__main__':
-                    print 'Error retreiving GPS data'
-        # Set the next thread to happen
+            #else:
+            #    if __name__=='__main__':
+            #        print 'Error retreiving GPS data'
+        # Start the next thread
         yourThread = threading.Timer(POOL_TIME, collection, ())
         yourThread.start()
     def initialize():
@@ -127,7 +198,9 @@ def create_app():
     # When you kill Flask (SIGTERM), clear the trigger for the next thread
     atexit.register(interrupt)
     return app
-# end create_app
+
+
+# Plotting functions
 
 
 '''##############################
@@ -164,7 +237,6 @@ yourThread = threading.Thread()
 
 # Initiate app
 app = create_app()
-
 # Assign and create get function for server
 @app.route('/ECHO/lms/v1.0/pos/<float:query_time>', methods=['GET'])
 def get_gps_pos(query_time):
@@ -180,7 +252,6 @@ def get_gps_pos(query_time):
     else:
         return 'Error: Query time '+str(query_time)+' outside range '+\
                     str(gps_raw[0,0])+'to'+str(gps_raw[-1,0])
-
 # Run server app
 if opts.host:
     app.run(debug=True,host=opts.host,port=5000)

@@ -53,28 +53,109 @@ o.add_option('--freq',type=float,default=137.554,
                     help='Frequency of importance')
 opts,args = o.parse_args(sys.argv[1:])
 
-def get_spec(inFile,freq_chan,freqs):
-    spec_times = []
-    spec_raw = []
-    lines = open(inFile).readlines()
-    count = len(lines)
-    if count != 0:
-        if len(freqs) == 0:
-            freqs = np.array(map(float,lines[1].rstrip('\n').split(',')[1:]))
-            freq_chan = np.argmax(freqs == opts.freq) # Get index of opts.freq for gridding
-            freqs = freqs[freq_chan-10:freq_chan+10] # opts.freq is freqs[10]
-        for line in lines:
+
+# Reading functions
+def get_data(infile,filetype=None,freqs=[],freq_chan=None):
+    if filetype == 'gps':
+        '''
+            Read in GPS position file.
+            The first line contains start date/time information for file.
+            The second line contains the column formatting:
+                0 Time [GPS s], 1 Lat [deg], 2 Lon [deg], 3 Alt [m]
+        '''
+        gps_arr = []
+        lines = open(infile).readlines()
+        count = len(lines)
+        gps_arr = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
+        return np.array(gps_arr)
+
+    elif filetype == 'sh':
+        '''
+            Read in Signal Hound file.
+            The first line contains a comment and is not needed.
+            The second line contains a list of all frequency bins read by the Signal Hound.
+            Column format for subsequent lines is:
+                0 Time [unix sec], 1: Spectrum [dB]
+        '''
+        spec_times = []
+        spec_raw = []
+        lines = open(infile).readlines()
+        count = len(lines)
+        if count != 0:
+            if len(freqs) == 0:
+                freqs = np.array(map(float,lines[1].rstrip('\n').split(',')[1:]))
+                freq_chan = np.argmax(freqs == opts.freq) # Get index of opts.freq for gridding
+                freqs = freqs[freq_chan-10:freq_chan+10] # opts.freq is freqs[10]
+            for line in lines:
+                if line.startswith('#'):
+                    continue
+                line = line.rstrip('\n').split(',')
+                if len(line) == 4097: # Make sure line has finished printing
+                    spec_times.append(float(line[0]))
+                    spec_raw.append(map(float,line[freq_chan-10:freq_chan+10]))
+        return np.array(spec_times),np.array(spec_raw),np.array(freqs),freq_chan
+
+    elif filetype == 'echo':
+        '''
+            Read in ECHO file.
+            The first two lines contain comment and formatting information.
+            Third line contains lat0 and lon0 of antenna under test.
+            Column format for subsequent lines is:
+                0 Time [gps sec], 1 Lat [deg], 2 Lon [deg], 3 Alt [m], 4: Spectrum [dB]
+        '''
+        all_Data = []
+        freqs = []
+        #print '\nReading in %s...' %inFile
+        lines = open(infile).readlines()
+        # Add information from flight to all_Data array
+        if not 'transmitter' in infile:
+            lat0,lon0 = map(float,lines[2].rstrip('\n').split(':')[1].strip(' ').split(','))
+            freqs = map(float,lines[3].rstrip('\n').split(':')[1].strip(' ').split(','))
+            freqs = np.array(freqs)
+        for line in lines[4:]: # Data begins on fifth line of accumulated file
             if line.startswith('#'):
                 continue
-            line = line.rstrip('\n').split(',')
-            if len(line) == 4097: # Make sure line has finished printing
-                spec_times.append(float(line[0]))
-                spec_raw.append(map(float,line[freq_chan-10:freq_chan+10]))
-    return np.array(spec_times),np.array(spec_raw),freq_chan,np.array(freqs)
+            elif not line.split(',')[1] == '-1':
+                    all_Data.append(map(float,line.rstrip('\n').split(',')))
+        all_Data = np.array(all_Data)
+        #print 'Converted to array with shape %s and type %s' %(all_Data.shape,all_Data.dtype)
+        # Extract information from all_Data array
+        if 'transmitter' in infile: # Green Bank data
+            spec_times,lats,lons,alts = (all_Data[:,1],all_Data[:,2],all_Data[:,3],all_Data[:,4])
+            if 'Nant' in infile:
+                lat0,lon0 = (38.4248532,-79.8503723)
+                if 'NS' in infile:
+                    spec_raw = all_Data[:,12:17] # N antenna, NS dipole
+                if 'EW' in infile:
+                    spec_raw = all_Data[:,24:29] # N antenna, EW dipole
+            if 'Sant' in infile:
+                lat0,lon0 = (38.4239235,-79.8503418)
+                if 'NS' in infile:
+                    spec_raw = all_Data[:,6:11] # S antenna, NS dipole
+                if 'EW' in infile:
+                    spec_raw = all_Data[:,18:23] # S antenna, EW dipole
+        else:
+            spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],all_Data[:,2],\
+                                                                        all_Data[:,3],all_Data[:,4:])
+        return spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0
 
-#spec_times = [float(line.split(',')[0]) for line in lines[2:] if not line.startswith('#')]
-#spec_raw = [map(float,line.rstrip('\n').split(',')[desired_chan-10:desired_chan+10]) for line in lines[2:]\
-#                    if not line.startswith('#')] # channel for opts.freq is spec_raw[i,10]
+    else:
+        print '\nNo valid filetype found for %s' %infile
+        print 'Exiting...\n\n'
+        sys.exit()
+
+# Time functions
+def unix_to_gps(t):
+    return Time(t,scale='utc',format='unix').gps
+
+# Position functions
+
+
+# Server API functions
+
+
+# Plotting functions
+
 
 
 dt = 0.3 # Time delay between queries of ECHO_server.py
@@ -110,15 +191,17 @@ if opts.realtime:
 
     # Header information for output file
     headstr = '# Accumulated data for '+start_datestr+', '+start_timestr
-    colfmtstr = '# Column Format: 1 Time [GPS s], 2 Lat [deg], 3 Lon [deg], 4 Rel Alt [m], 5: Radio Spectrum'
+    colfmtstr = '# Column Format: 1 Time [GPS s], 2 Lat [deg], 3 Lon [deg],\
+                            4 Rel Alt [m], 5: Radio Spectrum'
     latlonstr = '# lat0,lon0: %s,%s' %(opts.lat0,opts.lon0)
     with open(outfile_str,'ab') as outfile:
         # Write header information to output file
         outfile.write(headstr+'\n'+colfmtstr+'\n'+latlonstr+'\n')
 
     # Read in initial SH data
-    spec_times,spec_raw,freq_chan,freqs = get_spec(opts.spec_file,freq_chan,freqs)
-    print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
+    spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',\
+                                                                freqs=freqs,freq=opts.freq,freq_chan=freq_chan)
+    #print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
     with open(outfile_str,'ab') as outfile:
         # Write frequencies to output file for indexing in ECHO_plot.py
         outfile.write('# Freqs: '+','.join(map(str,freqs))+'\n')
@@ -129,7 +212,7 @@ if opts.realtime:
         if not spec_times.shape[0] == curr_size:
             curr_size = spec_times.shape[0]
         while last_row_index < spec_times.shape[0]:
-            qtime = Time(spec_times[last_row_index],scale='utc',format='unix').gps
+            qtime = unix_to_gps(spec_times[last_row_index])
             fileo = urllib2.urlopen('http://'+opts.host+':5000/ECHO/lms/v1.0/pos/'+str(qtime))
             lines = fileo.read()
             pos = json.loads(lines)
@@ -150,8 +233,9 @@ if opts.realtime:
         time.sleep(dt)
 
         # Read in new spectrum data
-        spec_times,spec_raw,freq_chan,freqs = get_spec(opts.spec_file,freq_chan,freqs)
-        print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
+        spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',\
+                                                                    freqs=freqs,freq=opts.freq,freq_chan=freq_chan)
+        #print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
 
 
 '''####################################################

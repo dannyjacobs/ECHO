@@ -1,7 +1,5 @@
-# ECHO
+# pyECHO
 
-We are ECHO, the external calibrator for hydrogen observatories, a subset of LoCo, the low frequency cosmology group at Arizona State University.
+pyECHO is a Python package in development for measuring the primary beam response of 21cm observatories using drones.  
 
-# pyecho
-
-pyecho is a Python package developed to measure the primary beam response of 21cm radio astronomy observatories utilizing drones. 
+More information about pyECHO can be found on our [website](http://dannyjacobs.github.io/ECHO/).
