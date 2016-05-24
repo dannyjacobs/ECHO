@@ -51,15 +51,14 @@ if opts.realtime:
         sys.exit()
 
     # Initialize plotting figure
-    fig = plt.figure(figsize=(15,9),dpi=80,facecolor='w',edgecolor='w') # figsize=(16,9))
+    fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
     mng = plt.get_current_fig_manager() # Make figure full screen
-    fig.suptitle('ECHO Realtime Data Visualization',fontsize=18)
+    fig.suptitle('ECHO Realtime Data Visualization for %s' %opts.acc_file,fontsize=16)
 
     # Spectrum plot initialization
     gsl = gridspec.GridSpec(2,1) # Sets up grid for placing plots
     spec_plot = fig.add_subplot(gsl[0]) # Initialize the spectrum plot in figure
     spec_line, = spec_plot.plot(freqs,spec_raw[0,:])
-    #spec_plot.vlines([fmin,fmax],ymin=-100,ymax=10)
     freq_labels = [freqs[0],freqs[9],freqs[10],freqs[11],freqs[-1]]
     plt.xticks(freq_labels,map(str,freq_labels),rotation=45)
     spec_plot.set_xlabel("Frequency [Mhz]")
