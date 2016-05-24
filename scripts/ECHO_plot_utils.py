@@ -13,19 +13,16 @@ def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,nsides=8,volts=False,nor
     # Obtain spherical coordinates for x, y, and alt
     rs,thetas,phis = to_spherical(x,y,alts)
 
-    # z (power) will set color value for gridded data
-    #freqIndex = np.argmax(spec_raw[0,:])
-    freqIndex = 10
+    freqIndex = np.where(spec_raw[0,:])[0]
+    #freqIndex = 10
     # Only extract information from appropriate column (index = 10)
     z = spec_raw[:,freqIndex].copy()
     if volts:
         # Distance normalization
         r0 = 100 # reference position for distance normalization (unit: meters)
         z = 10*np.log10((2*z**2)*(rs/r0)**2)
-        # log(V^2) -> dB
-    # Normalize for plotting [-inf,0]
     if normalize:
-        z -= z.max()
+        z -= z.max() # Scaled on [-infty,0]
 
     # Set binsize (used in function grid_data)
     # Affects the apparent size of the pixels on the plot created below.
@@ -50,7 +47,6 @@ def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,nsides=8,volts=False,nor
     hpx_rms[hpx_rms == 0] = np.nan
 
     return hpx_beam,hpx_counts,hpx_rms
-
 
 
 def grid_data(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
@@ -130,12 +126,10 @@ def grid_data(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
                 return np.ma.masked_invalid(grid), xi, yi, gcounts, grms
 
 
-
 def animate_spectrum(i,spec_plot,spec_line,spec_raw):
     spec_line.set_ydata(spec_raw[i,:])
     spec_plot.set_ylim([spec_raw[i,:].min(),spec_raw[i,:].max()])
     return
-
 
 
 def animate_peak(i,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,spec_times,\
@@ -187,20 +181,15 @@ def make_polycoll(hpx_beam,plot_lim=[-90,-50],nsides=8):
     verts = np.swapaxes(boundaries[:,0:2,:],1,2)
     coll = PolyCollection(verts, array=hpx_beam[np.isnan(hpx_beam)==False],\
                                     cmap=cm.gnuplot,edgecolors='none')
-    #coll.set_clim(plot_lim)
     return coll
-
 
 
 def animate_beam(beam_plot,hpx_beam,fig,cax,cbar,plot_lim=[-40,5],nsides=8):
     coll = make_polycoll(hpx_beam,nsides=8)#,plot_lim=plot_lim)
     cax.cla()
     cbar = fig.colorbar(coll, cax=cax, use_gridspec=True, label='dB')
-    #cbar.set_clim([-90,-50])
-    #cbar.set_clim(np.nanmin(hpx_beam),np.nanmax(hpx_beam))
     beam_plot.collections.remove(beam_plot.collections[-1])
     beam_plot.add_collection(coll)
-
 
 
 def adjustErrbarxy(errobj, x, y, y_error):
@@ -218,7 +207,6 @@ def adjustErrbarxy(errobj, x, y, y_error):
     barsy[0].set_segments(new_segments_y)
 
 
-
 def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
     beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,ell,az)
     beam_slice_E_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az)
@@ -228,10 +216,7 @@ def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
     adjustErrbarxy(cuts_E_line,ell,beam_slice_E,beam_slice_E_err)
     adjustErrbarxy(cuts_H_line,ell,beam_slice_H,beam_slice_H_err)
 
-    cuts_plot.autoscale(axis='y')
-
-    ''' Need to account for NaN values in beam for axes relimiting '''
-
+    #cuts_plot.autoscale(axis='y')
     E_min = np.nanmin(beam_slice_E)-np.nanmin(beam_slice_E_err)
     H_min = np.nanmin(beam_slice_H)-np.nanmin(beam_slice_H_err)
     E_max = np.nanmax(beam_slice_E)+np.nanmax(beam_slice_E_err)

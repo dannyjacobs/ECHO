@@ -23,26 +23,8 @@ import sys,os,optparse
 import time
 import numpy as np
 from pymavlink import mavutil
-#from astropy.time import Time
-
-# Reading functions
-
-# Time functions
-def unix_to_gps(t):
-    return Time(t,scale='utc',format='unix').gps
-
-def gps_to_HMS(t):
-    t = Time(t,scale='utc',format='gps')
-    return t.iso.split(' ')[1]
-
-# Position functions
-def get_position(udp):
-    loc = udp.location()
-    return [loc.lat,loc.lng,loc.alt]
-
-# Server API functions
-
-# Plotting functions
+from ECHO_position_utils import get_position
+from ECHO_time_utils import unix_to_gps,gps_to_HMS
 
 
 o = optparse.OptionParser()

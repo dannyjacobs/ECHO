@@ -7,21 +7,16 @@
 
 '''
 
+import urllib2,optparse,sys,json,time,warnings
+import numpy as np
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
 
-#from matplotlib import cm,use
 from matplotlib import use
 use('TkAgg')
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-#from astropy.time import Time
-from ECHO_reading import get_data
-from ECHO_positioning import *
-#from ECHO_plotting import make_beam,grid_data
-
-import urllib2,optparse,sys,json,time,warnings
-import numpy as np
-#import healpy as hp
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
+from ECHO_read_utils import get_data
+from ECHO_position_utils import *
 
 
 o = optparse.OptionParser()
@@ -41,8 +36,8 @@ opts,args = o.parse_args(sys.argv[1:])
 
 if opts.realtime:
 
-    from ECHO_timing import find_peak
-    from ECHO_plotting import *
+    from ECHO_time_utils import find_peak
+    from ECHO_plot_utils import *
 
     fmin,fmax = int(opts.freq)-1,int(opts.freq)+1 # MHz; for plotting
     time_range = 200 # Time range in seconds of peak plot window
@@ -258,8 +253,6 @@ else:
     cuts_plot.set_xlabel('Elevation Angle [deg]')
     cuts_plot.set_xlim([-95,95])
     cuts_plot.set_xticks(xticks)
-    #cuts_plot.autoscale(enable=True)
-    cuts_plot.set_ylim([-90,5])
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", UserWarning)
