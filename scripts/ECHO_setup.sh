@@ -161,6 +161,6 @@ elif [ $ACCUM ]; then
 #   fi # END IF REALTIME
 
 else
-   echo "Please specify --ground or --acc"
+   echo "Please specify --ground or --accum"
    exit
 fi
