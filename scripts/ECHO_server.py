@@ -26,13 +26,14 @@
 
 '''
 
-import optparse,sys
+import optparse,sys,threading
 import numpy as np
 from time import sleep,strftime
 from astropy.time import Time
 
 from ECHO_read_utils import get_data
 from ECHO_position_utils import interp_pos
+from ECHO_server_utils import create_app
 
 o = optparse.OptionParser()
 o.set_description('Reads in GPS positional data in realtime from a user specified text file.\
@@ -80,7 +81,7 @@ dataLock = threading.Lock()
 yourThread = threading.Thread()
 
 # Initiate app
-app = create_app()
+app = create_app(POOL_TIME)
 # Run server app
 if opts.host:
     app.run(debug=True,host=opts.host,port=5000)

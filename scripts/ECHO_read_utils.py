@@ -6,7 +6,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=
         gps_arr = []
         lines = open(infile).readlines()
         count = len(lines)
-        gps_arr = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4]
+        gps_arr = [map(float,line.rstrip('\n').split(',')) for line in lines[2:] if len(line.split(','))==4 and not line.startswith('#')]
         return np.array(gps_arr)
 
     elif filetype == 'sh':

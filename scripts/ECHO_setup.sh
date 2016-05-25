@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 SESSION=ECHO
 BAUDRATE=57600
@@ -75,8 +75,8 @@ tmux split-window -h
 
 if [ $GROUND ]; then
    # Check if 3DR telem radio plugged in
-   if [ $(ls /dev/tty.Bluetooth-M*) ]; then
-      RADIO_LOC=$(ls /dev/tty.Bluetooth-M*)
+   if [ $(ls /dev/tty.usb*) ]; then
+      RADIO_LOC=$(ls /dev/tty.usb*)
    else
       tmux kill-session -t $SESSION
       echo "No valid 3DR telemetry radio found"
@@ -108,6 +108,8 @@ if [ $GROUND ]; then
 
    tmux select-pane -t 3
    tmux send-keys "tail -f $GPS_FILE" C-m
+
+   tmux attach-session -t $SESSION
 
 
 elif [ $ACCUM ]; then
@@ -157,6 +159,8 @@ elif [ $ACCUM ]; then
          tmux send-keys "python ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ" C-m
       fi
    fi
+
+   tmux attach-session -t $SESSION
 
 #   fi # END IF REALTIME
 
