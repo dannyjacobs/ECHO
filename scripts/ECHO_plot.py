@@ -29,6 +29,9 @@ o.add_option('--lon0',type=float,help='Longitude of antenna under test')
 o.add_option('--freq',type=float,help='Peak frequency to look for in data')
 opts,args = o.parse_args(sys.argv[1:])
 
+acc_file = opts.acc_file
+acc_file = acc_file.split('_')[-1]
+acc_file = acc_file.split('.')[0]
 
 '''####################################################
 #                                                   REALTIME                                                     #

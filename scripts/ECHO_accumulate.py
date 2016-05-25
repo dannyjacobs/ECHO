@@ -47,13 +47,14 @@ o.set_description('ECHO_accumulate queries ground station server for \
 o.add_option('--host',type=str,default='10.1.1.1',
                     help='Host for server (string).  Default is 10.1.1.1')
 o.add_option('--spec_file',type=str,help='Radio spectrum file')
+o.add_option('--gps_file',type=str,help='GPS position file')
+o.add_option('--acc_file',type=str,help='Accumulated output file')
 o.add_option('--lat0',type=str,help='Latitude of antenna under test')
 o.add_option('--lon0',type=str,help='Longitude of antenna under test')
-o.add_option('--realtime',action='store_true',
-                    help='Specify realtime accumulation of data')
-o.add_option('--gps_file',type=str,help='GPS position file')
 o.add_option('--freq',type=float,default=137.554,
                     help='Frequency of importance')
+o.add_option('--realtime',action='store_true',
+                    help='Specify realtime accumulation of data')
 opts,args = o.parse_args(sys.argv[1:])
 
 
@@ -79,6 +80,11 @@ if opts.realtime:
         print '\nPlease pass a valid spectrum file (--spec_file)...\n'
         sys.exit()
 
+    # Check for valid acc_file
+    if not opts.acc_file:
+        print '\nPlease pass a valid accumulated file (--acc_file)...\n'
+        sys.exit()
+
     # Check for latitude and longitude of antenna under test
     if not np.logical_and(opts.lat0,opts.lon0):
         print '\nLatitude (--lat0) and Longitude (--lon0) required...\n'
@@ -86,7 +92,9 @@ if opts.realtime:
 
     start_timestr = time.strftime('%H:%M:%S') # Current time in Hours:Min:Sec
     start_datestr = time.strftime('%d_%m_%Y') # Current date in Day_Month_Yr
-    outfile_str = 'accumulated_'+start_datestr+'_'+start_timestr+'.txt'
+    #outfile_str = 'accumulated_'+start_datestr+'_'+start_timestr+'.txt'
+    #outfile_str = 'accumulated_'+opts.version+'.txt'
+    outfile_str = opts.acc_file
 
     # Header information for output file
     headstr = '# Accumulated data for '+start_datestr+', '+start_timestr

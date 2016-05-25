@@ -1,14 +1,166 @@
 #!/bin/bash
 
-echo -n "Enter MAVProxy connection port (i.e. /dev/tty.usb*): "
-read port
+SESSION=ECHO
+BAUDRATE=57600
+FREQ=137.554
+APM_PATH="/Applications/APM\ Planner\ 2.0.app/"
+HOST="10.1.1.1"
+ARGS=$@
 
-echo -n "Enter Baud rate: (57600 for 3DR radio): "
-read baud
+START_DATE=$(date +"%m_%d_%y")
+START_TIME=$(date +"%H:%M:%S")
+GPS_FILE="gps_"$START_DATE"_"$START_TIME".txt"
+SPEC_FILE="spec_"$START_DATE"_"$START_TIME".txt"
+ACC_FILE="acc_"$START_DATE"_"$START_TIME".txt"
 
-echo -n "Enter APM Planner 2.0 location: (i.e. /Applications): "
-read apm_loc
+for i in ${ARGS}
+do
+   case $i in
+      --ground)
+      GROUND=1
+      shift
+      ;;
+      --accum)
+      ACCUM=1
+      shift
+      ;;
+      --trans=*)
+      TRANS="${i#*=}"
+      shift
+      ;;
+      --dt=*)
+      DT="${i#*=}"
+      shift
+      ;;
+      --host=*)
+      HOST="${i#*=}"
+      shift
+      ;;
+      --lat0=*)
+      LAT0="${i#*=}"
+      shift
+      ;;
+      --lon0=*)
+      LON0="${i#*=}"
+      shift
+      ;;
+#      --realtime)
+#      REALTIME=1
+#      shift
+#      ;;
+      --freq=*)
+      FREQ="${i#*=}"
+      shift
+      ;;
+      --nsides=*)
+      NSIDES="${i#*=}"
+      shift
+      ;;
+      *) #unrecognized value
+      ;;
+      # Add more parameters here
+   esac
+done
 
-open $apm_loc/APM\ Planner\ 2.0.app/
+# Create tmux window
+tmux new-session -d -s $SESSION
+tmux new-window -t $SESSION
+tmux split-window -v
 
-mavproxy.py --master=$port --baudrate=$baud --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14551 
+# Modify tmux window
+tmux select-pane -t 0
+tmux split-window -h
+tmux select-pane -t 2
+tmux split-window -h
+
+if [ $GROUND ]; then
+   # Check if 3DR telem radio plugged in
+   if [ $(ls /dev/tty.Bluetooth-M*) ]; then
+      RADIO_LOC=$(ls /dev/tty.Bluetooth-M*)
+   else
+      tmux kill-session -t $SESSION
+      echo "No valid 3DR telemetry radio found"
+      echo "Exiting..."
+      exit
+   fi
+
+   # Open APM Planner
+   tmux select-pane -t 0
+   tmux send-keys "open /Applications/APM\ Planner\ 2.0.app/" C-m
+   tmux send-keys "mavproxy.py --master=$RADIO_LOC --baudrate=$BAUDRATE --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14551" C-m
+   # Wait for UDP connection to be open
+   sleep 2
+
+   # Get GPS data from drone once UDP comm up
+   tmux select-pane -t 1
+   if [ $TRANS ]; then
+      tmux send-keys "python ECHO_get_gps.py --gps_file=$GPS_FILE --trans=$TRANS" C-m
+   else
+      tmux send-keys "python ECHO_get_gps.py --gps_file=$GPS_FILE" C-m
+   fi
+
+   tmux select-pane -t 2
+   if [ $DT ]; then
+      tmux send-keys "python ECHO_server.py --gps_file=$GPS_FILE --dt=$DT --host=$HOST" C-m
+   else
+      tmux send-keys "python ECHO_server.py --gps_file=$GPS_FILE --host=$HOST" C-m
+   fi
+
+   tmux select-pane -t 3
+   tmux send-keys "tail -f $GPS_FILE" C-m
+
+
+elif [ $ACCUM ]; then
+   # Login as sudo to run get_sh_spectra
+   sudo -v
+
+   # Run get_sh_spectra script for radio spectrum from Signal Hound
+   tmux select-pane -t 0
+   tmux send-keys "sudo ./get_sh_spectra_137 >> $SPEC_FILE" C-m
+
+# Assume realtime and make another script for non realtime???
+#   if [ $REALTIME ]; then
+   # Run ECHO_accumulate.py with potential options
+   tmux select-pane -t 1
+   if [ $HOST ]; then
+      if [ $LAT0 -a $LON0 ]; then
+         tmux send-keys "python ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --host=$HOST --lat0=$LAT0 --lon0=$LON0" C-m
+      else # No LAT0 or LON0, still HOST
+         tmux send-keys "python ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --host=$HOST" C-m
+      fi
+   else # No HOST
+      if [ $LAT0 -a $LON0 ]; then
+         tmux send-keys "python ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0" C-m
+      else # No HOST, LAT0, or LON0
+      tmux send-keys "python ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ" C-m
+      fi
+   fi
+   # Wait for accumulated file to be created
+   sleep 1
+
+   # Monitor accumulated file
+   tmux select-pane -t 2
+   tmux send-keys "tail -f $ACC_FILE"
+
+   # Run ECHO_plot.py with realtime + other options
+   tmux select-pane -t 3
+   if [ $NSIDES ]; then
+      if [ $LAT0 -a $LON0 ]; then
+         tmux send-keys "python ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0 --nsides=$NSIDES" C-m
+      else # No LAT0 or LON0, still NSIDES
+         tmux send-keys "python ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --nsides=$NSIDES" C-m
+      fi
+   else # No NSIDES
+      if [ $LAT0 -a $LON0 ]; then
+         tmux send-keys "python ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0" C-m
+      else # No LAT0 or LON0, still NSIDES
+         tmux send-keys "python ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ" C-m
+      fi
+   fi
+
+#   fi # END IF REALTIME
+
+else
+   echo "Please specify --ground or --acc"
+   exit
+fi
