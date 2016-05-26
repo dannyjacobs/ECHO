@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.interpolate import interp1d
 
 R_EARTH = 6371000 # meters
 

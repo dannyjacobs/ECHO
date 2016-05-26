@@ -26,13 +26,14 @@
 
 '''
 
-import optparse,sys
+import optparse,sys,threading
 import numpy as np
 from time import sleep,strftime
 from astropy.time import Time
 
 from ECHO_read_utils import get_data
 from ECHO_position_utils import interp_pos
+from ECHO_server_utils import create_app
 
 o = optparse.OptionParser()
 o.set_description('Reads in GPS positional data in realtime from a user specified text file.\
@@ -134,6 +135,7 @@ def get_gps_pos(query_time):
     else:
         return 'Error: Query time '+str(query_time)+' outside range '+\
                     str(gps_raw[0,0])+'to'+str(gps_raw[-1,0])
+
 
 # Run server app
 if opts.host:

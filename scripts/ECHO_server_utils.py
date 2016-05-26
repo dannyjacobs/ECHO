@@ -1,9 +1,10 @@
 import threading,atexit
 import numpy as np
 from flask import Flask,jsonify
-from ECHO_reading import get_data
-from ECHO_positioning import interp_pos
+from ECHO_read_utils import get_data
+from ECHO_position_utils import interp_pos
 
+''' NEED TO FIX THE CREATE_APP FUNCTION TO ACCOUNT FOR MODIFICATION OF GLOBAL QUANTITIES !!! '''
 
 def create_app():
     app = Flask(__name__)
@@ -24,7 +25,7 @@ def create_app():
             lati,loni,alti = interp_pos(gps_raw)
             currlen = gps_raw.shape[0]
             if currlen == lastlen:
-                sleep(POOL_TIME)
+                sleep(pool_time)
             elif currlen > lastlen:
                 lastlen = currlen
                 tmin,tmax = gps_raw[:,0].min(),gps_raw[:,0].max()
@@ -34,14 +35,14 @@ def create_app():
                 #counts.append(0) # len(counts) -1 = len(tbins)
                 #weights = np.column_stack((counts,tbins))
         # Start the next thread
-        yourThread = threading.Timer(POOL_TIME, collection, ())
+        yourThread = threading.Timer(pool_time, collection, ())
         yourThread.start()
 
     def initialize():
         # Do initialisation stuff here
         global yourThread
         # Create your thread
-        yourThread = threading.Timer(POOL_TIME, collection, ())
+        yourThread = threading.Timer(pool_time, collection, ())
         yourThread.start()
 
     # Initiate
