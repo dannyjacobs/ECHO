@@ -7,8 +7,8 @@
 
 '''
 
-from matplotlib import use
-use('TkAgg')
+#from matplotlib import use
+#use('TkAgg')
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ECHO_read_utils import get_data
 from ECHO_position_utils import *
@@ -52,7 +52,7 @@ if opts.realtime:
 
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
-    mng = plt.get_current_fig_manager() # Make figure full screen
+    #mng = plt.get_current_fig_manager() # Make figure full screen
     fig.suptitle('ECHO Realtime Data Visualization for %s' %opts.acc_file,fontsize=16)
 
     # Spectrum plot initialization
@@ -155,7 +155,7 @@ if opts.realtime:
         gsr.tight_layout(fig, rect=[0.5, None, None, 0.97])
 
     plt.subplots_adjust(top=0.8)
-    mng.window.state('zoomed')
+    #mng.window.state('zoomed')
     plt.draw()
     plt.show(block=False)
 
@@ -175,7 +175,8 @@ if opts.realtime:
                             peakrmss,freqs,fmin,fmax,time_range=time_range,rmswindow=rmswindow)
                 animate_beam(beam_plot,hpx_beam,fig,cax,cbar,plot_lim=plot_lim,nsides=opts.nsides)
                 animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az)
-                fig.canvas.draw()
+                #fig.canvas.draw()
+                plt.pause(0.0001)
                 plot_ind += 1
 
     except KeyboardInterrupt:
