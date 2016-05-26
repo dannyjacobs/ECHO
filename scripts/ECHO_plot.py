@@ -175,7 +175,7 @@ if opts.realtime:
                             peakrmss,freqs,fmin,fmax,time_range=time_range,rmswindow=rmswindow)
                 animate_beam(beam_plot,hpx_beam,fig,cax,cbar,plot_lim=plot_lim,nsides=opts.nsides)
                 animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az)
-                plt.draw()
+                fig.canvas.draw()
                 plot_ind += 1
 
     except KeyboardInterrupt:
