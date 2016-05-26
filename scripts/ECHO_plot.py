@@ -52,7 +52,7 @@ if opts.realtime:
 
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
-    #mng = plt.get_current_fig_manager() # Make figure full screen
+    mng = plt.get_current_fig_manager() # Make figure full screen
     fig.suptitle('ECHO Realtime Data Visualization for %s' %opts.acc_file,fontsize=16)
 
     # Spectrum plot initialization
@@ -154,8 +154,8 @@ if opts.realtime:
         warnings.simplefilter("ignore", UserWarning)
         gsr.tight_layout(fig, rect=[0.5, None, None, 0.97])
 
-    #mng.window.state('zoomed')
     plt.subplots_adjust(top=0.8)
+    mng.window.state('zoomed')
     plt.draw()
     plt.show(block=False)
 
@@ -199,7 +199,7 @@ else:
 
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
-    mng = plt.get_current_fig_manager() # Make figure full screen
+    #mng = plt.get_current_fig_manager() # Make figure full screen
     plot_lim = [-40,5]
     ax = fig.add_subplot(111)
     ax.set_title(r'ECHO Stuff is WORKING',y=1.08,size=16)
@@ -262,5 +262,5 @@ else:
 
     # Show plot window
     plt.subplots_adjust(wspace=0.5)
-    mng.window.state('zoomed')
+    #mng.window.state('zoomed')
     plt.show()
