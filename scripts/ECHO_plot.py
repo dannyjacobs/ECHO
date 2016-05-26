@@ -8,18 +8,7 @@
 '''
 
 from matplotlib import use
-<<<<<<< HEAD
 use('TkAgg')
-=======
-use('Qt4Agg')
-
-import urllib2,optparse,sys,json,time,warnings
-import numpy as np
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
-
-
->>>>>>> 7629aeaf8f24471be4f7943c564b3fd0c875f89a
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ECHO_read_utils import get_data
 from ECHO_position_utils import *
@@ -40,9 +29,6 @@ o.add_option('--lon0',type=float,help='Longitude of antenna under test')
 o.add_option('--freq',type=float,help='Peak frequency to look for in data')
 opts,args = o.parse_args(sys.argv[1:])
 
-#acc_file = opts.acc_file
-#acc_file = acc_file.split('_')[-1]
-#acc_file = acc_file.split('.')[0]
 
 '''####################################################
 #                                                   REALTIME                                                     #

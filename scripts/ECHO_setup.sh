@@ -139,15 +139,15 @@ elif [ $ACCUM ]; then
       tmux send-keys "python scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ" C-m
       fi
    fi
-   # Wait for accumulated file to be created
-   sleep 1
 
    # Monitor accumulated file
    tmux select-pane -t 2
-   tmux send-keys "tail -f $ACC_FILE"
+   tmux send-keys "sleep 2" C-m
+   tmux send-keys "tail -f $ACC_FILE" C-m
 
    # Run ECHO_plot.py with realtime + other options
    tmux select-pane -t 3
+   tmux send-keys "sleep 2" C-m
    if [ $NSIDES ]; then
       if [ $LAT0 -a $LON0 ]; then
          tmux send-keys "python scripts/ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0 --nsides=$NSIDES" C-m
