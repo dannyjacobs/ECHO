@@ -124,7 +124,7 @@ if opts.realtime:
             pos = json.loads(fileo.read())
             if not pos['lat'] == -1:
                 outstr = str(qtime)+','+str(pos['lat'])+','+str(pos['lon'])+','+\
-                             str(pos['alt'])+','+','.join(map(str,spec_raw[last_row_index,:]))
+                             str(pos['alt'])+','+','.join(map(str,spec_raw[i,:]))
                 # Check that output string has the correct number of columns
                 if len(outstr.split(',')) == 24:
                     with open(outfile_str,'ab') as outfile:

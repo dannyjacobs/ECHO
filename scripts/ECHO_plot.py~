@@ -8,7 +8,7 @@
 '''
 
 from matplotlib import use
-use('Qt4Agg')
+use('TkAgg')
 
 import urllib2,optparse,sys,json,time,warnings
 import numpy as np
