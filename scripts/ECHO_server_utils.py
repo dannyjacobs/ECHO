@@ -30,9 +30,9 @@ def create_app():
                 tmin,tmax = gps_raw[:,0].min(),gps_raw[:,0].max()
                 # Create weights array for check of GPS data when user queries server
                 counts,tbins = np.histogram(gps_raw[:,0],bins=int((tmax-tmin)/dt))
-                counts = list(counts)
-                counts.append(0) # len(counts) -1 = len(tbins)
-                weights = np.column_stack((counts,tbins))
+                #counts = list(counts)
+                #counts.append(0) # len(counts) -1 = len(tbins)
+                #weights = np.column_stack((counts,tbins))
         # Start the next thread
         yourThread = threading.Timer(POOL_TIME, collection, ())
         yourThread.start()
@@ -51,7 +51,7 @@ def create_app():
 
     # Add get function to app before returning
     @app.route('/ECHO/lms/v1.0/pos/<float:query_time>', methods=['GET'])
-    def get_gps_pos(query_time):
+    def get_gps_pos(query_time,counts):
         if np.logical_and(query_time>=gps_raw[0,0],query_time<=gps_raw[-1,0]):
             if counts[np.abs(tbins-query_time).argmin()] > 0:
                 # Return a dictionary of latitude, longitude, and altitude at query time

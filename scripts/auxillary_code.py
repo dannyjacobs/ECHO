@@ -458,3 +458,9 @@ def animate_cuts(cuts_E_line,cuts_H_line,hpx_beam,ell,az):
 
     adjustErrbarxy(cuts_E_line,ell,beam_slice_E,beam_slice_E_err)
     adjustErrbarxy(cuts_H_line,ell,beam_slice_H,beam_slice_H_err)
+
+
+# Code to make counts,tbins one array (useless)
+counts = list(counts)
+counts.append(0)
+weights = np.column_stack((counts,tbins))
