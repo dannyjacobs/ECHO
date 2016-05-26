@@ -8,7 +8,18 @@
 '''
 
 from matplotlib import use
+<<<<<<< HEAD
 use('TkAgg')
+=======
+use('Qt4Agg')
+
+import urllib2,optparse,sys,json,time,warnings
+import numpy as np
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+
+
+>>>>>>> 7629aeaf8f24471be4f7943c564b3fd0c875f89a
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ECHO_read_utils import get_data
 from ECHO_position_utils import *
@@ -55,7 +66,7 @@ if opts.realtime:
 
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
-    mng = plt.get_current_fig_manager() # Make figure full screen
+    #mng = plt.get_current_fig_manager() # Make figure full screen
     fig.suptitle('ECHO Realtime Data Visualization for %s' %opts.acc_file,fontsize=16)
 
     # Spectrum plot initialization
@@ -100,7 +111,7 @@ if opts.realtime:
     if opts.lat0 and opts.lon0:
         lat0,lon0 = opts.lat0,opts.lon0
     hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,\
-                                                            lat0=lat0,lon0=lon0,nsides=opts.nsides)
+                                      lat0=lat0,lon0=lon0,nsides=opts.nsides)
 
     # Cuts and beam plot initializations
     gsr = gridspec.GridSpec(2, 1,height_ratios=[1,1])
@@ -157,7 +168,7 @@ if opts.realtime:
         warnings.simplefilter("ignore", UserWarning)
         gsr.tight_layout(fig, rect=[0.5, None, None, 0.97])
 
-    mng.window.state('zoomed')
+    #mng.window.state('zoomed')
     plt.subplots_adjust(top=0.8)
     plt.draw()
     plt.show(block=False)
@@ -168,14 +179,14 @@ if opts.realtime:
             # Get updated data from Signal Hound
             spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file,filetype='echo')
             hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,\
-                                                                    lat0=lat0,lon0=lon0,nsides=opts.nsides)
+                                                  lat0=lat0,lon0=lon0,nsides=opts.nsides)
 
             while plot_ind < spec_times.shape[0]:
                 # Update plotting window
                 animate_spectrum(plot_ind,spec_plot,spec_line,spec_raw)
                 animate_peak(plot_ind,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,\
                                      spec_times,spec_raw,peaktimes,peakvals,peakfreqs,rmss,\
-                                     peakrmss,freqs,fmin,fmax,time_range=time_range,rmswindow=rmswindow)
+                            peakrmss,freqs,fmin,fmax,time_range=time_range,rmswindow=rmswindow)
                 animate_beam(beam_plot,hpx_beam,fig,cax,cbar,plot_lim=plot_lim,nsides=opts.nsides)
                 animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az)
                 plt.draw()

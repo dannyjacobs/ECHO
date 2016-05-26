@@ -86,7 +86,7 @@ if opts.realtime:
         sys.exit()
 
     # Check for latitude and longitude of antenna under test
-    if not np.logical_and(opts.lat0,opts.lon0):
+    if not (opts.lat0 and opts.lon0):
         print '\nLatitude (--lat0) and Longitude (--lon0) required...\n'
         sys.exit()
 
@@ -124,7 +124,7 @@ if opts.realtime:
             pos = json.loads(fileo.read())
             if not pos['lat'] == -1:
                 outstr = str(qtime)+','+str(pos['lat'])+','+str(pos['lon'])+','+\
-                             str(pos['alt'])+','+','.join(map(str,spec_raw[i,:]))
+                             str(pos['alt'])+','+','.join(map(str,spec_raw[last_row_index,:]))
                 # Check that output string has the correct number of columns
                 if len(outstr.split(',')) == 24:
                     with open(outfile_str,'ab') as outfile:
