@@ -4,8 +4,8 @@ import math
 from matplotlib.collections import PolyCollection
 from matplotlib import cm
 
-from ECHO_positioning import latlon2xy,to_spherical
-from ECHO_timing import gps_to_HMS,find_peak
+from ECHO_position_utils import latlon2xy,to_spherical
+from ECHO_time_utils import gps_to_HMS,find_peak
 
 def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,nsides=8,volts=False,normalize=False):
     # Convert lat/lon to x/y
@@ -13,8 +13,8 @@ def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,nsides=8,volts=False,nor
     # Obtain spherical coordinates for x, y, and alt
     rs,thetas,phis = to_spherical(x,y,alts)
 
-    freqIndex = np.where(spec_raw[0,:])[0]
-    #freqIndex = 10
+    #freqIndex = np.argmax(spec_raw[0,:])
+    freqIndex = 10
     # Only extract information from appropriate column (index = 10)
     z = spec_raw[:,freqIndex].copy()
     if volts:

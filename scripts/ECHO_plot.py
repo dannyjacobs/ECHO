@@ -7,16 +7,16 @@
 
 '''
 
-import urllib2,optparse,sys,json,time,warnings
-import numpy as np
-import matplotlib.gridspec as gridspec
-import matplotlib.pyplot as plt
-
 from matplotlib import use
 use('TkAgg')
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ECHO_read_utils import get_data
 from ECHO_position_utils import *
+
+import urllib2,optparse,sys,json,time,warnings
+import numpy as np
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
 
 
 o = optparse.OptionParser()
@@ -29,9 +29,9 @@ o.add_option('--lon0',type=float,help='Longitude of antenna under test')
 o.add_option('--freq',type=float,help='Peak frequency to look for in data')
 opts,args = o.parse_args(sys.argv[1:])
 
-acc_file = opts.acc_file
-acc_file = acc_file.split('_')[-1]
-acc_file = acc_file.split('.')[0]
+#acc_file = opts.acc_file
+#acc_file = acc_file.split('_')[-1]
+#acc_file = acc_file.split('.')[0]
 
 '''####################################################
 #                                                   REALTIME                                                     #
@@ -119,7 +119,7 @@ if opts.realtime:
     divider = make_axes_locatable(beam_plot)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     cbar = fig.colorbar(coll, cax=cax, use_gridspec=True, label='dB')
-    cbar.set_clim([-90,-50])
+    #cbar.set_clim([-90,-50])
 
     for radius_deg in [20,40,60,80]:
         r = np.sin(radius_deg*np.pi/180.)
@@ -146,9 +146,9 @@ if opts.realtime:
     cuts_plot.legend(loc='lower center')
     cuts_plot.set_ylabel('dB')
     cuts_plot.set_xlabel('Elevation Angle [deg]')
-    cuts_plot.set_xlim([-95,95])
+    #cuts_plot.set_xlim([-95,95])
     cuts_plot.set_xticks(xticks)
-    cuts_plot.set_ylim([-90,5])
+    #cuts_plot.set_ylim([-90,5])
 
     with warnings.catch_warnings():
         # This raises warnings since tight layout cannot
