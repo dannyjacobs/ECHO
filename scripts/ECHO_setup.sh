@@ -1,14 +1,12 @@
  #!/bin/bash
 
-# Login as sudo to run get_sh_spectra
-sudo -v
-
 
 SESSION=ECHO
 BAUDRATE=57600
-FREQ=137.554
+FREQ=137.500
 APM_PATH="/Applications/APM\ Planner\ 2.0.app/"
 HOST="10.1.1.1"
+ECHO_HOME="/home/echo/ECHO/"
 ARGS=$@
 
 START_DATE=$(date +"%m_%d_%y")
@@ -93,22 +91,22 @@ if [ $GROUND ]; then
    tmux select-pane -t 0
    tmux send-keys "open /Applications/APM\ Planner\ 2.0.app/" C-m
    tmux send-keys "mavproxy.py --master=$RADIO_LOC --baudrate=$BAUDRATE --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14551" C-m
-   # Wait for UDP connection to be open
-   sleep 2
+
 
    # Get GPS data from drone once UDP comm up
    tmux select-pane -t 1
+   tmux send-keys "sleep 2" C-m
    if [ $TRANS ]; then
-      tmux send-keys "python scripts/ECHO_get_gps.py --gps_file=$GPS_FILE --trans=$TRANS" C-m
+      tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_get_gps.py --gps_file=$GPS_FILE --trans=$TRANS" C-m
    else
-      tmux send-keys "python scripts/ECHO_get_gps.py --gps_file=$GPS_FILE" C-m
+      tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_get_gps.py --gps_file=$GPS_FILE" C-m
    fi
 
    tmux select-pane -t 2
    if [ $DT ]; then
-      tmux send-keys "python scripts/ECHO_server.py --gps_file=$GPS_FILE --dt=$DT --host=$HOST" C-m
+      tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_server.py --gps_file=$GPS_FILE --dt=$DT --host=$HOST" C-m
    else
-      tmux send-keys "python scripts/ECHO_server.py --gps_file=$GPS_FILE --host=$HOST" C-m
+      tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_server.py --gps_file=$GPS_FILE --host=$HOST" C-m
    fi
 
    tmux select-pane -t 3
@@ -120,39 +118,41 @@ if [ $GROUND ]; then
 elif [ $ACCUM ]; then
    # Run get_sh_spectra script for radio spectrum from Signal Hound
    tmux select-pane -t 0
-   tmux send-keys "sudo ./scripts/get_sh_spectra_137 >> $SPEC_FILE" C-m
+   tmux send-keys "You have 20s to enter the password" C-m
+   tmux send-keys "sudo ${ECHO_HOME}/scripts/get_sh_spectra_137 > $SPEC_FILE" C-m
 
    # Assume realtime and make another script for non realtime???
    #   if [ $REALTIME ]; then
    # Run ECHO_accumulate.py with potential options
    tmux select-pane -t 1
+   tmux send-keys "sleep 20" C-m
    if [ $HOST ]; then
       if [ $LAT0 -a $LON0 ]; then
-         tmux send-keys "python scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --host=$HOST --lat0=$LAT0 --lon0=$LON0" C-m
+         tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --host=$HOST --lat0=$LAT0 --lon0=$LON0" C-m
       else # No LAT0 or LON0, still HOST
-         tmux send-keys "python scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --host=$HOST" C-m
+         tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --host=$HOST" C-m
       fi
    else # No HOST
       if [ $LAT0 -a $LON0 ]; then
-         tmux send-keys "python scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0" C-m
+         tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0" C-m
       else # No HOST, LAT0, or LON0
-      tmux send-keys "python scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ" C-m
+      tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_accumulate.py --realtime --gps_file=$GPS_FILE --spec_file=$SPEC_FILE --acc_file=$ACC_FILE --freq=$FREQ" C-m
       fi
    fi
 
    # Monitor accumulated file
    tmux select-pane -t 2
-   tmux send-keys "sleep 2" C-m
+   tmux send-keys "sleep 25" C-m
    tmux send-keys "tail -f $ACC_FILE" C-m
 
    # Run ECHO_plot.py with realtime + other options
    tmux select-pane -t 3
-   tmux send-keys "sleep 2" C-m
+   tmux send-keys "sleep 30" C-m
    if [ $NSIDES ]; then
       if [ $LAT0 -a $LON0 ]; then
-         tmux send-keys "python scripts/ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0 --nsides=$NSIDES" C-m
+         tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --lat0=$LAT0 --lon0=$LON0 --nsides=$NSIDES" C-m
       else # No LAT0 or LON0, still NSIDES
-         tmux send-keys "python scripts/ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --nsides=$NSIDES" C-m
+         tmux send-keys "python ${ECHO_HOME}/scripts/ECHO_plot.py --realtime --acc_file=$ACC_FILE --freq=$FREQ --nsides=$NSIDES" C-m
       fi
    else # No NSIDES
       if [ $LAT0 -a $LON0 ]; then
@@ -162,6 +162,7 @@ elif [ $ACCUM ]; then
       fi
    fi
 
+   tmux select-pane -t 0
    tmux attach-session -t $SESSION
 
 #   fi # END IF REALTIME

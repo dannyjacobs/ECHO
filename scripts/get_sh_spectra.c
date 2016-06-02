@@ -6,7 +6,7 @@ Authors:
 Hamdi, Jay & Michael 2/13/2015
 
 Compile
-g++ get_sh_spectra.c -o get_sh_spectra -lbbapi -lfftw3
+g++ get_sh_spectra.c -o get_sh_spectra -lbb_api -lfftw3
 
 **/
 

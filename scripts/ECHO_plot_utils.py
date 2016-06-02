@@ -128,7 +128,7 @@ def grid_data(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
 
 def animate_spectrum(i,spec_plot,spec_line,spec_raw):
     spec_line.set_ydata(spec_raw[i,:])
-    spec_plot.set_ylim([spec_raw[i,:].min(),spec_raw[i,:].max()])
+    #spec_plot.set_ylim([spec_raw[i,:].min(),spec_raw[i,:].max()])
     return
 
 
@@ -212,7 +212,12 @@ def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
     beam_slice_E_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az)
     beam_slice_H = hp.pixelfunc.get_interp_val(hpx_beam,ell,az+np.pi/2)
     beam_slice_H_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az+np.pi/2)
-
+    
+    beam_slice_E = np.ma.masked_invalid(beam_slice_E)
+    beam_slice_E_err = np.ma.masked_invalid(beam_slice_E_err)
+    beam_slice_H = np.ma.masked_invalid(beam_slice_H)
+    beam_slice_H_err = np.ma.masked_invalid(beam_slice_H_err)
+    
     adjustErrbarxy(cuts_E_line,ell,beam_slice_E,beam_slice_E_err)
     adjustErrbarxy(cuts_H_line,ell,beam_slice_H,beam_slice_H_err)
 

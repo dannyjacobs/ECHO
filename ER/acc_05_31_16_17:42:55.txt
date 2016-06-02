@@ -1,0 +1,4 @@
+# Accumulated data for 31_05_2016, 17:43:16
+# Column Format: 1 Time [GPS s], 2 Lat [deg], 3 Lon [deg],                            4 Rel Alt [m], 5: Radio Spectrum
+# lat0,lon0: 34.6205940,-112.4479370
+# Freqs: 

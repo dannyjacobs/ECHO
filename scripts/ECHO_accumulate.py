@@ -101,42 +101,38 @@ if opts.realtime:
     colfmtstr = '# Column Format: 1 Time [GPS s], 2 Lat [deg], 3 Lon [deg],\
                             4 Rel Alt [m], 5: Radio Spectrum'
     latlonstr = '# lat0,lon0: %s,%s' %(opts.lat0,opts.lon0)
-    with open(outfile_str,'ab') as outfile:
+    with open(outfile_str,'wb') as outfile:
         # Write header information to output file
         outfile.write(headstr+'\n'+colfmtstr+'\n'+latlonstr+'\n')
 
     # Read in initial SH data
-    spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',\
-                                                                freqs=freqs,freq=opts.freq,freq_chan=freq_chan)
+    spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',freqs=freqs,freq=opts.freq,freq_chan=freq_chan)
     #print 'Read in %d lines from $s' %(spec_times.shape[0],opts.spec_file)
     with open(outfile_str,'ab') as outfile:
         # Write frequencies to output file for indexing in ECHO_plot.py
         outfile.write('# Freqs: '+','.join(map(str,freqs))+'\n')
 
     # Read in SH data and query ECHO_server.py
-    curr_size = spec_times.shape[0]
+    last_row_index = 0 # Index for SH time queries
     while True:
-        if not spec_times.shape[0] == curr_size:
-            curr_size = spec_times.shape[0]
         while last_row_index < spec_times.shape[0]:
             qtime = unix_to_gps(spec_times[last_row_index])
             fileo = urllib2.urlopen('http://'+opts.host+':5000/ECHO/lms/v1.0/pos/'+str(qtime))
-            pos = json.loads(fileo.read())
-            if not pos['lat'] == -1:
+            try:
+                pos = json.loads(fileo.read())
                 outstr = str(qtime)+','+str(pos['lat'])+','+str(pos['lon'])+','+\
                              str(pos['alt'])+','+','.join(map(str,spec_raw[last_row_index,:]))
                 # Check that output string has the correct number of columns
-                if len(outstr.split(',')) == 24:
+                if len(outstr.split(',')) == (len(freqs)+4):
                     with open(outfile_str,'ab') as outfile:
                         outfile.write(outstr+'\n')
-            else:
-                with open(outfile_str,'ab') as outfile:
-                    # Print -1 for all entries with no valid GPS data
-                    outfile.write(str(qtime)+','+','.join(map(str,[-1]*23))+'\n')
 
-        # Update row counter and wait for new data
-        last_row_index += 1
-        time.sleep(dt)
+
+	    except(ValueError):
+                pass
+            # Update row counter and wait for new data
+	    last_row_index += 1
+	    time.sleep(dt)
 
         # Read in new spectrum data
         spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',\

@@ -10,7 +10,11 @@
 #from matplotlib import use
 #use('TkAgg')
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import ECHO_read_utils
 from ECHO_read_utils import get_data
+
+print ECHO_read_utils.__file__
+
 from ECHO_position_utils import *
 
 import urllib2,optparse,sys,json,time,warnings
@@ -44,7 +48,8 @@ if opts.realtime:
     rmswindow = 10
 
     # Get initial data from Signal Hound
-    spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file,filetype='echo')
+    spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file,filetype='echo',freq=137.500)
+    print freqs
     #print freqs.shape,spec_raw.shape
     if spec_times.shape[0] == 0: # Ensure data in inFile
         print 'Invalid data: array with zero dimension\nExiting...\n'
@@ -59,10 +64,12 @@ if opts.realtime:
     gsl = gridspec.GridSpec(2,1) # Sets up grid for placing plots
     spec_plot = fig.add_subplot(gsl[0]) # Initialize the spectrum plot in figure
     spec_line, = spec_plot.plot(freqs,spec_raw[0,:])
-    freq_labels = [freqs[0],freqs[9],freqs[10],freqs[11],freqs[-1]]
-    plt.xticks(freq_labels,map(str,freq_labels),rotation=45)
+    #freq_labels = [freqs[0],freqs[9],freqs[10],freqs[11],freqs[-1]]
+    #plt.xticks(freq_labels,map(str,freq_labels),rotation=45)
     spec_plot.set_xlabel("Frequency [Mhz]")
     spec_plot.set_ylabel("Power [dBm]")
+    spec_plot.grid()
+    spec_plot.axvline(x=opts.freq)
     #spec_plot.set_ylim([-90,10])
     #spec_plot.set_xlim([freqs[0],freqs[-1]])
 
@@ -163,7 +170,7 @@ if opts.realtime:
         plot_ind = 0
         while True:
             # Get updated data from Signal Hound
-            spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file,filetype='echo')
+            spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0 = get_data(opts.acc_file,filetype='echo',freq=opts.freq)
             hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,\
                                                   lat0=lat0,lon0=lon0,nsides=opts.nsides)
 

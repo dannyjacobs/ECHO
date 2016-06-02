@@ -43,7 +43,7 @@ secperweek = 604800
 ######################### Opts #############################
 
 o = optparse.OptionParser()
-o.set_description('Takes raw APM/Orbcomm data and creates an interpolated, combined text file')
+o.set_description('Takes raw APM data and creates an interpolated, combined text file')
 o.add_option('--trans',type=str,help='Polarization of Bicolog antenna onboard drone')
 opts,args = o.parse_args(sys.argv[1:])
 

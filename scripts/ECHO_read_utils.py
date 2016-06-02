@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=None):
+def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=None,width=100):
     if filetype == 'gps':
         gps_arr = []
         lines = open(infile).readlines()
@@ -17,15 +17,15 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=
         if count != 0:
             if len(freqs) == 0:
                 freqs = np.array(map(float,lines[1].rstrip('\n').split(',')[1:]))
-                freq_chan = np.argmax(freqs == freq) # Get index of freq for gridding
-                freqs = freqs[freq_chan-10:freq_chan+10] # freq is freqs[10]
-            for line in lines:
+                freq_chan = np.where(np.abs(freqs-freq).min()==np.abs(freqs-freq))[0] # Get index of freq for gridding            
+		freqs = freqs[freq_chan-width:freq_chan+width] # freq is freqs[10]
+            for line in lines[2:]:
                 if line.startswith('#'):
                     continue
                 line = line.rstrip('\n').split(',')
                 if len(line) == 4097: # Make sure line has finished printing
                     spec_times.append(float(line[0]))
-                    spec_raw.append(map(float,line[freq_chan-10:freq_chan+10]))
+                    spec_raw.append(map(float,line[freq_chan-width:freq_chan+width]))
         return np.array(spec_times),np.array(spec_raw),np.array(freqs),freq_chan
 
     elif filetype == 'echo':
