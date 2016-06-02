@@ -1,0 +1,12 @@
+File:	apm_60BIN_data.log
+Start time:	2016-06-02 00:33:44.200
+Stop time:	2016-06-02 00:58:00.000
+
+File:	apm_61BIN_data.log
+Start time:	2016-06-02 01:08:27.600
+Stop time:	2016-06-02 01:17:26.400
+
+File:	apm_62BIN_data.log
+Start time:	2016-06-02 01:34:58.400
+Stop time:	2016-06-02 01:53:54.400
+

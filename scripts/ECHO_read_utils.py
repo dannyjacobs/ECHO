@@ -17,8 +17,8 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=
         if count != 0:
             if len(freqs) == 0:
                 freqs = np.array(map(float,lines[1].rstrip('\n').split(',')[1:]))
-                freq_chan = np.where(np.abs(freqs-freq).min()==np.abs(freqs-freq))[0] # Get index of freq for gridding            
-		freqs = freqs[freq_chan-width:freq_chan+width] # freq is freqs[10]
+                freq_chan = np.where(np.abs(freqs-freq).min()==np.abs(freqs-freq))[0] # Get index of freq for gridding
+                freqs = freqs[freq_chan-width:freq_chan+width] # freq is freqs[10]
             for line in lines[2:]:
                 if line.startswith('#'):
                     continue
@@ -41,11 +41,11 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=
             if line.startswith('#'):
                 continue
             elif not line.split(',')[1] == '-1':
-                    all_Data.append(map(float,line.rstrip('\n').split(',')))
+                all_Data.append(map(float,line.rstrip('\n').split(',')))
         all_Data = np.array(all_Data)
         #print 'Converted to array with shape %s and type %s' %(all_Data.shape,all_Data.dtype)
         spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],all_Data[:,2],\
-                                                                        all_Data[:,3],all_Data[:,4:])
+                                                all_Data[:,3],all_Data[:,4:])
         return spec_times,spec_raw,freqs,lats,lons,alts,lat0,lon0
 
     elif filetype == 'orbcomm':
@@ -55,10 +55,10 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=
             if line.startswith('#'):
                 continue
             elif not line.split(',')[1] == '-1':
-                    all_Data.append(map(float,line.rstrip('\n').split(',')))
+                all_Data.append(map(float,line.rstrip('\n').split(',')))
         all_Data = np.array(all_Data)
         spec_times,lats,lons,alts,yaws = (all_Data[:,1],all_Data[:,2],all_Data[:,3],\
-                                                        all_Data[:,4],all_Data[:,5])
+                                            all_Data[:,4],all_Data[:,5])
         if ant == 'N':
             lat0,lon0 = (38.4248532,-79.8503723)
             if 'NS' in inFile:
