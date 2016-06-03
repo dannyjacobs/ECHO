@@ -29,14 +29,18 @@ Healpix maps (i.e. power, counts, and rms).
 
 '''
 
-import sys
+import sys,optparse,warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import scipy.interpolate as sin
 import healpy as hp
+
 from matplotlib import cm
-import optparse
+from matplotlib.collections import PolyCollection
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import matplotlib.gridspec as gridspec
+from healpy import _healpy_pixel_lib as pixlib
 
 
 ######################### Opts #############################
@@ -45,21 +49,66 @@ o = optparse.OptionParser()
 o.set_description('Generates a healpix beam given precompiled, combined spectral/position data.')
 o.add_option('--nsides',type=int,default=8,
     help='Number of sides for Healpix plotting. Default is 8.')
-o.add_option('--trans',type=str,help='Polarization of Bicolog antenna onboard drone.')
+o.add_option('--trans',type=str,
+    help='Polarization of Bicolog antenna onboard drone.')
 o.add_option('--times',type=str,
     help="file with list of start and stop gps times")
-o.add_option('--lat0',type=float,help='latitude of antenna under test')
-o.add_option('--lon0',type=float,help='longitude of antenna under test')
+o.add_option('--waypts',type=str,
+    help='file with list of waypoint execution times')
+o.add_option('--lat0',type=float,
+    help='latitude of antenna under test')
+o.add_option('--lon0',type=float,
+    help='longitude of antenna under test')
 o.add_option('--freq',type=float,default=137.500,
-        help='Frequency to look for in data')
+    help='Frequency to look for in data')
 opts,args = o.parse_args(sys.argv[1:])
 
 ######################## Functions #########################
 
+def make_beam(lats,lons,alts,spec_raw,freq_chan,lat0=0.0,lon0=0.0,nsides=8,volts=False,normalize=False):
+    # Convert lat/lon to x/y
+    x,y = latlon2xy(lats,lons,lat0,lon0)
+    # Obtain spherical coordinates for x, y, and alt
+    rs,thetas,phis = to_spherical(x,y,alts)
+
+
+    # Only extract information from appropriate column (index = 10)
+    z = spec_raw[:,freq_chan].copy()
+    if volts:
+        # Distance normalization
+        r0 = 100 # reference position for distance normalization (unit: meters)
+        z = 10*np.log10((2*z**2)*(rs/r0)**2)
+    if normalize:
+        z -= z.max() # Scaled on [-infty,0]
+
+    # Set binsize (used in function grid_data)
+    # Affects the apparent size of the pixels on the plot created below.
+    binsize=5
+    # Obtain gridded data
+    grid,bins,rmsBins,binloc,xg,yg,gcounts,grms = grid_data(x,y,z,binsize=binsize)
+
+    # Healpix things
+    nPixels = hp.nside2npix(nsides)
+    hpx_beam = np.zeros(nPixels)
+    hpx_counts = np.zeros(nPixels)
+    hpx_rms = np.zeros(nPixels)
+    # Find pixel # for a given theta and phi
+    pixInd = hp.ang2pix(nsides,thetas,phis,nest=False)
+    # Set pixel values at pixInd to power values
+    hpx_beam[pixInd] = z
+    hpx_counts[pixInd] = gcounts
+    hpx_rms[pixInd] = grms
+    # Grey out pixels with no measurements
+    hpx_beam[hpx_beam == 0] = hp.UNSEEN
+    hpx_counts[hpx_counts == 0] = hp.UNSEEN
+    hpx_rms[hpx_rms == 0] = hp.UNSEEN
+
+    return hp.ma(hpx_beam),hp.ma(hpx_counts),hp.ma(hpx_rms)
+
 #griddata.py - 2010-07-11 ccampo
 #Obtained via http://wiki.scipy.org/Cookbook/Matplotlib/Gridding_irregularly_spaced_data
 # Modified
-def griddata(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
+def grid_data(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
     # get extrema values.
     xmin, xmax = x.min(), x.max()
     ymin, ymax = y.min(), y.max()
@@ -134,6 +183,15 @@ def griddata(x, y, z, binsize=0.01, retbin=True, retloc=True, retrms=True):
 # end griddata
 
 
+def make_polycoll(hpx_beam,plot_lim=[-90,-50],nsides=8):
+    pix = np.where(np.isnan(hpx_beam)==False)[0]
+    boundaries = hp.boundaries(nsides,pix)
+    verts = np.swapaxes(boundaries[:,0:2,:],1,2)
+    coll = PolyCollection(verts, array=hpx_beam[np.isnan(hpx_beam)==False],\
+                                    cmap=cm.gnuplot,edgecolors='none')
+    return coll
+
+
 def find_peak(f,x,fmin=0,fmax=500):
     # f = frequencies in MHz
     # x = spectrum
@@ -167,6 +225,38 @@ def inrange(tr,t):
             return True
     return False
 # end inrange
+
+
+def get_interp_val(m,theta,phi,nest=False):
+    """Return the bi-linear interpolation value of a map using 4 nearest neighbours.
+
+    Parameters
+    ----------
+    m : array-like
+      an healpix map, accepts masked arrays
+    theta, phi : float, scalar or array-like
+      angular coordinates of point at which to interpolate the map
+    nest : bool
+      if True, the is assumed to be in NESTED ordering.
+
+    Returns
+    -------
+      val : float, scalar or arry-like
+        the interpolated value(s), usual numpy broadcasting rules apply.
+
+    """
+    m2=m.ravel()
+    nside=hp.pixelfunc.npix2nside(m2.size)
+    if nest:
+        r=pixlib._get_interpol_nest(nside,theta,phi)
+    else:
+        r=pixlib._get_interpol_ring(nside,theta,phi)
+    p = np.array(r[0:4])
+    w = np.array(r[4:8])
+    w = np.ma.array(w)
+    w.mask = m2[p].mask
+    del r
+    return np.ma.sum(m2[p]*w/np.ma.sum(w,0),0)
 
 ######################### Main #############################
 
@@ -205,36 +295,43 @@ for inFile in args:
     # Add information from each flight to rawData array
     for line in lines[3:]:
         rawData.append(map(float,line.strip('\n').split(',')))
-rawData = np.array(rawData)
+rawData = np.array(rawData); times = rawData[:,1]
+print 'Read in %d lines from %s...\n' %(rawData.shape[0],','.join(args))
 
-# Extract information from rawData array
-(times,lat,lon,alt,spectrum) = (rawData[:,1],rawData[:,2],rawData[:,3],rawData[:,4],rawData[:,5:])
 if not opts.times is None:
     timeranges = np.loadtxt(opts.times)
     inds = []
     for timerange in timeranges:
         print times.min(),timerange.astype(int) ,times.max()
+        #print timerange[0]-times.min(),times.max()-timerange[1]
         inds.append(np.logical_and(times>timerange[0],times<timerange[1]))
+        #print inds[-1]
         print np.sum(inds[-1])/float(len(times))
     inds = np.sum(inds,axis=0).astype(np.bool)
-    rawData = rawData[inds]
-    (times,lat,lon,alt,spectrum) = (rawData[:,1],rawData[:,2],rawData[:,3],rawData[:,4],rawData[:,5:])
+    print 'Data shape before time filter: %d' %rawData.shape[0]
+    rawData = rawData[inds];times = rawData[:,1]
+    print 'Data shape after time filter: %d\n' %rawData.shape[0]
 
+if not opts.waypts is None:
+    # Waypoint times read in
+    wayptFile = opts.waypts
+    waypts = np.loadtxt(opts.waypts,skiprows=1,dtype=float)
+    # Filter data around waypoints
+    validPts =np.array([inrange(waypts,t) for t in times])
+    print 'Data shape before waypoints filter: %d' %rawData.shape[0]
+    rawData = rawData[validPts];times = rawData[:,1]
+    print 'Data shape after waypoints filter: %d\n' %rawData.shape[0]
+    #print "Waypoints range: %.2f, %.2f, %.2f" %(waypts[0,2],waypts[-1,2],waypts[-1,2]-waypts[0,2])
+    #print "Times range: %.2f, %.2f, %.2f\n" %(times[0],times[-1],times[-1]-times[0])
+
+
+# Extract information from rawData array
+(times,lats,lons,alts,spec_raw) = (rawData[:,1],rawData[:,2],rawData[:,3],rawData[:,4],rawData[:,5:])
 
 # Convert lat/lon to x/y
-x,y = latlon2xy(lat,lon,opts.lat0,opts.lon0)
+xs,ys = latlon2xy(lats,lons,opts.lat0,opts.lon0)
 # Obtain spherical coordinates for x, y, and alt
-rs,thetas,phis = to_spherical(x,y,alt)
-
-
-
-# 'z' will set color value for gridded data (power value)
-# Only extract information from appropriate column
-z = spectrum[:,freqIndex]
-# Distance normalization
-r0 = 100 # reference position for distance normalization (unit: meters)
-z = np.log10((2*z**2)*(rs/r0)**2)
-z = 10*(z-z.max()) # log(V^2) -> dB and normalization for healpix plotting range [-inf,0]
+rs,thetas,phis = to_spherical(xs,ys,alts)
 
 
 
@@ -242,37 +339,77 @@ z = 10*(z-z.max()) # log(V^2) -> dB and normalization for healpix plotting range
 # the plot created below.
 binsize=5
 # Obtain gridded data
-grid,bins,rmsBins,binloc,xg,yg,gcounts,grms = griddata(x,y,z,binsize=binsize)
+grid,bins,rmsBins,binloc,xg,yg,gcounts,grms = grid_data(xs,ys,spec_raw,binsize=binsize)
+# Obtain beam
+hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,freqIndex,\
+                                        lat0=opts.lat0,lon0=opts.lon0,nsides=opts.nsides)
+
+hp.write_map(str(opts.nsides)+'_power_ER.fits',hpx_beam)
+
+fig = plt.figure()
+gsr = gridspec.GridSpec(2, 1,height_ratios=[1,1])
+
+beam_plot = fig.add_subplot(gsr[0],aspect='equal')
+coll = make_polycoll(hpx_beam,nsides=opts.nsides)#,plot_lim=[-90,-50])
+beam_plot.add_collection(coll)
+beam_plot.autoscale_view()
+
+# Position colorbar next to plot with same height as plot
+divider = make_axes_locatable(beam_plot)
+cax = divider.append_axes("right", size="5%", pad=0.05)
+cbar = fig.colorbar(coll, cax=cax, use_gridspec=True, label='dB')
+#cbar.set_clim([-90,-50])
+
+for radius_deg in [20,40,60,80]:
+    r = np.sin(radius_deg*np.pi/180.)
+    x = np.linspace(-r,r,100)
+    beam_plot.plot(x,np.sqrt(r**2-x**2),'w-',linewidth=3)
+    beam_plot.plot(x,-np.sqrt(r**2-x**2),'w-',linewidth=3)
 
 
+# Cuts plot initialization
+cuts_plot = fig.add_subplot(gsr[1])
 
-# Healpix things
-nsides = opts.nsides
-nPixels = hp.nside2npix(nsides)
-hz = np.zeros(nPixels)
-hcounts = np.zeros(nPixels)
-hrms = np.zeros(nPixels)
-# Find pixel # for a given theta and phi
-pixInd = hp.ang2pix(nsides,thetas,phis,nest=False)
-# Set pixel values at pixInd to power values
-hz[pixInd] = z
-hcounts[pixInd] = gcounts
-hrms[pixInd] = grms
-# Grey out pixels with no measurements
-hz[hz == 0] = np.nan
-hcounts[hcounts == 0] = np.nan
-hrms[hrms == 0] = np.nan
+#receiver coordinates
+r0 = 90 # radius of sphere flown
+lowest_ell = np.arccos(alts.min()/r0)
+ell = np.linspace(-lowest_ell,lowest_ell)
+az = np.zeros_like(ell)
+xticks = [-90,-60,-40,-20,0,20,40,60,90]
+beam_slice_E = get_interp_val(hpx_beam,ell,az)
+beam_slice_E_err = get_interp_val(hpx_rms,ell,az)
+beam_slice_H = get_interp_val(hpx_beam,ell,az+np.pi/2)
+beam_slice_H_err = get_interp_val(hpx_rms,ell,az+np.pi/2)
+
+cuts_E_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_E,\
+                                                beam_slice_E_err,fmt='b.',label='ECHO [E]')
+cuts_H_line = cuts_plot.errorbar(ell*180/np.pi,beam_slice_H,\
+                                                beam_slice_H_err,fmt='r.',label='ECHO [H]')
+cuts_plot.legend(loc='lower center')
+cuts_plot.set_ylabel('dB')
+cuts_plot.set_xlabel('Elevation Angle [deg]')
+cuts_plot.set_xticks(xticks)
+
+
+with warnings.catch_warnings():
+    # This raises warnings since tight layout cannot
+    # handle gridspec automatically. We are going to
+    # do that manually so we can filter the warning.
+    warnings.simplefilter("ignore", UserWarning)
+    gsr.tight_layout(fig, rect=[0, None, None, 0.97])
+
+plt.show()
 # Write healpix maps to fits files
 #hp.write_map(str(nsides)+'_power_'+outfilename+'.fits',hz)
 #hp.write_map(str(nsides)+'_rms_'+outfilename+'.fits',hrms)
 #hp.write_map(str(nsides)+'_counts_'+outfilename+'.fits',hcounts)
 
 
-
+'''
 ######################## Plotting ###########################
 
 # Obtain bounds for plotting window
-extent = (x.min(), x.max(), y.min(), y.max())
+extent = (xs.min(), xs.max(), ys.min(), ys.max())
 # Compute quartiles for scaling of colorbar
 fq = np.percentile(z,10)
 uq = np.percentile(z,80)
@@ -284,14 +421,14 @@ gnuplotmap.set_under('0.75')
 
 
 # Plot Healpix map(s)
-''' NEED TO CHANGE title BELOW '''
+# NEED TO CHANGE title BELOW
 title = opts.trans+' Transmitter Polarization'
 rot = [90,90,0] # Rotation for plotting view with N/S (up/down) & E/W (left/right)
-hp.mollview(hz,title='Beam for '+title,unit=r'dB',format='%d',rot=rot,cmap=gnuplotmap)
+hp.mollview(hpx_beam,title='Beam for '+title,unit=r'dB',format='%d',rot=rot,cmap=gnuplotmap)
 #plt.savefig(str(nsides)+'_beam_'+outfilename+'.png')
-hp.mollview(hcounts,title='Counts for '+title,rot=rot,cmap='bone_r',max=25)
+#hp.mollview(hcounts,title='Counts for '+title,rot=rot,cmap='bone_r',max=25)
 #plt.savefig(str(nsides)+'_counts_'+outfilename+'.png')
-hp.mollview(hrms,title='RMS for '+title,unit=r'dB',rot=rot,format='%d',cmap=gnuplotmap)
+#hp.mollview(hrms,title='RMS for '+title,unit=r'dB',rot=rot,format='%d',cmap=gnuplotmap)
 #plt.savefig(str(nsides)+'_rms'+outfilename+'.png')
 
 
@@ -299,3 +436,4 @@ plt.show()
 
 
 ######################################################
+'''
