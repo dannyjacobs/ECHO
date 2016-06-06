@@ -73,6 +73,22 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,ant=None,dip=
                 spec_raw = all_Data[:,18:23] # S antenna, EW dipole
         return spec_times,lats,lons,alts,yaws,spec_raw
 
+    elif filetype == 'apm':
+        lats = []
+        lons = []
+        alts =[]
+        weektimes = []
+        lines = open(infile).readlines()
+        for line in lines:
+            if line.startswith('GPS'):
+                lats.append(map(float,line.split(',')[7:8]))
+                lons.append(map(float,line.split(',')[8:9]))
+                alts.append(map(float,line.split(',')[9:10]))
+                weektimes.append(map(float,line.split(',')[3:5])) #ms and week number
+        weektimes = np.array(weektimes)
+        times = Time(weektimes[:,1]*secperweek + weektimes[:,0]/1000.,format='gps')
+        return times.gps,np.array(lats),np.array(lons),np.array(alts)
+
     else:
         print '\nNo valid filetype found for %s' %infile
         print 'Exiting...\n\n'

@@ -344,7 +344,7 @@ grid,bins,rmsBins,binloc,xg,yg,gcounts,grms = grid_data(xs,ys,spec_raw,binsize=b
 hpx_beam,hpx_counts,hpx_rms = make_beam(lats,lons,alts,spec_raw,freqIndex,\
                                         lat0=opts.lat0,lon0=opts.lon0,nsides=opts.nsides)
 
-hp.write_map(str(opts.nsides)+'_power_ER.fits',hpx_beam)
+#hp.write_map(str(opts.nsides)+'_power_ER.fits',hpx_beam)
 
 fig = plt.figure()
 gsr = gridspec.GridSpec(2, 1,height_ratios=[1,1])
@@ -398,11 +398,13 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore", UserWarning)
     gsr.tight_layout(fig, rect=[0, None, None, 0.97])
 
+
 plt.show()
+
 # Write healpix maps to fits files
-#hp.write_map(str(nsides)+'_power_'+outfilename+'.fits',hz)
-#hp.write_map(str(nsides)+'_rms_'+outfilename+'.fits',hrms)
-#hp.write_map(str(nsides)+'_counts_'+outfilename+'.fits',hcounts)
+hp.write_map(str(opts.nsides)+'_power_'+'_'.join(args[0].split('_')[0:3])+'.fits',hpx_beam)
+hp.write_map(str(opts.nsides)+'_rms_'+'_'.join(args[0].split('_')[0:3])+'.fits',hpx_rms)
+hp.write_map(str(opts.nsides)+'_counts_'+'_'.join(args[0].split('_')[0:3])+'.fits',hpx_counts)
 
 
 '''
