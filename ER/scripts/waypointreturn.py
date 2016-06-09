@@ -12,8 +12,8 @@ o.add_option('--first_waypoint',type=int,default=3,
 o.add_option('--waypts',action='store_true')
 opts,args = o.parse_args(sys.argv[1:])
 
-secperweek = 604800
-logsec_per_tick = 1.e-6
+SECPERWEEK = 604800
+LOG_SEC_PER_TICK = 1.e-6
 
 ##### FUNCTION TO RECORD TIMES:
 def get_way(filename):
@@ -27,10 +27,10 @@ def get_way(filename):
          CMD_time.append(float(line.split(',')[1].strip()))
          CMD_num.append(int(line.split(',')[3].strip()))
    GPS_weektimes = np.array(GPS_weektimes)
-   GPS_seconds = GPS_weektimes[:,1]*secperweek + GPS_weektimes[:,0]/1000.
-   GPS_arm= Time((np.array(GPS_arm[0])*logsec_per_tick), format = 'gps')
+   GPS_seconds = GPS_weektimes[:,1]*SECPERWEEK + GPS_weektimes[:,0]/1000.
+   GPS_arm= Time((np.array(GPS_arm[0])*LOG_SEC_PER_TICK), format = 'gps')
    GPS_time = Time(GPS_seconds, format='gps')
-   CMD_time = (np.array(CMD_time).astype(float))*logsec_per_tick
+   CMD_time = (np.array(CMD_time).astype(float))*LOG_SEC_PER_TICK
    return GPS_time, GPS_arm, np.array(CMD_num), CMD_time
 
 if opts.waypts:

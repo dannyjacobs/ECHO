@@ -39,7 +39,7 @@ secperweek = 604800
 o = optparse.OptionParser()
 o.set_description('Takes raw APM data and creates an interpolated, combined text file')
 o.add_option('--trans',type=str,help='Polarization of Bicolog antenna onboard drone')
-o.add_option('--width',type=int,default=100,
+o.add_option('--width',type=int,default=1000,
         help='Width (number) of channels to keep in spectrum data')
 o.add_option('--freq',type=float,default=137.500,
         help='Frequency to look for in data')
@@ -126,6 +126,7 @@ for infile in args:
         APM_times = Time(GPSseconds, format = 'gps')
         APM_lat,APM_lon,APM_alt = (np.array(APM_lat),np.array(APM_lon),
                     np.array(APM_alt))
+        print APM_lat.shape,APM_lon.shape,APM_alt.shape
     else:
         print "\nPlease pass a valid APM and Orbcomm file.\n"
         sys.exit()
@@ -145,7 +146,15 @@ print "After time filter: ",specTimes.shape,specData.shape
 
 
 #Interpolation of APM_lat, APM_lon, and APM_alt to SH_times
+from timeit import default_timer as timer
+start = timer()
 APM_lati = interp1d(APM_times.gps,APM_lat[:,0],kind='zero')
+print specTimes[550].gps
+print APM_lati(specTimes[550].gps)
+end = timer()
+print(end - start)
+sys.exit()
+
 APM_lati = APM_lati(specTimes.gps)
 APM_loni= interp1d(APM_times.gps,APM_lon[:,0],kind='zero')
 APM_loni = APM_loni(specTimes.gps)

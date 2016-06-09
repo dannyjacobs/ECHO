@@ -1,20 +1,21 @@
 import numpy as np
 import healpy as hp
 import math
+from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
 from matplotlib import cm
 
 from ECHO_position_utils import latlon2xy,to_spherical
 from ECHO_time_utils import gps_to_HMS,find_peak
 
-def make_beam(lats,lons,alts,spec_raw,freq_chan,lat0=0.0,lon0=0.0,nsides=8,volts=False,normalize=False):
+def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,nsides=8,volts=False,normalize=False):
     # Convert lat/lon to x/y
     x,y = latlon2xy(lats,lons,lat0,lon0)
     # Obtain spherical coordinates for x, y, and alt
     rs,thetas,phis = to_spherical(x,y,alts)
 
     #freqIndex = np.argmax(spec_raw[0,:])
-    freqIndex = 10
+    freqIndex = int(spec_raw.shape[1]/2.)
     # Only extract information from appropriate column (index = 10)
     z = spec_raw[:,freqIndex].copy()
     if volts:
@@ -46,8 +47,8 @@ def make_beam(lats,lons,alts,spec_raw,freq_chan,lat0=0.0,lon0=0.0,nsides=8,volts
     hpx_counts[hpx_counts == 0] = np.nan
     hpx_rms[hpx_rms == 0] = np.nan
 
-    return np.ma.masked_invalid(hpx_beam),
-           np.ma.masked_invalid(hpx_counts),
+    return np.ma.masked_invalid(hpx_beam),\
+           np.ma.masked_invalid(hpx_counts),\
            np.ma.masked_invalid(hpx_rms)
 
 
@@ -174,9 +175,6 @@ def animate_peak(i,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,spec_tim
     pkrms_plot.autoscale_view(True,True,True)
 
 
-''' Plot limits for the spectrum plot (y), beam plot (colorbar limits), and cuts plot (y)
-    need to be updated dynamically.  Beam plot behaves oddly when beam is normalized. '''
-
 def make_polycoll(hpx_beam,plot_lim=[-90,-50],nsides=8):
     pix = np.where(np.isnan(hpx_beam)==False)[0]
     boundaries = hp.boundaries(nsides,pix)
@@ -241,3 +239,62 @@ def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
             print '----------------------\n'
             """
             cuts_plot.set_ylim([cuts_min,cuts_max])
+
+def get_interp_val(m,theta,phi,nest=False):
+    m2=m.ravel()
+    nside=hp.pixelfunc.npix2nside(m2.size)
+    if nest:
+        r=pixlib._get_interpol_nest(nside,theta,phi)
+    else:
+        r=pixlib._get_interpol_ring(nside,theta,phi)
+    p = np.array(r[0:4])
+    w = np.array(r[4:8])
+    w = np.ma.array(w)
+    w.mask = m2[p].mask
+    del r
+    return np.ma.sum(m2[p]*w/np.ma.sum(w,0),0)
+
+
+def add_diagram(axs,xys,xytexts,colors,labels=None):
+    for i in range(len(xys)):
+        ax = axs[i]
+        xy = xys[i]
+        xytext = xytexts[i]
+        color = colors[i]
+        ax.annotate("",
+                    xy=xy,
+                    xycoords='axes fraction',
+                    xytext=xytext,
+                    textcoords='axes fraction',
+                    arrowprops=dict(arrowstyle='-',
+                                    color=color,
+                                    shrinkA=5, shrinkB=5,
+                                    patchA=None,
+                                    patchB=None,
+                                    connectionstyle="arc3,rad=0.",
+                                    ),
+                    size=20)
+        if not labels is None:
+            label = labels[i]
+            xyl = xy[:]
+            if i == 0:
+                xyl[0] += 0.05
+            elif i == 1:
+                xyl[1] += 0.05
+            elif i == 2:
+                xyl = (xy[0]+0.2,
+                      xyl[1]+0.05)
+            ax.annotate(label,
+                        xy=xyl,
+                        xycoords='axes fraction',
+                        xytext=xyl,
+                        textcoords='axes fraction',
+                        arrowprops=dict(arrowstyle="-",
+                                        color=color,
+                                        shrinkA=5, shrinkB=5,
+                                        patchA=None,
+                                        patchB=None,
+                                        connectionstyle="arc3,rad=0.",
+                                        alpha=0.0
+                                        ),
+                        size=16)
