@@ -11,9 +11,9 @@ resulting data.
 ECHO is an open source project. Use and reuse is encouraged.  If you use this code in published work please reference the github repo.
 http://github.com/dannyjacobs/ECHO
 
-Mailing list:   [https://groups.google.com/d/forum/astro_echo](groups.google.com/d/forum/astro_echo)
-ASU team blog:  [http://danielcjacobs.com/ECHO](danielcjacobs.com/ECHO)
-Documentation:  [http://dannyjacobs.github.io/ECHO/](dannyjacobs.github.io/ECHO/)
+* Mailing list:   https://groups.google.com/d/forum/astro_echo
+* ASU team blog:  http://danielcjacobs.com/ECHO
+* Documentation:  http://dannyjacobs.github.io/ECHO/
 
 
 
