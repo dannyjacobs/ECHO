@@ -12,6 +12,7 @@ g++ get_sh_spectra.c -o get_sh_spectra -lbb_api -lfftw3
 
 #include <cstdio>
 #include <iostream>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 #include <cmath>
@@ -41,7 +42,7 @@ extern "C"
 
 // Integration time in [mS] must be multiple of 3.7376 mS
 #define tau 40007.2704 //20003.6352 // 3737.6 //10001.8176 //5000.9088
-#define Nfft 4096 //131072 (2^17)
+#define Nfft 1024 //131072 (2^17)
 // number of fft points power of 2
 
 float times[Ns]; 		 			// Time Vector
@@ -52,10 +53,15 @@ float avg[(Nfft/2) ]; // average fft_out
 float avg_zoom [n_zoom];
 float maxmax;
 float maxfreq;
-time_t timestamp;
+//time_t timestamp;
+timeval timestamp;
+
+// Sleep time between samples
+#define SEC_BETWEEN_SAMPLES 0.2
+
 // Sweep Parameters (in MHz)
 #define fcenter 137e6 // Center Frequency in H
-#define fspan 20e6
+#define fspan 5e6
 
 #define y1min 0.600
 #define y1max 4.20
@@ -338,16 +344,18 @@ int main()
 	signal(SIGINT, intHandler);
 	sh_calibration();
 	sh_init();
-	timestamp = time(NULL);
-   //timestamp = gmtime(&timestamp);
-	printf("%ld",timestamp);
+	//timestamp = time(NULL);
+    //timestamp = gmtime(&timestamp);
+	//printf("%.2ld",timestamp);
+	gettimeofday(&timestamp,NULL);
+	printf("%.2f",1.0*(timestamp.tv_sec*1e6+timestamp.tv_usec)/1.0e6);
 	// print the frequencies to the top of a text file here
 	for (i = 0; i<traceSize; i++)
 	{
 		printf(",%6.3f ",(i*binSize+startFreq)/1e6);
 	}
 	printf("\n");
-	//start inifinit loop
+	// start inifinite loop
 
 	while (keepRunning){
 		bbQueryTraceInfo(
@@ -367,10 +375,12 @@ int main()
 			max
 			);
 		//get the spectrum
-		timestamp = time(NULL); //get the time in secomends since 1970
-
+		//timestamp = time(NULL); //get the time in secomends since 1970
 		//print the time and the spectrum
-		printf("%ld",timestamp);
+		//printf("%.2ld",timestamp);
+		gettimeofday(&timestamp,NULL);
+	    printf("%.2f",1.0*(timestamp.tv_sec*1e6+timestamp.tv_usec)/1.0e6);
+		
 		for (i = 0; i<traceSize; i++)
 		{
 			printf(",%6.3f", min[i]);
@@ -394,7 +404,7 @@ int main()
 		}
 		printf("max = %6.3f, freq = %6.3f \n",maxmax,maxfreq);
 		**/
-		sleep(2);
+		usleep(SEC_BETWEEN_SAMPLES*1e6);
 	} //end of the while
 	sh_terminate();
 	if (min != NULL) delete min;
