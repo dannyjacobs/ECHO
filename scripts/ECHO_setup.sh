@@ -9,8 +9,8 @@ HOST="10.1.1.1"
 ECHO_HOME="/home/echo/ECHO/"
 ARGS=$@
 
-START_DATE=$(date +"%m_%d_%y")
-START_TIME=$(date +"%H:%M:%S")
+START_DATE=$(date +"%m-%d-%y")
+START_TIME=$(date +"%H-%M-%S")
 GPS_FILE="gps_"$START_DATE"_"$START_TIME".txt"
 SPEC_FILE="spec_"$START_DATE"_"$START_TIME".txt"
 ACC_FILE="acc_"$START_DATE"_"$START_TIME".txt"

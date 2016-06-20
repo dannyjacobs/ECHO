@@ -18,10 +18,10 @@ def to_spherical(x,y,z):
     return rhos,thetas,phis
 
 
-def interp_pos(gps):
-    lati = interp1d(gps[:,0],gps[:,1],kind='zero')
-    loni = interp1d(gps[:,0],gps[:,2],kind='zero')
-    alti = interp1d(gps[:,0],gps[:,3],kind='zero')
+def interp_pos(times,lats,lons,alts,kind='zero'):
+    lati = interp1d(times,lats,kind=kind)
+    loni = interp1d(times,lons,kind=kind)
+    alti = interp1d(times,alts,kind=kind)
     return lati,loni,alti
 
 
