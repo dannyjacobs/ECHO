@@ -25,6 +25,10 @@ def interp_pos(times,lats,lons,alts,kind='zero'):
     return lati,loni,alti
 
 
-def get_position(udp):
-    loc = udp.location()
-    return [loc.lat,loc.lng,loc.alt]
+#def get_position(udp):
+#    loc = udp.location()
+#    return [loc.lat,loc.lng,loc.alt]
+
+
+#def get_position(mavfile):
+#    return mlog.recv_match(type='GLOBAL_POSITION_INT',blocking=False)

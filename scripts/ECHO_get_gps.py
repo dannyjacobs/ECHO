@@ -20,22 +20,58 @@
 '''
 
 import sys,os,optparse
-import time
 import numpy as np
+import time
 from pymavlink import mavutil
-from ECHO_position_utils import get_position
+#from ECHO_position_utils import get_position
 from ECHO_time_utils import unix_to_gps,gps_to_HMS
+from astropy.time import Time
 
 
 o = optparse.OptionParser()
 o.set_description('Takes raw APM/Orbcomm data and creates an interpolated, combined text file')
-o.add_option('--gps_file',type=str,help='File name for output of GPS data')
-o.add_option('--trans',type=str,help='Transmitting antenna polarization')
+o.add_option('--gps_file',type=str,
+    help='File name for output of GPS data')
+o.add_option('--tlog',type=str,
+    help='APM tlog file path')
+o.add_option('--trans',type=str,
+    help='Transmitting antenna polarization')
 opts,args = o.parse_args(sys.argv[1:])
 
 
 # Establish connection with Drone via UDP
-udp = mavutil.mavudp('127.0.0.1:14551')
+#udp = mavutil.mavudp('127.0.0.1:14551')
+
+''' TESTING READING TLOG FROM APM PLANNER '''
+byte_count = 0 # initial byte count is zero (beginning of file)
+SLEEP_TIME = 0.1
+
+'''
+try:
+    while True:
+      mlog = mavutil.mavlink_connection(filename)
+      start_time = Time(mlog.start_time,format='unix').gps
+      mlog.f.seek(byte_count) # go to current byte count offset
+      pos = mlog.recv_match(type='GPS_RAW_INT',blocking=False)
+      if not pos is None:
+        byte_count = mlog.f.tell() # update current byte count offset
+        timestamp = start_time + pos.time_usec*1e-6
+        print timestamp,pos.lat*1e-07,pos.lon*1e-07,pos.alt
+        sleep(SLEEP_TIME)
+
+      while not pos is None:
+        pos = mlog.recv_match(type='GPS_RAW_INT',blocking=False)
+        if not pos is None: # Check if position received
+            byte_count = mlog.f.tell() # update current byte count offset
+            timestamp = start_time + pos.time_usec*1e-6
+            print timestamp,pos.lat*1e-07,pos.lon*1e-07,pos.alt
+            sleep(SLEEP_TIME)
+        else:
+            print '\nRe-reading %s <(''^) ^(' ')^ (^'')>...\n' %filename
+except(KeyboardInterrupt):
+    print '\nExiting...\n'
+    sys.exit()
+'''
 
 # Setup outfile
 dt = 0.2 # time delay between GPS messages
@@ -55,18 +91,46 @@ with open(outfilename,'wb') as outfile:
     outfile.write('# Transmitter polarization: '+trans_pol+'\n')
     outfile.write('# Col Format: Time [GPS s], Lat [deg], Lon [deg], Alt [m]\n')
 
+# Open tlog and get start_time
+mlog = mavutil.mavlink_connection(opts.tlog)
+start_time = Time(mlog.start_time,format='unix').gps
 try: # Continuously write time + position to outfile until close
     while True:
-        loc = get_position(udp)
-        query_time = unix_to_gps(time.time())
-        if loc:
-            loc_str = '%.2f,%.5f,%.5f,%.5f' %(query_time,loc[0],loc[1],loc[2])
+        #loc = get_position(udp)
+        pos = mlog.recv_match(type='GLOBAL_POSITION_INT',blocking=False)
+        if not pos is None:
+            sys.stdout.write('\r')
+            sys.stdout.flush()
+            byte_count = mlog.f.tell()
+            timestamp = start_time + pos.time_boot_ms*1e-03
+            lat = pos.lat*1e-07
+            lon = pos.lon*1e-07
+            alt = pos.relative_alt*1e-03
+            pos_str = '%.2f,%.5f,%.5f,%.5f' %(timestamp,lat,lon,alt)
             with open(outfilename,'ab') as outfile:
-                outfile.write(loc_str+'\n')
-        else:
-            print 'No New GPS data at '+gps_to_HMS(query_time,'gps')+'s.'
-            time.sleep(dt)
-except KeyboardInterrupt:
+                outfile.write(pos_str+'\n')
+            time.sleep(SLEEP_TIME)
+
+        while pos:
+            pos = mlog.recv_match(type='GLOBAL_POSITION_INT',blocking=False)
+            if not pos is None:
+                byte_count = mlog.f.tell()
+                timestamp = start_time + pos.time_boot_ms*1e-03
+                lat = pos.lat*1e-07
+                lon = pos.lon*1e-07
+                alt = pos.relative_alt*1e-03
+                pos_str = '%.2f,%.5f,%.5f,%.5f' %(timestamp,lat,lon,alt)
+                with open(outfilename,'ab') as outfile:
+                    outfile.write(pos_str+'\n')
+                time.sleep(SLEEP_TIME)
+        # Re-read tlog file and go to current byte location
+        mlog.f.close()
+        sys.stdout.write('Re-reading %s...\r' %opts.tlog)
+        sys.stdout.flush()
+        mlog = mavutil.mavlink_connection(opts.tlog)
+        mlog.f.seek(byte_count)
+
+except(KeyboardInterrupt):
     outfile.close()
     print '\n\n'+outfilename+' closed successfully'
     print 'Exiting...\n'

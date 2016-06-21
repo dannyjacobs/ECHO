@@ -26,10 +26,11 @@
 
 '''
 
-import optparse,sys,threading
+import optparse,sys,threading,atexit
 import numpy as np
 from time import sleep,strftime
 from astropy.time import Time
+from flask import Flask,jsonify
 
 from ECHO_read_utils import get_data
 from ECHO_position_utils import interp_pos
@@ -47,7 +48,7 @@ o.add_option('--gps_file',type=str,
 o.add_option('--dt',type=float,default=0.5,
     help='User specified time interval for binning resolution')
     #Since v_drone<2m/s, dt gives a maximum positional extrapolation range, i.e. dx~v*dt')
-o.add_option('--host',type=str,default='10.1.1.1'
+o.add_option('--host',type=str,default='10.1.1.1',
     help='Host address')
 
 opts,args = o.parse_args(sys.argv[1:])
@@ -77,15 +78,15 @@ def create_app():
         global yourThread
         with dataLock: # Wait for lock on current thread
             gps_times,lats,lons,alts = get_data(opts.gps_file,filetype='gps')
-            lati,loni,alti = interp_pos(gps_times,lats,lons,alts)
+            lati,loni,alti = interp_pos(gps_times.gps[:,0],lats,lons,alts)
             currlen = gps_times.shape[0]
             if currlen == lastlen:
                 sleep(POOL_TIME)
             elif currlen > lastlen:
                 lastlen = currlen
-                tmin,tmax = gps_times.min(),gps_times.max()
+                tmin,tmax = gps_times.gps.min(),gps_times.gps.max()
                 # Create weights array for check of GPS data when user queries server
-                counts,tbins = np.histogram(gps_times,bins=int((tmax-tmin)/dt))
+                counts,tbins = np.histogram(gps_times.gps,bins=int((tmax-tmin)/dt))
         # Start the next thread
         yourThread = threading.Timer(POOL_TIME, collection, ())
         yourThread.start()
@@ -107,15 +108,16 @@ def create_app():
 
 # Global variables
 gps_times,lats,lons,alts = get_data(opts.gps_file,filetype='gps')
-lati,loni,alti = interp_pos(gps_times,lats,lons,alts)
+print gps_times.shape,lats.shape,lons.shape,alts.shape
+lati,loni,alti = interp_pos(gps_times.gps[:,0],lats,lons,alts)
 
 # Get current number of GPS data points for monitoring of opts.gps_file
 lastlen = gps_times.shape[0]
-tmin,tmax = gps_times.min(),gps_times.max()
+tmin,tmax = gps_times.gps.min(),gps_times.gps.max()
 
 # Create weights array for check of GPS data when user queries server
 dt = opts.dt
-counts,tbins = np.histogram(gps_times,bins=int((tmax-tmin)/dt))
+counts,tbins = np.histogram(gps_times.gps,bins=int((tmax-tmin)/dt))
 
 # Create Lock object to access variables on an individual thread
 dataLock = threading.Lock()
@@ -127,7 +129,7 @@ yourThread = threading.Thread()
 app = create_app()
 @app.route('/ECHO/lms/v1.0/pos/<float:query_time>', methods=['GET'])
 def get_gps_pos(query_time):
-    if np.logical_and(query_time>=gps_times[0],query_time<=gps_times[-1]):
+    if np.logical_and(query_time>=gps_times.gps[0],query_time<=gps_times.gps[-1]):
         if counts[np.abs(tbins-query_time).argmin()] > 0:
             # Return a dictionary of latitude, longitude, and altitude at query time
             lat,lon,alt = float(lati(query_time)),float(loni(query_time)),float(alti(query_time))

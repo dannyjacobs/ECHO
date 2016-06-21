@@ -33,7 +33,7 @@
 
 import urllib2,optparse,sys,json
 import numpy as np
-#import time
+import time
 
 from astropy.time import Time
 from ECHO_read_utils import get_data
