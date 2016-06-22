@@ -46,7 +46,7 @@ if opts.realtime:
 
     # Get initial data from Signal Hound
     spec_times,spec_raw,freqs,freq_chan = get_data(opts.acc_file,filetype='sh',freq=opts.freq,width=opts.width)
-    print spec_times.shape,spec_raw.shape,freqs.shape,freq_chan
+    print spec_times.shape,freqs.shape,freq_chan
     freqs -= 0.005
     #print freqs.shape,spec_raw.shape
     if spec_times.shape[0] == 0: # Ensure data in inFile
