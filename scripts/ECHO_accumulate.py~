@@ -144,13 +144,11 @@ if opts.realtime:
                 if len(outstr.split(',')) == (len(freqs)+4):
                     with open(outfile_str,'ab') as outfile:
                         outfile.write(outstr+'\n')
-
-
-	        except(ValueError):
-                    pass
+            except(ValueError):
+                pass
             # Update row counter and wait for new data
-	        last_row_index += 1
-	        time.sleep(DELAY_TIME)
+            last_row_index += 1
+            time.sleep(DELAY_TIME)
 
         # Read in new spectrum data
         spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,
