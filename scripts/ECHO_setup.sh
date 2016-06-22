@@ -86,7 +86,7 @@ if [ $GROUND ]; then
       exit
    fi
 
-   ECHO_PATH="/Users/echo_loco/ECHO"
+   ECHO_PATH="/Users/echo_loco/ECHO_code/"
    TLOG_PATH="/Users/echo_loco/apmplanner2/tlogs/octocopter"
    TLOG=$(ls -t ${TLOG_PATH} | head -1)
 
