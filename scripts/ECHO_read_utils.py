@@ -130,12 +130,12 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
             all_Data = all_Data[inds]
             #print 'After waypt time filter: %s' %all_Data.shape[0]
 
-        spec_times,lats,lons,alts,spec_raw = np.split(all_Data,
-                                                      [1,2,3,4],
-                                                      axis=1)
-        #spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],\
-        #                                 all_Data[:,2],all_Data[:,3],\
-        #                                 all_Data[:,4:])
+        #spec_times,lats,lons,alts,spec_raw = np.split(all_Data,
+        #                                              [1,2,3,4],
+        #                                              axis=1)
+        spec_times,lats,lons,alts,spec_raw = (all_Data[:,0],all_Data[:,1],\
+                                         all_Data[:,2],all_Data[:,3],\
+                                         all_Data[:,4:])
         spec_times = Time(spec_times,format='gps')
         lats = lats.squeeze(); lats = np.insert(lats,0,lat0)
         lons = lons.squeeze(); lons = np.insert(lons,0,lon0)
