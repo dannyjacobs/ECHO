@@ -171,9 +171,9 @@ elif [ ${ACCUM} ]; then
       fi
    else # No NSIDES
       if [ ${LAT0} -a ${LON0} ]; then
-         tmux send-keys "python scripts/ECHO_plot.py --realtime --acc_file=${ACC_FILE} --freq=${FREQ} --lat0=${LAT0} --lon0=${LON0}" C-m
+         tmux send-keys "python ${ECHO_PATH}/scripts/ECHO_plot.py --realtime --acc_file=${ACC_FILE} --freq=${FREQ} --lat0=${LAT0} --lon0=${LON0}" C-m
       else # No LAT0 or LON0, still NSIDES
-         tmux send-keys "python scripts/ECHO_plot.py --realtime --acc_file=${ACC_FILE} --freq=${FREQ}" C-m
+         tmux send-keys "python ${ECHO_PATH}/scripts/ECHO_plot.py --realtime --acc_file=${ACC_FILE} --freq=${FREQ}" C-m
       fi
    fi
 

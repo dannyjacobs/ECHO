@@ -101,7 +101,8 @@ print spec_times.shape,spec_raw.shape,freqs.shape
 # Get date/time info for file naming
 date_time = spec_times[0].iso.split(' ')
 time_str = '-'.join(date_time[-1].split(':')).split('.')[0]
-outfile_str = 'acc_'+date_time[0]+'_'+time_str+'.txt'
+#outfile_str = 'acc_'+date_time[0]+'_'+time_str+'.txt'
+outfile_str = opts.acc_file
 
 # Header information for output file
 headstr = '# Accumulated data for '+','.join(date_time)
