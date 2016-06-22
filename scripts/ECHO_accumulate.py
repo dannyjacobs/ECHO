@@ -131,7 +131,7 @@ if opts.realtime:
     last_row_index = 0 # Index for SH time queries
     while True:
         while last_row_index < spec_times.shape[0]:
-            qtime = spec_times[last_row_index].gps
+            qtime = spec_times.gps[last_row_index]
             fileo = urllib2.urlopen('http://'+opts.host+':5000/ECHO/lms/v1.0/pos/'+str(qtime))
             try:
                 pos = json.loads(fileo.read())
