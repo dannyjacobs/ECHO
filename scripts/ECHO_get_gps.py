@@ -45,6 +45,7 @@ opts,args = o.parse_args(sys.argv[1:])
 ''' TESTING READING TLOG FROM APM PLANNER '''
 byte_count = 0 # initial byte count is zero (beginning of file)
 SLEEP_TIME = 0.1
+TIME_SINCE_BOOT_FACTOR = 1e-06
 
 '''
 try:
@@ -102,7 +103,7 @@ try: # Continuously write time + position to outfile until close
             sys.stdout.write('\r')
             sys.stdout.flush()
             byte_count = mlog.f.tell()
-            timestamp = start_time + pos.time_boot_ms*1e-03
+            timestamp = start_time + pos.time_boot_ms*TIME_SINCE_BOOT_FACTOR
             lat = pos.lat*1e-07
             lon = pos.lon*1e-07
             alt = pos.relative_alt*1e-03
@@ -115,7 +116,7 @@ try: # Continuously write time + position to outfile until close
             pos = mlog.recv_match(type='GLOBAL_POSITION_INT',blocking=False)
             if not pos is None:
                 byte_count = mlog.f.tell()
-                timestamp = start_time + pos.time_boot_ms*1e-03
+                timestamp = start_time + pos.time_boot_ms*TIME_SINCE_BOOT_FACTOR
                 lat = pos.lat*1e-07
                 lon = pos.lon*1e-07
                 alt = pos.relative_alt*1e-03

@@ -215,9 +215,9 @@ else:
     # Read in initial data
     spec_times,spec_raw,freqs,lats,lons,alts = get_data(opts.acc_file,
                                                             filetype='echo',
-                                                            freq=opts.freq,
-                                                            times=opts.times,
-                                                            waypts=opts.waypts)
+                                                            freq=opts.freq)#,
+                                                            #times=opts.times,
+                                                            #waypts=opts.waypts)
 
     hpx_beam,hpx_counts,hpx_rms = make_beam(lats[1:],lons[1:],
                                             alts,spec_raw,

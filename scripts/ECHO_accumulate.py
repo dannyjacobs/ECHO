@@ -53,15 +53,19 @@ o.add_option('--apm_file',type=str,
     help='APM log file(s). For multiple files specify --isList')
 o.add_option('--acc_file',type=str,
     help='Accumulated output file')
-o.add_option('--isList',action='store_true',
-    help='Specify if passing several APM/spec files for reading')
+o.add_option('--start_stop',action='store_true',
+    help='If true, data filtered with flight start/stop times')
+o.add_option('--waypts',action='store_true',
+    help='If true, data filtered around waypoint times')
+#o.add_option('--isList',action='store_true',
+#    help='Specify if passing several APM/spec files for reading')
 o.add_option('--lat0',type=str,
     help='Latitude of antenna under test')
 o.add_option('--lon0',type=str,
     help='Longitude of antenna under test')
 o.add_option('--freq',type=float,default=137.500,
     help='Frequency of importance')
-o.add_option('--width',type=int,default=1000,
+o.add_option('--width',type=int,default=500,
     help='Keep channels within 0.005*width [MHz] of --freq')
 o.add_option('--realtime',action='store_true',
     help='Specify realtime accumulation of data')
@@ -87,16 +91,18 @@ last_row_index = 0 # Index for SH time queries
 freq_chan = 0 # Index in spectrum of Valon synth peak freq
 freqs = [] # Store frequencies in SH spectrum
 
-
+print ' '
 # Read in initial SH data
 spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,
                                                filetype='sh',
                                                freqs=freqs,
                                                freq=opts.freq,
                                                freq_chan=freq_chan,
-                                               width=opts.width,
-                                               isList=opts.isList)
-print spec_times.shape,spec_raw.shape,freqs.shape
+                                               width=opts.width)#,
+                                               #isList=opts.isList)
+print 'Read in %s spectra spanning %s frequencies\n' %(spec_times.shape[0],
+                                                         freqs.shape[0])
+
 
 # Get date/time info for file naming
 date_time = spec_times[0].iso.split(' ')
@@ -144,13 +150,11 @@ if opts.realtime:
                 if len(outstr.split(',')) == (len(freqs)+4):
                     with open(outfile_str,'ab') as outfile:
                         outfile.write(outstr+'\n')
-
-
-	    except(ValueError):
+            except(ValueError):
                 pass
             # Update row counter and wait for new data
-	    last_row_index += 1
-	    time.sleep(DELAY_TIME)
+            last_row_index += 1
+            time.sleep(DELAY_TIME)
 
         # Read in new spectrum data
         spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,
@@ -170,24 +174,27 @@ else:
     #                   POST-PROCESSING                   #
     ####################################################'''
 
+    from ECHO_read_utils import get_filter_times
     from ECHO_position_utils import interp_pos
+    from ECHO_time_utils import flight_time_filter,waypt_time_filter
 
     if opts.apm_file:
         # Read in data from APM file(s)
         times,lats,lons,alts = get_data(opts.apm_file,
-                                        filetype='apm',
-                                        isList=opts.isList)
-        print times.shape,lats.shape,lons.shape,alts.shape
+                                        filetype='apm')#,
+                                        #isList=opts.isList)
 
     elif opts.gps_file:
         # Read in data from ECHO GPS file(s)
         times,lats,lons,alts = get_data(opts.gps_file,
-                                            filetype='gps',
-                                            isList=opts.isList)
+                                            filetype='gps')#,
+                                            #isList=opts.isList)
 
     if not opts.apm_file and not opts.gps_file:
         print '\nPlease pass valid file(s) with GPS positions with --gps_file...\n'
         sys.exit()
+
+    print 'Read in %s GPS positions' %lats.shape[0]
 
     minTime = times.gps.min()
     maxTime = times.gps.max()
@@ -201,21 +208,59 @@ else:
 
 
     # Interpolate GPS positions
-    print 'Interpolating...'
+    print '\nInterpolating...'
+    start = time.time()
     latsi,lonsi,altsi = interp_pos(times.gps,lats,lons,alts)
-    print 'Interpolation finished...'
+    stop = time.time()
+    print 'Interpolation finished in %.1e seconds' %(stop-start)
     latsi = latsi(spec_times.gps)
     lonsi = lonsi(spec_times.gps)
     altsi = altsi(spec_times.gps)
 
 
+    # Zip everything together for start/stop and waypt filtering
+    spec_times = np.expand_dims(spec_times.gps,axis=1)
+    latsi = np.expand_dims(latsi,axis=1)
+    lonsi = np.expand_dims(lonsi,axis=1)
+    altsi = np.expand_dims(altsi,axis=1)
+    all_Data = np.concatenate((spec_times,latsi,lonsi,altsi,spec_raw),
+                               axis=1)
+    print '\nZipped data shape: '+str(all_Data.shape)
+
+
+    if opts.start_stop:
+        if opts.apm_file is None:
+            print '\nAPM file (glob) needed for start/stop filtering.'
+            print 'Exiting...\n'
+            sys.exit()
+
+        if opts.waypts:
+            start_stop_times,waypt_times = get_filter_times(opts.apm_file,
+                                                            waypts=True)
+        else:
+            start_stop_times = get_filter_times(opts.apm_file)
+
+        start_stop_inds = flight_time_filter(start_stop_times,
+                                            all_Data[:,0])
+        print '\nBefore start/stop time filter: %s' %all_Data.shape[0]
+        all_Data = all_Data[start_stop_inds]
+        print 'After start/stop time filter: %s' %all_Data.shape[0]
+
+        if opts.waypts:
+            waypt_inds = waypt_time_filter(waypt_times,
+                                           all_Data[:,0])
+            print '\nBefore waypoint filter: %s' %all_Data.shape[0]
+            all_Data = all_Data[waypt_inds]
+            print 'After waypoint filter: %s' %all_Data.shape[0]
+
+
     # Write accumulated data to output file
-    for k in range(spec_times.shape[0]):
-        outstr = str(spec_times[k].gps)+','+\
-                 str(latsi[k])+','+\
-                 str(lonsi[k])+','+\
-                 str(altsi[k])+','+\
-                 ','.join(map(str,spec_raw[k,:]))
+    for k in range(all_Data.shape[0]):
+        '''
+            Error thrown here.
+            ','.join expects string but gets float.  Wtf?
+        '''
+        outstr = ','.join(all_Data[k])
         if len(outstr.split(',')) == (len(freqs)+4):
             with open(outfile_str,'ab') as outfile:
                 outfile.write(outstr+'\n')

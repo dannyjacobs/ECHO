@@ -22,17 +22,15 @@ def find_peak(f,x,fmin=0,fmax=500):
     return maxfreq,peak,peakrms
 
 
-def inrange(tr,t):
-    diff = 3
+def inrange(tr,t,diff=3):
     for i in range(0,len(tr)):
         if (t>=tr[i]-diff) and (t<=tr[i]+diff):
             return True
     return False
 
 
-def flight_time_filter(infile,times):
+def flight_time_filter(timeranges,times):
     inds = []
-    timeranges = np.loadtxt(infile,skiprows=1,dtype=float)
     for timerange in timeranges:
         inds.append(np.logical_and(times>timerange[0],
                                    times<timerange[1]))
@@ -40,7 +38,6 @@ def flight_time_filter(infile,times):
     return inds
 
 
-def waypt_time_filter(infile,times):
-    waypt_times = np.loadtxt(infile,skiprows=1,dtype=float)
+def waypt_time_filter(waypt_times,times):
     inds = np.array([inrange(waypt_times,t) for t in times])
     return inds
