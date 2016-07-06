@@ -8,13 +8,9 @@ SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
 NFFT = 1024
 
-<<<<<<< HEAD
+
 def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
              ant=None,dip=None,width=100,times=None,waypts=None):#isList=False,
-=======
-def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=0,
-             ant=None,dip=None,width=100,isList=False,times=None,waypts=None):
->>>>>>> 0f1f174bbcd13d135de18b84a08cedecd60584c1
 
     if filetype == 'gps':
         gps_arr = []
@@ -68,18 +64,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=0,
     elif filetype == 'sh':
         spec_times = []
         spec_raw = []
-<<<<<<< HEAD
         spec_files = glob.glob(infile)
-=======
-        width = int(width/2.)
-        if not isList:
-            spec_files = [infile]
-        else:
-            spec_files = []
-            lines = open(infile).readlines()
-            for line in lines:
-                spec_files.append(line.rstrip('\n'))
->>>>>>> 0f1f174bbcd13d135de18b84a08cedecd60584c1
         for spec_file in spec_files:
             print 'Reading in %s...' %spec_file
             lines = open(spec_file).readlines()
@@ -90,17 +75,13 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=0,
                     freq_chan = np.where(np.abs(freqs-freq).min()==np.abs(freqs-freq))[0]
                     # Filter freqs around freq_chan
                     freqs = freqs[freq_chan-width:freq_chan+width]
-                for line in lines:
+                for line in lines[2:]:
                     if line.startswith('#'):
                         continue
                     line = line.rstrip('\n').split(',')
-<<<<<<< HEAD
                     if len(line) == (NFFT+1): # Make sure line has finished printing
-=======
-                    if len(line) == 1025: # Make sure line has finished printing
->>>>>>> 0f1f174bbcd13d135de18b84a08cedecd60584c1
                         spec_times.append(float(line[0]))
-                        spec_raw.append(map(float,line[freq_chan-width:freq_chan+width]))
+                        spec_raw.append(map(float,line[freq_chan-width+1:freq_chan+width+1]))
         spec_times = Time(spec_times,format='unix')
         spec_raw = np.array(spec_raw)
         freqs = np.array(freqs).squeeze()
@@ -130,6 +111,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=0,
         lats = lats.squeeze(); lats = np.insert(lats,0,lat0)
         lons = lons.squeeze(); lons = np.insert(lons,0,lon0)
         alts = alts.squeeze()
+        freqs = np.array(freqs)
         return spec_times,spec_raw,freqs,lats,lons,alts#,lat0,lon0
 
     elif filetype == 'orbcomm':

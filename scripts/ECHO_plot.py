@@ -219,13 +219,15 @@ else:
                                                             #times=opts.times,
                                                             #waypts=opts.waypts)
 
+    freq_chan = np.where(np.abs(freqs-opts.freq).min()==np.abs(freqs-opts.freq))[0]
     hpx_beam,hpx_counts,hpx_rms = make_beam(lats[1:],lons[1:],
                                             alts,spec_raw,
                                             lat0=lats[0],
                                             lon0=lons[0],
-                                            nsides=opts.nsides)
+                                            nsides=opts.nsides,
+                                            freq_chan=freq_chan)
 
-    print 'Plotting frequency: %.3f MHz' %freqs[int(spec_raw.shape[1]/2.)]
+    print 'Plotting frequency: %.3f MHz' %freqs[freq_chan]
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
     fig.suptitle('ECHO Realtime Data Visualization for %s' %opts.acc_file,fontsize=16)
@@ -238,6 +240,7 @@ else:
     beam_plot = fig.add_subplot(gs[0,:2],aspect='equal')
 
     coll = make_polycoll(hpx_beam,nsides=opts.nsides)#,plot_lim=[-90,-50])
+    #coll.set_clim([-88,-75])
     beam_plot.add_collection(coll)
     beam_plot.autoscale_view()
 
@@ -293,6 +296,7 @@ else:
     cuts_plot.set_ylabel('dB')
     cuts_plot.set_xlabel('Elevation Angle [deg]')
     cuts_plot.set_xlim([-95,95])
+    cuts_plot.set_xlim([-88,-74])
     cuts_plot.set_xticks(xticks)
 
     with warnings.catch_warnings():

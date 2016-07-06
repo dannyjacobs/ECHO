@@ -253,14 +253,15 @@ else:
             all_Data = all_Data[waypt_inds]
             print 'After waypoint filter: %s' %all_Data.shape[0]
 
-
     # Write accumulated data to output file
+    print '\nWriting to %s...' %outfile_str
     for k in range(all_Data.shape[0]):
         '''
             Error thrown here.
             ','.join expects string but gets float.  Wtf?
         '''
-        outstr = ','.join(all_Data[k])
+        outstr = ','.join(map(str,all_Data[k,:]))
         if len(outstr.split(',')) == (len(freqs)+4):
             with open(outfile_str,'ab') as outfile:
                 outfile.write(outstr+'\n')
+    print '%s closed successfully\n' %outfile_str

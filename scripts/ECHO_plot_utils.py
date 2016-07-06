@@ -8,16 +8,16 @@ from matplotlib import cm
 from ECHO_position_utils import latlon2xy,to_spherical
 from ECHO_time_utils import gps_to_HMS,find_peak
 
-def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,nsides=8,volts=False,normalize=False):
+def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,
+              nsides=8,volts=False,normalize=False,freq_chan=0):
     # Convert lat/lon to x/y
     x,y = latlon2xy(lats,lons,lat0,lon0)
     # Obtain spherical coordinates for x, y, and alt
     rs,thetas,phis = to_spherical(x,y,alts)
 
-    #freqIndex = np.argmax(spec_raw[0,:])
-    freqIndex = int(spec_raw.shape[1]/2.)
+    #freq_chan = np.argmax(spec_raw[0,:])
     # Only extract information from appropriate column (index = 10)
-    z = spec_raw[:,freqIndex].copy()
+    z = spec_raw[:,freq_chan].copy()
     if volts:
         # Distance normalization
         r0 = 100 # reference position for distance normalization (unit: meters)
