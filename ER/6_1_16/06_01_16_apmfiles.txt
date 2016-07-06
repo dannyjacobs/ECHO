@@ -1,3 +1,0 @@
-apm_60BIN_data.log
-apm_61BIN_data.log
-apm_62BIN_data.log
