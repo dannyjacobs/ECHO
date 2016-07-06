@@ -134,7 +134,7 @@ elif [ ${ACCUM} ]; then
    # Run get_sh_spectra script for radio spectrum from Signal Hound
    tmux select-pane -t 0
    tmux send-keys "You have 20s to enter the password" C-m
-   tmux send-keys "sudo ${ECHO_PATH}/scripts/get_sh_spectra_137 > ${SPEC_FILE}" C-m
+   tmux send-keys "sudo ${ECHO_PATH}/scripts/get_sh_spectra_1024 > ${SPEC_FILE}" C-m
 
    # Assume realtime and make another script for non realtime???
    #   if [ $REALTIME ]; then
