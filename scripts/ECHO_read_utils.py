@@ -6,11 +6,10 @@ from ECHO_time_utils import flight_time_filter,waypt_time_filter
 
 SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
-NFFT = 1024
 
 
 def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
-             ant=None,dip=None,width=100,times=None,waypts=None):#isList=False,
+             ant=None,dip=None,width=100,times=None,waypts=None,nfft=1024):#isList=False,
 
     if filetype == 'gps':
         gps_arr = []
@@ -79,7 +78,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
                     if line.startswith('#'):
                         continue
                     line = line.rstrip('\n').split(',')
-                    if len(line) == (NFFT+1): # Make sure line has finished printing
+                    if len(line) == (nfft+1): # Make sure line has finished printing
                         spec_times.append(float(line[0]))
                         spec_raw.append(map(float,line[freq_chan-width+1:freq_chan+width+1]))
         spec_times = Time(spec_times,format='unix')

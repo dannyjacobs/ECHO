@@ -71,19 +71,21 @@ o.add_option('--realtime',action='store_true',
     help='Specify realtime accumulation of data')
 o.add_option('--host',type=str,default='10.1.1.1',
     help='Host for server (string).  Default is 10.1.1.1')
+o.add_option('--nfft',type=int,
+    help='Number of FFT bins in Signal Hound spectra')
 
 opts,args = o.parse_args(sys.argv[1:])
 
 
 # Check for valid spec_file
 if not opts.spec_file:
-    print '\nPlease pass a valid spectrum file (--spec_file)...\n'
-    sys.exit()
+   print '\nPlease pass a valid spectrum file (--spec_file)...\n'
+   sys.exit()
 
 # Check for latitude and longitude of antenna under test
 if not (opts.lat0 and opts.lon0):
-    print '\nLatitude (--lat0) and Longitude (--lon0) required...\n'
-    sys.exit()
+   print '\nLatitude (--lat0) and Longitude (--lon0) required...\n'
+   sys.exit()
 
 
 DELAY_TIME = 0.3 # Time delay between queries of ECHO_server.py
@@ -98,7 +100,8 @@ spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,
                                                freqs=freqs,
                                                freq=opts.freq,
                                                freq_chan=freq_chan,
-                                               width=opts.width)#,
+                                               width=opts.width,
+                                               nfft=opts.nfft)#,
                                                #isList=opts.isList)
 print 'Read in %s spectra spanning %s frequencies\n' %(spec_times.shape[0],
                                                          freqs.shape[0])
@@ -162,7 +165,8 @@ if opts.realtime:
                                                        freqs=freqs,
                                                        freq=opts.freq,
                                                        freq_chan=freq_chan,
-                                                       width=opts.width)
+                                                       width=opts.width,
+                                                       nfft=opts.nfft)
 
 
 

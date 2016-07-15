@@ -18,6 +18,7 @@ import urllib2,optparse,sys,json,time,warnings
 import numpy as np
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import healpy as hp
 
 
 o = optparse.OptionParser()
@@ -41,7 +42,8 @@ o.add_option('--nsides',type=int,default=8,
     help='Number of sides for Healpix plotting (Default = 8)')
 o.add_option('--realtime',action='store_true',
     help='Specify realtime or not')
-
+o.add_option('--output_healpix',action='store_true',
+    help='Output the beam healpix maps.')
 opts,args = o.parse_args(sys.argv[1:])
 
 
@@ -306,4 +308,8 @@ else:
     # Show plot window
     plt.subplots_adjust(wspace=0.5)
     #mng.window.state('zoomed')
+    if opts.output_healpix:
+        hp.write_map(opts.acc_file[:-4]+'_beam.fits',hpx_beam)
+        hp.write_map(opts.acc_file[:-4]+'_rms.fits',hpx_rms)
+        hp.write_map(opts.acc_file[:-4]+'_counts.fits',hpx_counts)
     plt.show()
