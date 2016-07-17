@@ -28,8 +28,7 @@ three lines of the file.
 
 from astropy.time import Time
 import datetime as date
-import numpy as n
-import exifread
+import numpy as np
 import sys,optparse
 import os
 from pylab import *
@@ -43,7 +42,7 @@ secperweek = 604800
 ######################### Opts #############################
 
 o = optparse.OptionParser()
-o.set_description('Takes raw APM/Orbcomm data and creates an interpolated, combined text file')
+o.set_description('Takes raw APM data and creates an interpolated, combined text file')
 o.add_option('--trans',type=str,help='Polarization of Bicolog antenna onboard drone')
 opts,args = o.parse_args(sys.argv[1:])
 
@@ -59,29 +58,29 @@ if not cont:
     sys.exit()
 '''
 for infile in args:
-    if 'orb' in infile:
+    if 'spec' in infile:
         # Get Orbcomm files
-        print "Orbcomm File: %s" %infile
+        print "Spectrum File: %s" %infile
         lines = open(infile).readlines()
-        ORB_files = []
+        SPEC_files = []
         for i,line in enumerate(lines):
-            ORB_files.append(line)
-            ORB_files[-1] = ORB_files[-1].strip(' \n')
+            SPEC_files.append(line.rstrip('\n'))
 
-        orbTimes = []
-        orbData = []
-        for ORB_file in ORB_files:
-            lines = open(ORB_file).readlines()
+        specTimes = []
+        specData = []
+        for SPEC_file in SPEC_files:
+            lines = open(SPEC_file).readlines()
             for line in lines[1:-2]:
                 string = line.strip(' \n')
                 #if len(string.split(' ')) == 25:
-                orbTimes.append(float(string.split(',')[0]))
-                orbData.append(map(float,string.strip(' \n').split(',')[1:]))
+                specTimes.append(float(string.split(',')[0]))
+                specData.append(map(float,string.strip(' \n').split(',')[1:]))
 
-        orbData = n.array(orbData)
-        freqs = orbData[0,:]
-        orbData = orbData[1:,:]
-        orbTimes = Time(orbTimes,format='unix')
+        specData = np.array(specData)
+        freqs = specData[0,:]
+        specData = specData[1:,:]
+        specTimes = Time(specTimes,format='unix')
+        print specTimes.gps.min(),specTimes.gps.max()
 
     elif 'apm' in infile:
         # Get APM data
@@ -105,10 +104,17 @@ for infile in args:
             lines = open(APM_file).readlines()
             for line in lines:
                 if line.startswith('GPS'):
-                    APM_lat.append(map(float,line.split(',')[6:7]))
-                    APM_lon.append(map(float,line.split(',')[7:8]))
-                    APM_alt.append(map(float,line.split(',')[8:9]))
-                    weektimes.append(map(float,line.split(',')[2:4])) #ms and week number
+                    # Arducopter 3.2
+                    #APM_lat.append(map(float,line.split(',')[6:7]))
+                    #APM_lon.append(map(float,line.split(',')[7:8]))
+                    #APM_alt.append(map(float,line.split(',')[8:9]))
+                    #weektimes.append(map(float,line.split(',')[2:4])) #ms and week number
+
+                    # Arducopter 3.3
+                    APM_lat.append(map(float,line.split(',')[7:8]))
+                    APM_lon.append(map(float,line.split(',')[8:9]))
+                    APM_alt.append(map(float,line.split(',')[9:10]))
+                    weektimes.append(map(float,line.split(',')[3:5])) #ms and week number
                     if isGPS:
                         startTime = float(line.split(',')[-1])
                         isGPS = False
@@ -116,52 +122,56 @@ for infile in args:
                     ATT_times.append(map(float,[line.split(',')[1].strip(' ')]))
                     ATT_yaw.append(map(float,[line.split(',')[6].strip(' ')]))
 
-        weektimes = n.array(weektimes)
-        ATT_times = n.array(ATT_times)
+        weektimes = np.array(weektimes)
+        ATT_times = np.array(ATT_times)
         GPSseconds = weektimes[:,1]*secperweek + weektimes[:,0]/1000.
         ATTGPSseconds = ATT_times/1000.+GPSseconds[0]-startTime/1000.
         minAPM = GPSseconds.min()
         maxAPM = GPSseconds.max()
+        print minAPM,maxAPM
         APM_times = Time(GPSseconds, format = 'gps')
         ATT_times = Time(ATTGPSseconds, format = 'gps')
-        APM_lat,APM_lon,APM_alt,ATT_yaw = (n.array(APM_lat),n.array(APM_lon),
-                    n.array(APM_alt),n.array(ATT_yaw))
+        APM_lat,APM_lon,APM_alt,ATT_yaw = (np.array(APM_lat),np.array(APM_lon),
+                    np.array(APM_alt),np.array(ATT_yaw))
     else:
         print "\nPlease pass a valid APM and Orbcomm file.\n"
         sys.exit()
 
 #Obtain minimum and maximum times for Interpolation
 #Necessary to avoid interpolation range errors
-minTime = n.max([minAPM,ATT_times.gps[0]])
-maxTime = n.min([maxAPM,ATT_times.gps[-1]])
+minTime = np.max([minAPM,ATT_times.gps[0]])
+maxTime = np.min([maxAPM,ATT_times.gps[-1]])
+print minTime,maxTime
+#minTime = minAPM; maxTime = maxAPM
 
-
-print "Before time filter: ",orbTimes.shape
+print "Before time filter: ",specTimes.shape
 #Obtain times from Orbcomm data that lie in the time range of the APM data
-orbIndices = n.where(n.logical_and(orbTimes.gps>minTime,orbTimes.gps<maxTime))[0]
-orbTimes,orbData = (orbTimes[orbIndices],orbData[orbIndices])
-print "After time filter: ",orbTimes.shape
+specIndices = np.where(np.logical_and(specTimes.gps>minTime,specTimes.gps<maxTime))
+specTimes,specData = (specTimes[specIndices],specData[specIndices])
+print "After time filter: ",specTimes.shape
+
+sys.exit()
 
 #Interpolation of APM_lat, APM_lon, and APM_alt to SH_times
 APM_lati = interp1d(APM_times.gps,APM_lat[:,0],kind='zero')
-APM_lati = APM_lati(orbTimes.gps)
+APM_lati = APM_lati(specTimes.gps)
 APM_loni= interp1d(APM_times.gps,APM_lon[:,0],kind='zero')
-APM_loni = APM_loni(orbTimes.gps)
+APM_loni = APM_loni(specTimes.gps)
 APM_alti = interp1d(APM_times.gps,APM_alt[:,0],kind='zero')
-APM_alti = APM_alti(orbTimes.gps)
+APM_alti = APM_alti(specTimes.gps)
 ATT_yawi = interp1d(ATT_times.gps[:,0],ATT_yaw[:,0],kind='zero')
-ATT_yawi = ATT_yawi(orbTimes.gps)
+ATT_yawi = ATT_yawi(specTimes.gps)
 
 # Write to combined output file
 outfileName = APM_file.split('_')
 outfile = open(outfileName[1]+'_combined_cuts_'+outfileName[2].split('.')[0]+'.txt','wb')
-arg_strings = str(APM_files)+', '+str(ORB_files)
-outfile.write('# '+arg_strings+',start='+str(orbTimes.gps[0])+',stop='+
-                      str(orbTimes.gps[-1])+'\n')
+arg_strings = str(APM_files)+', '+str(SPEC_files)
+outfile.write('# '+arg_strings+',start= '+specTimes[0].iso+',stop= '+
+                      specTimes[-1].iso+'\n')
 colheader = '# Index, Time (GPS s), Lat (deg), Long (deg), Rel Alt (m), Yaw (deg), Spectrum'
 frequency_string = ','.join(map(str,freqs))
 outfile.write(colheader+'\n'+frequency_string+'\n')
-for i in range(0,len(orbTimes)):
-    spectrum_string = ','.join(map(str,orbData[i,:]))
-    outfile.write("%d,%s,%s,%s,%s,%s,%s\n" % (i,orbTimes.gps[i],APM_lati[i],APM_loni[i],APM_alti[i],ATT_yawi[i],spectrum_string))
+for i in range(0,len(specTimes)):
+    spectrum_string = ','.join(map(str,specData[i,:]))
+    outfile.write("%d,%s,%s,%s,%s,%s,%s\n" % (i,specTimes.gps[i],APM_lati[i],APM_loni[i],APM_alti[i],ATT_yawi[i],spectrum_string))
 outfile.close()
