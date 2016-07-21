@@ -65,7 +65,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
         spec_raw = []
         spec_files = glob.glob(infile)
         for spec_file in spec_files:
-            print 'Reading in %s...' %spec_file
+            #print 'Reading in %s...' %spec_file
             lines = open(spec_file).readlines()
             if not len(lines) == 0:
                 if len(freqs) == 0:

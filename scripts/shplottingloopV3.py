@@ -18,13 +18,23 @@ fmin = 136
 fmax = 138
 time_range = 200 #time range in seconds of peak plot
 
-def find_peak(f,x,fmin=0,fmax=500):
+def select_data_by_frequency(f,x,fmin=0,fmax=500,freq=137.5):
+    freq_chan = np.where(np.abs(f-freq).min()==np.abs(f-freq))[0]
+    peak = x[freq_chan]
+    maxfreq = f[freq_chan]
+    peakrms = np.mean(x[freq_chan+10:freq_chan+50])
+    return maxfreq,peak,peakrms
+
+def find_peak(f,x,fmin=0,fmax=500,freq=137.5):
     # f = frequencies in MHz
     # x = spectrum
     # fmin,fmax range in which to search for peak
     fchans = np.argwhere(np.logical_and(f>fmin,f<fmax))
-    peak = x[fchans].max()
-    maxfreq = f[fchans[x[fchans].argmax()]]
+    
+    #peak = x[fchans].max()
+    peak = x[freq_chan]
+    #maxfreq = f[fchans[x[fchans].argmax()]]
+    maxfreq = f[freq_chan]
     peakrms = np.mean(x[fchans.max():fchans.max()+100])
     return maxfreq,peak,peakrms
 
@@ -60,7 +70,7 @@ last_time = D[-1,0] #t
 figure2 = plt.figure(figsize=(10,6),facecolor='w',edgecolor='w')
 ax2 = figure2.add_subplot(211)
 ax2.autoscale_view(True,True,True)
-peakfreq,peakval,rms = find_peak(D[0,1:],D[-1,1:],fmin=fmin,fmax=fmax)
+peakfreq,peakval,rms = select_data_by_frequency(D[0,1:],D[-1,1:],fmin=fmin,fmax=fmax)
 peaktimes = [D[-1,0]]
 peakvals = [peakval]
 peakfreqs = [peakfreq]
@@ -100,7 +110,7 @@ def animate_peak(i):
         if time==peaktimes[-1]:return line2,
         frequencies = D[0,1:]
         spectrum = D[-1,1:]
-        peakfreq,peakval,rms = find_peak(frequencies,spectrum,fmin=fmin,fmax=fmax)
+        peakfreq,peakval,rms = select_data_by_frequency(frequencies,spectrum,fmin=fmin,fmax=fmax)
         peaktimes.append(time)
         peakvals.append(peakval)
         peakfreqs.append(peakfreq)
@@ -132,7 +142,7 @@ def init_peak():
     line2.set_ydata(peakvals)
     line2.set_xdata(peaktimes)
     return line2,
-ani = animation.FuncAnimation(figure1, animate_spectrum,init_func=init_spectrum, interval=25, blit=True)
+#ani = animation.FuncAnimation(figure1, animate_spectrum,init_func=init_spectrum, interval=25)#, blit=True)
 ani2 = animation.FuncAnimation(figure2, animate_peak,init_func=init_peak, interval=25)
 
 show()
