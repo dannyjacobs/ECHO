@@ -140,7 +140,7 @@ def animate_peak(i,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,spec_tim
                            fmin,fmax,time_range=200,rmswindow=10,freq=137.5):
     currtime = spec_times[i]
     if currtime == peaktimes[-1]:
-        return
+        return peak_line,
     #peakfreq,peakval,rms = find_peak(freqs,spec_raw[i,:],fmin=fmin,fmax=fmax)
     freq_chan = np.where(np.abs(freqs-freq).min()==np.abs(freqs-freq))[0]
     peakfreq = freqs[freq_chan][0]

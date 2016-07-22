@@ -29,6 +29,7 @@ opts,args = o.parse_args(sys.argv[1:])
 fmin,fmax = int(opts.freq)-1,int(opts.freq)+1 # MHz; for plotting
 time_range = 200
 rmswindow = 10
+start_ind = 0
 
 # Get initial data from Signal Hound
 spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',freq=opts.freq,width=opts.width)
@@ -50,7 +51,7 @@ fig.suptitle('ECHO Realtime Spectrum: %s' %opts.spec_file,fontsize=16)
 # Spectrum plot initialization
 gsl = gridspec.GridSpec(2,1) # Sets up grid for placing plots
 spec_plot = fig.add_subplot(gsl[0]) # Initialize the spectrum plot in figure
-spec_line, = spec_plot.plot(freqs,spec_raw[0,:])
+spec_line, = spec_plot.plot(freqs,spec_raw[start_ind,:])
 #freq_labels = [freqs[0],freqs[9],freqs[10],freqs[11],freqs[-1]]
 #plt.xticks(freq_labels,map(str,freq_labels),rotation=45)
 spec_plot.set_xlabel("Frequency [Mhz]")
@@ -66,10 +67,10 @@ gsl_lower_grid = gridspec.GridSpecFromSubplotSpec(2,1,gsl_lower_cell,hspace=0.0)
 peak_plot = fig.add_subplot(gsl_lower_grid[0]) # Initialize the peak plot in figure
 #peakfreq,peakval,rms = find_peak(freqs,spec_raw[0,:],fmin=fmin,fmax=fmax)
 peakfreq = freqs[freq_chan][0]
-peakval = spec_raw[0,freq_chan][0]
-rms = np.mean(spec_raw[0,freq_chan+10:freq_chan+50])
-print spec_times[0],peakfreq,peakval,rms
-peaktimes,peakvals,peakfreqs,rmss,peakrmss = [spec_times.gps[0]],[peakval],[peakfreq],[rms],[0]
+peakval = spec_raw[start_ind,freq_chan][0]
+rms = np.mean(spec_raw[start_ind,freq_chan+10:freq_chan+50])
+print spec_times[start_ind],peakfreq,peakval,rms
+peaktimes,peakvals,peakfreqs,rmss,peakrmss = [spec_times.gps[start_ind]],[peakval],[peakfreq],[rms],[0]
 peak_line, = peak_plot.plot(peaktimes,peakvals,label='Peak')
 noise_line, = peak_plot.plot(peaktimes,rmss,'k',label='Noise')
 peak_plot.set_ylabel('Peak Power [dBm]')
@@ -101,12 +102,12 @@ try:
     plot_ind = 0
     while True:
         # Get updated data from Signal Hound
-        spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',freq=opts.freq,width=opts.width)
+        spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',freq=opts.freq,width=opts.width,start_lines=plot_ind)
         
         while plot_ind < spec_times.shape[0]:
             # Update plotting window
-            animate_spectrum(plot_ind,spec_plot,spec_line,spec_raw)
-            animate_peak(plot_ind,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,
+            animate_spectrum(-1,spec_plot,spec_line,spec_raw)
+            animate_peak(-1,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,
                          spec_times.gps,spec_raw,peaktimes,peakvals,peakfreqs,rmss,
                          peakrmss,freqs,fmin,fmax,time_range=time_range,rmswindow=rmswindow)
             plt.pause(0.00001)
