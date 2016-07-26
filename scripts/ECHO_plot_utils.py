@@ -213,10 +213,10 @@ def adjustErrbarxy(errobj, x, y, y_error):
 
 
 def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
-    beam_slice_E = hp.pixelfunc.get_interp_val(hpx_beam,ell,az)
-    beam_slice_E_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az)
-    beam_slice_H = hp.pixelfunc.get_interp_val(hpx_beam,ell,az+np.pi/2)
-    beam_slice_H_err = hp.pixelfunc.get_interp_val(hpx_rms,ell,az+np.pi/2)
+    beam_slice_E = get_interp_val(hpx_beam,ell,az)
+    beam_slice_E_err = get_interp_val(hpx_rms,ell,az)
+    beam_slice_H = get_interp_val(hpx_beam,ell,az+np.pi/2)
+    beam_slice_H_err = get_interp_val(hpx_rms,ell,az+np.pi/2)
 
     beam_slice_E = np.ma.masked_invalid(beam_slice_E)
     beam_slice_E_err = np.ma.masked_invalid(beam_slice_E_err)
@@ -244,6 +244,7 @@ def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
             print '----------------------\n'
             """
             cuts_plot.set_ylim([cuts_min,cuts_max])
+
 
 def get_interp_val(m,theta,phi,nest=False):
     m2=m.ravel()
