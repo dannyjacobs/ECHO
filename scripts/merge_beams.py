@@ -35,7 +35,6 @@ gs = gridspec.GridSpec(2,4)
 
 # Setup base_beam(rms)
 base_beam = hp.read_map(opts.base_beam)
-#base_beam = np.ma.masked_greater(base_beam,10)
 base_beam = hp.ma(base_beam,badval=badval)
 base_rms = hp.read_map(opts.base_beam.replace('beam','rms'))
 base_rms = hp.ma(base_rms,badval=badval)
