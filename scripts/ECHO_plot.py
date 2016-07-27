@@ -27,6 +27,8 @@ o.set_description('Queries ground station server for interpolated GPS position')
 
 o.add_option('--acc_file',type=str,
     help='Accumulated file for plotting')
+o.add_option('--fits_file',type=str,
+    help='Fits file for plotting')
 o.add_option('--times',type=str,
     help="file with list of start and stop gps times")
 o.add_option('--waypts',type=str,
@@ -216,21 +218,29 @@ else:
     from ECHO_plot_utils import make_beam,make_polycoll,get_interp_val,add_diagram
 
     # Read in initial data
-    spec_times,spec_raw,freqs,lats,lons,alts = get_data(opts.acc_file,
-                                                            filetype='echo',
-                                                            freq=opts.freq)#,
-                                                            #times=opts.times,
-                                                            #waypts=opts.waypts)
+    if opts.fits_file is None:
+        spec_times,spec_raw,freqs,lats,lons,alts = get_data(opts.acc_file,
+                                                                filetype='echo',
+                                                                freq=opts.freq)#,
+                                                                #times=opts.times,
+                                                                #waypts=opts.waypts)
 
-    freq_chan = np.where(np.abs(freqs-opts.freq).min()==np.abs(freqs-opts.freq))[0]
-    hpx_beam,hpx_counts,hpx_rms = make_beam(lats[1:],lons[1:],
-                                            alts,spec_raw,
-                                            lat0=lats[0],
-                                            lon0=lons[0],
-                                            nsides=opts.nsides,
-                                            freq_chan=freq_chan)
+        freq_chan = np.where(np.abs(freqs-opts.freq).min()==np.abs(freqs-opts.freq))[0]
+        hpx_beam,hpx_counts,hpx_rms = make_beam(lats[1:],lons[1:],
+                                                alts,spec_raw,
+                                                lat0=lats[0],
+                                                lon0=lons[0],
+                                                nsides=opts.nsides,
+                                                freq_chan=freq_chan)
+        print 'Plotting frequency: %.3f MHz' %freqs[freq_chan]
 
-    print 'Plotting frequency: %.3f MHz' %freqs[freq_chan]
+    else:
+        hpx_beam = hp.read_map(opts.fits_file)
+        hpx_beam = hp.ma(hpx_beam,badval=1e20)
+        hpx_rms = hp.read_map(opts.fits_file.replace('beam','rms'))
+        hpx_rms = hp.ma(hpx_rms,badval=1e20)
+
+
     # Initialize plotting figure
     fig = plt.figure(figsize=(16,9),dpi=80,facecolor='w',edgecolor='w')
     fig.suptitle('ECHO Realtime Data Visualization for %s' %opts.acc_file,fontsize=16)
@@ -239,8 +249,8 @@ else:
 
 
     # Beam plot initialization
-    gs = gridspec.GridSpec(2,4,height_ratios=[4,1]) # Sets up grid for placing plots
-    beam_plot = fig.add_subplot(gs[0,:2],aspect='equal')
+    gs = gridspec.GridSpec(2,6,height_ratios=[4,1]) # Sets up grid for placing plots
+    beam_plot = fig.add_subplot(gs[0,:3],aspect='equal')
 
     coll = make_polycoll(hpx_beam,nsides=opts.nsides)#,plot_lim=[-90,-50])
     #coll.set_clim([-88,-75])
@@ -261,22 +271,24 @@ else:
     # Add E/H plane diagram
     EH_plane_diag = fig.add_subplot(gs[1,0],aspect='equal')
     EH_plane_diag.axis('off')
-    trans_diag = fig.add_subplot(gs[1,1],aspect='equal')
-    trans_diag.axis('off')
+    t_x_diag = fig.add_subplot(gs[1,1],aspect='equal')
+    t_x_diag.axis('off')
+    r_x_diag = fig.add_subplot(gs[1,2],aspect='equal')
+    r_x_diag.axis('off')
 
     if opts.trans == 'EW':
         colors = ['r','b','k']
-        labels = ['H','E','Trans Pol']
+        labels = ['H','E','T_x Pol']
     elif opts.trans == 'NS':
         colors = ['b','r','k']
-        labels = ['E','H','ECHO Trans Pol']
+        labels = ['E','H','T_x Pol']
     xys = [[0.5,0.],[0.,0.5],[0.,0.5]]
     xytexts = [[0.5,1.],[1.,0.5],[1,0.5]]
-    axs = [EH_plane_diag,EH_plane_diag,trans_diag]
+    axs = [EH_plane_diag,EH_plane_diag,t_x_diag]
     add_diagram(axs,xys,xytexts,colors,labels=labels)
 
     # Cuts plot initialization
-    cuts_plot = fig.add_subplot(gs[:,2:])
+    cuts_plot = fig.add_subplot(gs[:,3:])
 
     #receiver coordinates
     ell = np.linspace(-np.pi/2,np.pi/2)
@@ -309,8 +321,8 @@ else:
     # Show plot window
     plt.subplots_adjust(wspace=0.5)
     #mng.window.state('zoomed')
-    if opts.output_healpix:
-        hp.write_map(opts.acc_file[:-4]+'_beam.fits',hpx_beam)
-        hp.write_map(opts.acc_file[:-4]+'_rms.fits',hpx_rms)
-        hp.write_map(opts.acc_file[:-4]+'_counts.fits',hpx_counts)
+    if opts.output_healpix and (opts.fits_file is None) :
+        hp.write_map(opts.acc_file[:-4]+'_'+str(opts.nsides)+'_beam.fits',hpx_beam)
+        hp.write_map(opts.acc_file[:-4]+'_'+str(opts.nsides)+'_rms.fits',hpx_rms)
+        hp.write_map(opts.acc_file[:-4]+'_'+str(opts.nsides)+'_counts.fits',hpx_counts)
     plt.show()

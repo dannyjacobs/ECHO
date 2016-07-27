@@ -14,6 +14,7 @@ try:
       mlog = mavutil.mavlink_connection(filename)
       start_time = Time(mlog.start_time,format='unix').gps
       mlog.f.seek(byte_count) # go to current byte count offset
+      #pos = mlog.recv_match(type='GPS_RAW_INT',blocking=False)
       pos = mlog.recv_match(type='GPS_RAW_INT',blocking=False)
       if not pos is None:
         byte_count = mlog.f.tell() # update current byte count offset

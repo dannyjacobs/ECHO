@@ -9,7 +9,7 @@ APMLOG_SEC_PER_TICK = 1.0e-6
 
 
 def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
-             ant=None,dip=None,width=100,times=None,waypts=None,nfft=1024):#isList=False,
+             ant=None,dip=None,width=100,times=None,waypts=None,nfft=1024,start_lines=0):#isList=False,
 
     if filetype == 'gps':
         gps_arr = []
@@ -65,7 +65,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
         spec_raw = []
         spec_files = glob.glob(infile)
         for spec_file in spec_files:
-            print 'Reading in %s...' %spec_file
+            #print 'Reading in %s...' %spec_file
             lines = open(spec_file).readlines()
             if not len(lines) == 0:
                 if len(freqs) == 0:
@@ -74,7 +74,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
                     freq_chan = np.where(np.abs(freqs-freq).min()==np.abs(freqs-freq))[0]
                     # Filter freqs around freq_chan
                     freqs = freqs[freq_chan-width:freq_chan+width]
-                for line in lines[2:]:
+                for line in lines[2+start_lines:]:
                     if line.startswith('#'):
                         continue
                     line = line.rstrip('\n').split(',')
