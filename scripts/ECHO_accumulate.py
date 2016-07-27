@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 
     Author: Jacob Burba
@@ -36,8 +37,8 @@ import numpy as np
 import time
 
 from astropy.time import Time
-from ECHO_read_utils import get_data
-from ECHO_time_utils import unix_to_gps
+from ECHO.read_utils import get_data
+from ECHO.time_utils import unix_to_gps
 
 
 o = optparse.OptionParser()

@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 from matplotlib import use
 use('TkAgg')
 import numpy as n

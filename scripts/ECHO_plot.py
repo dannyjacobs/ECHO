@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 
     Author: Jacob Burba
@@ -10,9 +11,9 @@
 #from matplotlib import use
 #use('TkAgg')
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import ECHO_read_utils
-from ECHO_read_utils import get_data
-from ECHO_position_utils import *
+
+from ECHO.read_utils import get_data
+from ECHO.position_utils import *
 
 import urllib2,optparse,sys,json,time,warnings
 import numpy as np

@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 from pymavlink import mavutil
 from astropy.time import Time
 from time import sleep

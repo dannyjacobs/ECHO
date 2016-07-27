@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 
     Author: Jacob Burba
@@ -24,7 +25,7 @@ import numpy as np
 import time
 from pymavlink import mavutil
 #from ECHO_position_utils import get_position
-from ECHO_time_utils import unix_to_gps,gps_to_HMS
+from ECHO.time_utils import unix_to_gps,gps_to_HMS
 from astropy.time import Time
 
 

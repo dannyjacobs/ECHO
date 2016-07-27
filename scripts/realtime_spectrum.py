@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 '''
 
     Author: Jacob Burba
@@ -74,16 +75,14 @@ try:
     while True:
         # Get updated data from Signal Hound
         spec_times,spec_raw,freqs,freq_chan = get_data(opts.spec_file,filetype='sh',freq=opts.freq,width=opts.width)
-        
+
         while plot_ind < spec_times.shape[0]:
             # Update plotting window
             animate_spectrum(plot_ind,spec_plot,spec_line,spec_raw)
-            
+
             plt.pause(0.00001)
             plot_ind += 1
 
 except (KeyboardInterrupt):
     print '\nExiting...\n'
     sys.exit()
-
-

@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import numpy as n
 def length(x):
     #compute the length of a vector
