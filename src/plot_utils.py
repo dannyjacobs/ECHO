@@ -5,8 +5,8 @@ from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
 from matplotlib import cm
 
-from ECHO_position_utils import latlon2xy,to_spherical
-from ECHO_time_utils import gps_to_HMS,find_peak
+from position_utils import latlon2xy,to_spherical
+from time_utils import gps_to_HMS,find_peak
 
 def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,
               nsides=8,volts=False,normalize=False,freq_chan=0):

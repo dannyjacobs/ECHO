@@ -1,8 +1,8 @@
 import threading,atexit
 import numpy as np
 from flask import Flask,jsonify
-from ECHO_read_utils import get_data
-from ECHO_position_utils import interp_pos
+from read_utils import get_data
+from position_utils import interp_pos
 
 ''' NEED TO FIX THE CREATE_APP FUNCTION TO ACCOUNT FOR MODIFICATION OF GLOBAL QUANTITIES !!! '''
 

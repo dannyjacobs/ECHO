@@ -2,7 +2,7 @@ import numpy as np
 import glob
 from astropy.time import Time
 
-from ECHO_time_utils import flight_time_filter,waypt_time_filter
+from time_utils import flight_time_filter,waypt_time_filter
 
 SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
