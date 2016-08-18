@@ -1,12 +1,137 @@
-import numpy as np
+import numpy as np,sys
 import healpy as hp
 import math
 from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
-from matplotlib import cm
+from matplotlib import cm,colors
 
 from position_utils import latlon2xy,to_spherical
 from time_utils import gps_to_HMS,find_peak
+
+def cmap_discretize(cmap, N):
+    """Return a discrete colormap from the continuous colormap cmap.
+
+        cmap: colormap instance, eg. cm.jet.
+        N: number of colors.
+
+    Example
+        x = resize(arange(100), (5,100))
+        djet = cmap_discretize(cm.jet, 5)
+        imshow(x, cmap=djet)
+
+    borrowed from
+    http://scipy.github.io/old-wiki/pages/Cookbook/Matplotlib/ColormapTransformations
+    """
+
+    if type(cmap) == str:
+        cmap = cm.get_cmap(cmap)
+    colors_i = np.concatenate((np.linspace(0, 1., N), (0.,0.,0.,0.)))
+    colors_rgba = cmap(colors_i)
+    indices = np.linspace(0, 1., N+1)
+    cdict = {}
+    for ki,key in enumerate(('red','green','blue')):
+        cdict[key] = [ (indices[i], colors_rgba[i-1,ki], colors_rgba[i,ki]) for i in xrange(N+1) ]
+    # Return colormap object.
+    return colors.LinearSegmentedColormap(cmap.name + "_%d"%N, cdict, 1024)
+
+class nf(float):
+    def __repr__(self):
+        str = '%.1f' % (self.__float__(),)
+        if str[-1] == '0':
+            return '%.0f' % self.__float__()
+        else:
+            return '%.1f' % self.__float__()
+fmt = '%r$^\circ$'
+
+def rotate_hpm(hpm,angle):
+    "rotate hpm angle degrees around the zero pixel (ie around the north pole)"
+    nside = hp.npix2nside(len(hpm))
+    indexes = np.arange(len(hpm))
+    theta,phi = hp.pix2ang(nside,indexes)      #get the input map angles
+    #interpolate to a higher nside, rotate that thing
+    interp_map = hp.ud_grade(hpm,nside*2)
+    theta_interp,phi_interp = hp.pix2ang(nside*2,np.arange(len(hpm)*4))
+    phi_interp += angle*np.pi/180  #apply the azimuthal rotation
+    #get the rotated interpolated map
+    rotated_interpolated_beam = get_interp_val(hpm,theta_interp,phi_interp)
+    #interpolate back to the original map pixels
+    rotated_hpm = get_interp_val(rotated_interpolated_beam,theta,phi)
+    return rotated_hpm
+
+def project_healpix(M,rotate_angle=0):
+    #flat plotting
+    try:
+        M.mask
+    except(AttributeError):
+        M = np.ma.array(M)
+    xmax = 1#np.sin(theta.max())
+    X,Y = np.meshgrid(np.linspace(-xmax,xmax,num=100),
+        np.linspace(-xmax,xmax,num=100))
+    R = X**2 + Y**2
+    Z = np.sqrt(1-X**2 - Y**2)
+    Z[np.isnan(Z)] = 0
+    THETA,PHI = hp.vec2ang(np.array([X,Y,Z]).T)
+    THETA.shape = PHI.shape = X.shape
+    PHI += rotate_angle*np.pi/180
+    IM = get_interp_val(M,THETA,PHI).T
+    IM = np.ma.masked_where(R>1,IM)
+    return THETA,PHI,IM
+def grid_theta_phi_to_healpix(theta,phi,inbeam):
+    """
+    inputs:
+        theta (angle down from pixel 0, deg)
+        phi (CW longitude angle, deg)
+        inbeam: input beam values matching the corresponding theta and phi coords
+    """
+    print len(theta),len(phi),len(inbeam)
+    nside = hp.npix2nside(len(inbeam))
+    pixes = hp.ang2pix(nside,theta,phi)
+    beam = np.zeros(hp.nside2npix(nside))
+    rms = np.zeros(hp.nside2npix(nside))
+    counts = np.zeros(hp.nside2npix(nside))
+    for i,pix in enumerate(pixes):
+        beam[pix] += inbeam[i]
+        rms[pix] += inbeam[i]**2
+        counts[pix] += 1
+    beam[counts>0] /= counts[counts>0]
+    rms[counts>0] /= counts[counts>0]
+    rms -= beam**2
+    rms = np.sqrt(rms)
+    beam[counts==0] = hp.UNSEEN
+    counts[counts==0] = hp.UNSEEN
+    rms[counts==0] = hp.UNSEEN
+    return beam,rms,counts
+def grid_to_healpix(lats,lons,alts,rx,lat0,lon0,nside=8):
+    """
+    input:
+        lats (deg)
+        lons (deg)
+        alts (m) (relative)
+        rx: power in dB
+        lat0: lat of rx ant (deg)
+        lon0: lon of rx ant
+        nside: of healpix map
+    """
+    # Convert lat/lon to x/y
+    x,y = latlon2xy(lats,lons,lat0,lon0)
+    # Obtain spherical coordinates for x, y, and alt
+    rs,thetas,phis = to_spherical(x,y,alts)
+    pixes = hp.ang2pix(nside,thetas,phis)
+    beam = np.zeros(hp.nside2npix(nside))
+    rms = np.zeros(hp.nside2npix(nside))
+    counts = np.zeros(hp.nside2npix(nside))
+    for i,pix in enumerate(pixes):
+        beam[pix] += rx[i]
+        rms[pix] += rx[i]**2
+        counts[pix] += 1
+    beam[counts>0] /= counts[counts>0]
+    rms[counts>0] /= counts[counts>0]
+    rms -= beam**2
+    rms = np.sqrt(rms)
+    beam[counts==0] = hp.UNSEEN
+    counts[counts==0] = hp.UNSEEN
+    rms[counts==0] = hp.UNSEEN
+    return beam,rms,counts
 
 def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,
               nsides=8,volts=False,normalize=False,freq_chan=0):
@@ -17,7 +142,10 @@ def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,
 
     #freq_chan = np.argmax(spec_raw[0,:])
     # Only extract information from appropriate column (index = 10)
-    z = spec_raw[:,freq_chan].copy()
+    if len(spec_raw.shape)>1:
+        z = spec_raw[:,freq_chan].copy()
+    else:
+        z=spec_raw.copy()
     if volts:
         # Distance normalization
         r0 = 100 # reference position for distance normalization (unit: meters)
@@ -180,12 +308,15 @@ def animate_peak(i,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,spec_tim
     pkrms_plot.autoscale_view(True,True,True)
 
 
-def make_polycoll(hpx_beam,plot_lim=[-90,-50],nsides=8):
+def make_polycoll(hpx_beam,plot_lim=[-90,-50],nsides=8,cmap=cm.gnuplot):
+    #pixnums = np.arange(len(hpx_beam))
+    #theta,phi = hp.pix2ang(nsides,pixnums)
+    #pix = pixnums[np.argwhere(theta<np.pi/2)].squeeze()
     pix = np.where(np.isnan(hpx_beam)==False)[0]
     boundaries = hp.boundaries(nsides,pix)
     verts = np.swapaxes(boundaries[:,0:2,:],1,2)
     coll = PolyCollection(verts, array=hpx_beam[np.isnan(hpx_beam)==False],\
-                                    cmap=cm.gnuplot,edgecolors='none')
+                                    cmap=cmap,edgecolors='none')
     return coll
 
 
@@ -258,7 +389,9 @@ def get_interp_val(m,theta,phi,nest=False):
     w = np.ma.array(w)
     w.mask = m2[p].mask
     del r
-    return np.ma.sum(m2[p]*w/np.ma.sum(w,0),0)
+    val = np.ma.sum(m2[p]*w/np.ma.sum(w,axis=0),axis=0)
+    val.set_fill_value(hp.UNSEEN)
+    return val
 
 
 def add_diagram(axs,xys,xytexts,colors,labels=None):
