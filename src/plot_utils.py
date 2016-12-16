@@ -4,6 +4,8 @@ import math
 from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
 from matplotlib import cm,colors
+import matplotlib.pyplot as plt
+from matplotlib._png import read_png
 
 from position_utils import latlon2xy,to_spherical
 from time_utils import gps_to_HMS,find_peak
@@ -43,8 +45,26 @@ class nf(float):
             return '%.1f' % self.__float__()
 fmt = '%r$^\circ$'
 
-def rotate_hpm(hpm,angle):
+def rotate_hpm(hpm,rot_phi,rot_theta,pol='EW'):
+    """rotate hpm about phi, then theta (degrees)
+    if pol=EW theta is rotated about the X axis (default)
+    if pol=NS theta is rotated about the Y axis
+    """
+    nside = hp.npix2nside(len(hpm))
+    indexes = np.arange(len(hpm))
+    theta,phi = hp.pix2ang(nside,indexes)      #get the input map angles (rad)
+    if pol=='NS':
+        eulertype='X'
+    else:
+        eulertype='Y'
+    R = hp.rotator.Rotator(rot=(rot_phi,rot_theta),deg=True,eulertype=eulertype)                  #make the rotator
+    rotated_theta,rotated_phi = R(theta,phi) #rotate new radians
+    return get_interp_val(hpm,rotated_theta,rotated_phi)
+
+
+def rotate_hpm_old(hpm,angle,theta_angle=0):
     "rotate hpm angle degrees around the zero pixel (ie around the north pole)"
+    "Optionally apply a second rotation of theta degrees in the new phi=0 plane"
     nside = hp.npix2nside(len(hpm))
     indexes = np.arange(len(hpm))
     theta,phi = hp.pix2ang(nside,indexes)      #get the input map angles
@@ -56,6 +76,11 @@ def rotate_hpm(hpm,angle):
     rotated_interpolated_beam = get_interp_val(hpm,theta_interp,phi_interp)
     #interpolate back to the original map pixels
     rotated_hpm = get_interp_val(rotated_interpolated_beam,theta,phi)
+    if theta_angle!=0:
+        theta_interp,phi_interp = hp.pix2ang(nside*2,np.arange(len(hpm)*4))
+        theta_interp += theta_angle*np.pi/180 * np.cos(phi_interp)
+        rotated_interpolated_beam = get_interp_val(rotated_hpm,theta_interp,phi_interp)
+        rotated_hpm = get_interp_val(rotated_interpolated_beam,theta,phi)
     return rotated_hpm
 
 def project_healpix(M,rotate_angle=0):
@@ -131,8 +156,18 @@ def grid_to_healpix(lats,lons,alts,rx,lat0,lon0,nside=8):
     beam[counts==0] = hp.UNSEEN
     counts[counts==0] = hp.UNSEEN
     rms[counts==0] = hp.UNSEEN
+    #the standard deviation is uncertain for small counts
+    #the the error in the standard deviation goes as 1/sqrt(2(N-1))
+    #lets inflate the reported error to report the worst case upper limit
+    #print 'Inflating error bars for low number counts'
+    rms *= (1+1./np.sqrt(2*(counts-1)))
     return beam,rms,counts
-
+def downgrade_rms(Map):
+    #input a healpix map
+    #return the standard deviation we'd get if we degraded to nside/2
+    Map_nest = hp.reorder(Map,r2n=True)
+    Map_nest = np.reshape(Map_nest,(len(Map)/4,4))
+    return np.std(Map_nest,axis=1)
 def make_beam(lats,lons,alts,spec_raw,lat0=0.0,lon0=0.0,
               nsides=8,volts=False,normalize=False,freq_chan=0):
     # Convert lat/lon to x/y
@@ -376,6 +411,24 @@ def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
             """
             cuts_plot.set_ylim([cuts_min,cuts_max])
 
+def add_cut_glyph(parent_fig=None,parent_axes=None,pos=(0.8,0.8),size=(.1),cut='NS',pol='NS'):
+    #transformation stuff to put the little axis in the desired subplot
+    if parent_fig is None:
+        parent_fig = gcf()
+    if parent_axes is None:
+        parent_axes = gca()
+    axtrans = parent_axes.transAxes
+    figtrans = parent_fig.transFigure.inverted()
+    figpos = figtrans.transform(axtrans.transform(pos)) #get the desired position in figure units
+    pos = tuple(figpos)+ (size,size) #form up the extent box tuple
+    ax = parent_fig.add_axes(pos,'square')
+    ax.set_yticks([])
+    ax.set_xticks([])
+    ax.set_frame_on(False)
+    myglyph = '../figures/cut_glyphs_cut{cut}_rx{pol}_tx{pol}.png'.format(cut=cut,pol=pol)
+    glyph = read_png(myglyph)
+    ax.imshow(glyph,interpolation='none')
+    return
 
 def get_interp_val(m,theta,phi,nest=False):
     m2=m.ravel()
@@ -390,7 +443,6 @@ def get_interp_val(m,theta,phi,nest=False):
     w.mask = m2[p].mask
     del r
     val = np.ma.sum(m2[p]*w/np.ma.sum(w,axis=0),axis=0)
-    val.set_fill_value(hp.UNSEEN)
     return val
 
 
