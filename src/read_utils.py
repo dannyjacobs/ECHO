@@ -115,7 +115,6 @@ def read_apm_log_3_3_2(apm_file):
             lons.append(map(float,line.split(',')[7:8]))
             alts.append(map(float,line.split(',')[8:9]))
             weektimes.append(map(float,line.split(',')[2:4])) #ms and week number
-            print line.split(',')[2:4]
         if line.startswith('ATT'):
             ATT_times.append(map(float,[line.split(',')[1].strip(' ')]))
             yaws.append(map(float,[line.split(',')[7].strip(' ')]))
