@@ -44,7 +44,7 @@ rx_files = glob(opts.rx_files)
 assert(len(rx_files)>0)
 if rx_files[0].find('satpower')!=-1:#we're in orbcomm town
     pol = opts.pol.split('_')[1]
-    rxtimes,freqs,rxspectrum = read_orbcomm_spectrum(rx_files,opts.ant,pol)
+    rxtimes,freqs,rxspectrum = read_orbcomm_spectrum(rx_files,opts.rxant,pol)
 else: #read the default echo rx spectrum
     rxtimes,freqs,rxspectrum = read_echo_spectrum(rx_files)
 
