@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<block>
+  <name>welch</name>
+  <key>speclog_welch</key>
+  <category>speclog</category>
+  <import>import speclog</import>
+  <make>speclog.welch($type, $length, $window, $overlap)</make>
+
+  <param>
+    <name>Input Type</name>
+    <key>type</key>
+    <type>enum</type>
+    <option>
+      <name>Complex</name>
+      <key>complex</key>
+      <opt>size:gr.sizeof_gr_complex</opt>
+    </option>
+    <option>
+      <name>Float</name>
+      <key>float</key>
+      <opt>size:gr.sizeof_float</opt>
+    </option>
+    <option>
+      <name>Int</name>
+      <key>int</key>
+      <opt>size:gr.sizeof_int</opt>
+    </option>
+  </param>
+
+  <param>
+    <name>Transform Length</name>
+    <key>length</key>
+    <value>1</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Transform Window Type</name>
+    <key>window</key>
+    <type>enum</type>
+    <option>
+      <name>Rectangular</name>
+      <key>rectangular</key>
+    </option>
+    <option>
+      <name>Hamming</name>
+      <key>hamming</key>
+    </option>
+    <option>
+      <name>Bartlett</name>
+      <key>bartlett</key>
+    </option>
+    <option>
+      <name>Blackman</name>
+      <key>blackman</key>
+    </option>
+    <option>
+      <name>hanning</name>
+      <key>hanning</key>
+    </option>
+    <option>
+      <name>Kaiser</name>
+      <key>kaiser</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Beta</name>
+    <key>beta</key>
+    <value>1</value>
+    <type>float</type>
+  </param>
+
+  <check>$length &gt; 0</check>
+
+  <sink>
+    <name>in</name>
+    <type>$type</type>
+    <vlen>1</vlen>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>$type</type>
+    <vlen>$length</vlen>
+  </source>
+
+</block>
