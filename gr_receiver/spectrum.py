@@ -3,12 +3,17 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Spectrum
-# Generated: Wed Jun 27 18:23:16 2018
+# Generated: Fri Jun 29 09:30:58 2018
+
+#Edited by Danny Jacobs
+# June 2018
+
 ##################################################
 
 from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import fft
+from gnuradio import filter as gr_filter
 from gnuradio import gr
 from gnuradio import uhd
 from gnuradio import zeromq
@@ -21,18 +26,18 @@ import time
 
 class spectrum(gr.top_block):
 
-    def __init__(self):
+    def __init__(self,FFT_size,SDR_BW):
         gr.top_block.__init__(self, "Spectrum")
 
         ##################################################
         # Variables
         ##################################################
         self.tuning = tuning = 0
-        self.samp_rate = samp_rate = 320e6
+        self.samp_rate = samp_rate = 200e6
         self.integration_time = integration_time = 100
         self.data_address = data_address = "tcp://127.0.0.1:5555"
-        self.SDR_BW = SDR_BW = 160e6
-        self.FFT_size = FFT_size = 1024
+        self.SDR_BW = SDR_BW
+        self.FFT_size = FFT_size #take the FFT_size from the input
 
         ##################################################
         # Blocks
@@ -50,17 +55,25 @@ class spectrum(gr.top_block):
         self.uhd_usrp_source_0.set_center_freq(tuning, 0)
         self.uhd_usrp_source_0.set_gain(0, 0)
         self.uhd_usrp_source_0.set_antenna("TX/RX", 0)
-        self.fft_vxx_0 = fft.fft_vcc(FFT_size, True, (window.blackmanharris(1024)), True, 1)
+        self.fft_vxx_0 = fft.fft_vcc(FFT_size, True, (window.blackmanharris(FFT_size)), True, 1)
+        self.dc_blocker_xx_0 = gr_filter.dc_blocker_cc(32, True)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, FFT_size)
-        self.blocks_integrate_xx_0 = blocks.integrate_cc(1, FFT_size)
+        #self.blocks_integrate_xx_0 = blocks.integrate_cc(1, FFT_size)
 
         ##################################################
         # Connections
-        ##################################################
-        self.connect((self.blocks_integrate_xx_0, 0), (self.zeromq_push_sink_0, 0))    
-        self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
-        self.connect((self.fft_vxx_0, 0), (self.blocks_integrate_xx_0, 0))    
-        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_stream_to_vector_0, 0))    
+        ################################################## 
+        self.connect((self.uhd_usrp_source_0, 0), (self.dc_blocker_xx_0, 0))    
+        self.connect((self.dc_blocker_xx_0, 0), (self.blocks_stream_to_vector_0, 0))
+	#self.connect((self.uhd_usrp_source_0,0),(self.blocks_stream_to_vector_0,0))
+        self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0)) 
+        self.connect((self.fft_vxx_0, 0), (self.zeromq_push_sink_0, 0))  
+ 
+
+#        self.connect((self.blocks_integrate_xx_0, 0), (self.zeromq_push_sink_0, 0))    
+#        self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))    
+#        self.connect((self.fft_vxx_0, 0), (self.blocks_integrate_xx_0, 0))    
+#        self.connect((self.uhd_usrp_source_0, 0), (self.blocks_stream_to_vector_0, 0))    
 
     def get_tuning(self):
         return self.tuning
