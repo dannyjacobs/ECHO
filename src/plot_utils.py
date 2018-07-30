@@ -1,4 +1,4 @@
-import numpy as np,sys
+import numpy as np,os,sys
 import healpy as hp
 import math
 from healpy import _healpy_pixel_lib as pixlib
@@ -425,7 +425,7 @@ def add_cut_glyph(parent_fig=None,parent_axes=None,pos=(0.8,0.8),size=(.1),cut='
     ax.set_yticks([])
     ax.set_xticks([])
     ax.set_frame_on(False)
-    myglyph = '../figures/cut_glyphs_cut{cut}_rx{pol}_tx{pol}.png'.format(cut=cut,pol=pol)
+    myglyph = '/home/echo/src/ECHO/data/cut_glyphs_cut{cut}_rx{pol}_tx{pol}.png'.format(cut=cut,pol=pol)
     glyph = read_png(myglyph)
     ax.imshow(glyph,interpolation='none')
     return
