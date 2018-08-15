@@ -56,16 +56,20 @@ class spectrum(gr.top_block):
         self.uhd_usrp_source_0.set_gain(0, 0)
         self.uhd_usrp_source_0.set_antenna("TX/RX", 0)
         self.fft_vxx_0 = fft.fft_vcc(FFT_size, True, (window.blackmanharris(FFT_size)), True, 1)
-        self.dc_blocker_xx_0 = gr_filter.dc_blocker_cc(32, True)
+        self.dc_blocker_xx_0 = gr_filter.dc_blocker_cc(1024, True)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, FFT_size)
         #self.blocks_integrate_xx_0 = blocks.integrate_cc(1, FFT_size)
 
         ##################################################
         # Connections
         ################################################## 
+        #DC Blocker
         self.connect((self.uhd_usrp_source_0, 0), (self.dc_blocker_xx_0, 0))    
         self.connect((self.dc_blocker_xx_0, 0), (self.blocks_stream_to_vector_0, 0))
+        #No DC Blocker
 	#self.connect((self.uhd_usrp_source_0,0),(self.blocks_stream_to_vector_0,0))
+
+
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0)) 
         self.connect((self.fft_vxx_0, 0), (self.zeromq_push_sink_0, 0))  
  
