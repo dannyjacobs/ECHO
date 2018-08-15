@@ -45,9 +45,9 @@ def zmq_consumer(socket_str):
 #  This means we need to know the true available bandwidth of the SDR
 
 # suppose we wanted 2GHz of total bw
-B = 2e9
+B = 2e9 #scan range in Hz
 df = 100e3 #desired spectral resolution 100kHz would be reasonable for HERA
-
+start_freq = 10e6 #start the scan at this freq
 from spectrum import spectrum
 
 #SDR parameters
@@ -61,7 +61,7 @@ print("Scan Bandwidth [MHz]= ",B/1.e6)
 print("SDR Bandwidth [MHz] =" ,SDR_BW/1.e6)
 print("Number of chunks = ",nchunk)
 print("FFT_size = ",FFT_size)
-tunings = np.arange(nchunk)*SDR_BW + SDR_BW/2.
+tunings = np.arange(nchunk)*SDR_BW + SDR_BW/2. + start_freq
 nchan = nchunk*FFT_size
 print("total number of channels in spectrum = ",nchan)
 data = np.zeros(nchan)
