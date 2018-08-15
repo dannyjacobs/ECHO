@@ -12,7 +12,7 @@ setup_args = {
     'packages': ['ECHO'],
     'scripts': glob.glob('scripts/*'),
     'version': __version__,
-    #'package_data': {'uvdata': [op.join('data', '*')]}
+    'package_data': {'ECHO': [op.join('data', '*')]}
 }
 
 if __name__ == '__main__':
