@@ -48,7 +48,7 @@ def zmq_min_max_avg(socket_str,FFT_size,nreads=1):
     mean_accum = np.zeros(FFT_size)
     count_accum = np.zeros(FFT_size)
     max_accum = np.zeros(FFT_size)
-    min_accum = np.zeros(FFT_size)
+    min_accum = np.ones(FFT_size)*1000
     for i in xrange(nreads):
         data_buffer = results_receiver.recv()
         data = np.frombuffer(data_buffer,dtype=np.complex64)
@@ -79,17 +79,26 @@ def zmq_min_max_avg(socket_str,FFT_size,nreads=1):
 
 
 # suppose we wanted 2GHz of total bw
-B = 2e9
+B = 800e6
 df = 100e3 #desired spectral resolution 100kHz would be reasonable for HERA
-inttime = 10 #integration time in s
-
+inttime = 50 #integration time in s
 from spectrum import spectrum
+PLOT=False #turn on plotting
+outnpzname='tuning_scan_waterfall_30July2018_1336.npz'
+
 
 #SDR parameters
 SDR_BW = 160e6
 # and we knew that we had 
 #you can find out by running uhd_usrp_probe
-nchunk = np.ceil(B/SDR_BW)
+
+
+tune_step = 5e6 #1MHz steps
+#tune_step = SDR_BW #by default tune in steps equal to the tuning
+start_freq = SDR_BW/2. #lowest tuning
+
+#all parameters below this line are calculated automatically
+nchunk = np.ceil(B/tune_step)
 FFT_size = int(np.ceil(SDR_BW/df))
 FFT_size = round_to_nearest_2(FFT_size)
 print("Scan Bandwidth [MHz]= ",B/1.e6)
@@ -98,7 +107,7 @@ print("Number of chunks = ",nchunk)
 print("FFT_size = ",FFT_size)
 n_integration = int(np.ceil(df*inttime)/1e3) #/1e3 for cpu duty cycle??
 
-tunings = np.arange(nchunk)*SDR_BW + SDR_BW/2.
+tunings = np.arange(nchunk)*tune_step + start_freq
 nchan = nchunk*FFT_size
 print("total number of channels in spectrum = ",nchan)
 print("summing up n_integrations:",n_integration)
@@ -117,20 +126,25 @@ def main(top_block_cls=spectrum,options=None):
         data[:,i] = [min_spectrum,max_spectrum,avg_spectrum]
         tb.stop()
         tb.wait()
+    np.savez(outnpzname,tunings=tunings,data=data,B=B,df=df,FFT_size=FFT_size)
+    colors='bgrcmykw'
+    if PLOT:
+    	freqs = np.linspace(0,np.ceil(B/df),num=len(data))*df
+    	chans = np.arange(FFT_size)
+    	for i,freq in enumerate(tunings):
+    	    color=colors[i%len(colors)]
+    		#plt.fill_between(chans,data[0,i],y2=data[1,i])
+    	    plt.plot(chans,dB(data[1,i]),color=color,label=str(freq/1e6))
+    	    plt.plot(chans,dB(data[2,i]),color=color)
+    	    plt.plot(chans,dB(data[0,i]),color=color)
+    	    
+    	plt.legend()
+    	plt.figure()
+    	for i,freq in enumerate(tunings):
+    	    plt.plot(chans,dB(data[1,i])+i*5,color='k')
+    	    plt.annotate(str(freq/1e6)+'MHz',xy=(0,np.mean(dB(data[1,0]))+i*5))
 
-    prop_cycle = plt.rcParams['axes.prop_cycle']
-    colors=prop_cycle.by_key()['color']
-
-    freqs = np.linspace(0,np.ceil(B/df),num=len(data))*df
-    chans = np.arange(FFT_size)
-    for i,freq in enumerate(tunings):
-	color=colors[i%len(colors)]
-    	#plt.fill_between(chans,data[0,i],y2=data[1,i])
-	plt.plot(chans,dB(data[1,i]),color=color,label=str(freq/1e6))
-        plt.plot(chans,dB(data[2,i]),color=color)
-        
-    plt.legend()
-    plt.show()
+    	plt.show()
 
 if __name__ == '__main__':
     main()
