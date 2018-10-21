@@ -69,17 +69,17 @@ class spectrum(gr.top_block):
         ##################################################
         self.zeromq_push_sink_0 = zeromq.push_sink(gr.sizeof_gr_complex, FFT_size, data_address, 100, False, -1)
         self.uhd_usrp_source_0 = uhd.usrp_source(
-        	",".join(("", "")),
+        	",".join(("addr0=192.168.41.2", "")),
         	uhd.stream_args(
         		cpu_format="fc32",
         		channels=range(1),
         	),
-        )
+        )        
         self.uhd_usrp_source_0.set_subdev_spec("B:0", 0)
         self.uhd_usrp_source_0.set_samp_rate(samp_rate)
         self.uhd_usrp_source_0.set_center_freq(tuning, 0)
-        self.uhd_usrp_source_0.set_gain(0, 0)
-        self.uhd_usrp_source_0.set_antenna("TX/RX", 0)
+        self.uhd_usrp_source_0.set_gain(30, 0)
+        self.uhd_usrp_source_0.set_antenna("RX2", 0)
         self.fft_vxx_0 = fft.fft_vcc(FFT_size, True, (window.blackmanharris(FFT_size)), True, 1)
         self.dc_blocker_xx_0 = gr_filter.dc_blocker_cc(1024, True)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, FFT_size)
