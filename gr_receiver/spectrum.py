@@ -21,8 +21,33 @@ from gnuradio.eng_option import eng_option
 from gnuradio.fft import window
 from gnuradio.filter import firdes
 from optparse import OptionParser
+import zmq
 import time
+import numpy as np
 
+
+def zmq_min_max_avg(socket_str,FFT_size,nreads=1):
+    #input: URL and port (ex: "tcp://127.0.0.1:5555")
+    #       nreads number of times to read from the socket
+    #get data, make an array and do something with it
+    context = zmq.Context()
+    results_receiver = context.socket(zmq.PULL)
+    results_receiver.connect(socket_str)
+    mean_accum = np.zeros(FFT_size)
+    count_accum = np.zeros(FFT_size)
+    max_accum = np.zeros(FFT_size)
+    min_accum = np.ones(FFT_size)*1000
+    for i in xrange(nreads):
+        data_buffer = results_receiver.recv()
+        data = np.frombuffer(data_buffer,dtype=np.complex64)
+        data.shape = (data.size/FFT_size,FFT_size)
+        data = np.abs(data)
+        mean_accum += np.sum(data,axis=0)
+        max_accum = np.max(np.vstack([max_accum,data]),axis=0)
+        min_accum = np.min(np.vstack([min_accum,data]),axis=0)
+        count_accum += data.shape[0]
+    mean_accum = mean_accum[count_accum>0]/count_accum[count_accum>0]
+    return min_accum,max_accum,mean_accum
 
 class spectrum(gr.top_block):
 
