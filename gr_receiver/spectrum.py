@@ -116,6 +116,9 @@ class spectrum(gr.top_block):
 
     def set_FFT_size(self, FFT_size):
         self.FFT_size = FFT_size
+    def set_gain(self,gain):
+        self.uhd_usrp_source_0.set_gain(gain,0)
+
 
 
 def main(top_block_cls=spectrum, options=None):
