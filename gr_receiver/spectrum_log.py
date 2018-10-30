@@ -17,18 +17,22 @@ def dB(x):
 
 #TUNABLE PARAMETERS
 #record a waterfall at a given freq
-freq = 120e6
-sample_interval = .1
+freq = 100e6
+sample_interval = 10
 df = 200e3 #desired spectral resolution 100kHz would be reasonable for HERA
 plot_int = 1 #plot every plot_int spectra
-exp_name = 'hera' #add this name to the filename string to help identify it
+exp_name = 'dipole' #add this name to the filename string to help identify it
+doplot = False
+savedata = True
+nreads = 1000
+
 
 ##SDR parameters
-SDR_BW =160e6
+SDR_BW =200e6
 
 FFT_size = int(np.ceil(SDR_BW/df))
 FFT_size = round_to_nearest_2(FFT_size)
-nreads = 1000
+
 print("FFT_size = ",FFT_size)
  #time between spectra in seconds
 #freqs = np.linspace(0,np.ceil(SDR_BW/df),num=FFT_size)*df+freq/2
@@ -41,34 +45,38 @@ d = t.isot.replace(':','_')
 filename = "ECHO_{n}_{d}.txt".format(n=exp_name,d=d)
 
 #start a data file
-f = open(filename,'w>')
-f.write("# ECHO Spectrum data file\n")
-f.write("# Start Date: {d}\n".format(d=d))
-f.write('# freqs: {freqs}\n'.format(freqs=','.join(freqs.astype(str))))
-f.write("# data type, time (julian date), power in dB\n")
-print("logging to:{filename}".format(filename=filename))
+if savedata:
+    f = open(filename,'w>')
+    f.write("# ECHO Spectrum data file\n")
+    f.write("# Start Date: {d}\n".format(d=d))
+    f.write('# freqs: {freqs}\n'.format(freqs=','.join(freqs.astype(str))))
+    f.write("# data type, time (julian date), power in dB\n")
+    print("logging to:{filename}".format(filename=filename))
+else:
+    print("WARNING: data logging disabled")
 
 
-fig = plt.figure()
+if doplot: fig = plt.figure()
 def main(top_block_cls=spectrum,options=None):
     tb = top_block_cls(FFT_size,SDR_BW)
     socket_str = tb.get_data_address() #data are streaming from this ZMQ PUSH Sink
     tb.set_tuning(freq)
-    tb.start()
     i=0
     while True:
         try:
             #time.sleep(0.5)
             t = Time.now()
+            tb.start()
             min_accum,max_accum,mean_accum = zmq_min_max_avg(socket_str,FFT_size,nreads=nreads) #data should be NchanxNtimes long where Ntimes floats around but is generally 2-6  
             #write out data
-            f.write("MEAN, "+ str(t.jd)+', ')
-            f.write(','.join(dB(mean_accum).astype(str)))
-            f.write('\n')
+            if savedata:
+                f.write("MEAN, "+ str(t.jd)+', ')
+                f.write(','.join(dB(mean_accum).astype(str)))
+                f.write('\n')
             print('.',end='')
             
             #Plotting
-            if i%plot_int == 0:
+            if i%plot_int == 0 and doplot:
                 plt.clf()
                 plt.plot(freqs/1e6,dB(mean_accum),'k',label='mean')
                 plt.plot(freqs/1e6,dB(max_accum),':k',label="max")
@@ -84,8 +92,8 @@ def main(top_block_cls=spectrum,options=None):
             sys.stdout.flush()
         except(KeyboardInterrupt):
             sys.exit()
-#        tb.stop()
-#        tb.wait()
+        tb.stop()
+        tb.wait()
 
 if __name__ == '__main__':
     main()

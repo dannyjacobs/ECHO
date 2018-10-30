@@ -9,7 +9,7 @@
 # June 2018
 
 ##################################################
-
+from __future__ import print_function
 from gnuradio import blocks
 from gnuradio import eng_notation
 from gnuradio import fft
@@ -37,6 +37,7 @@ def zmq_min_max_avg(socket_str,FFT_size,nreads=1):
     count_accum = np.zeros(FFT_size)
     max_accum = np.zeros(FFT_size)
     min_accum = np.ones(FFT_size)*1000
+    print(":",end='')
     for i in xrange(nreads):
         data_buffer = results_receiver.recv()
         data = np.frombuffer(data_buffer,dtype=np.complex64)
@@ -46,7 +47,9 @@ def zmq_min_max_avg(socket_str,FFT_size,nreads=1):
         max_accum = np.max(np.vstack([max_accum,data]),axis=0)
         min_accum = np.min(np.vstack([min_accum,data]),axis=0)
         count_accum += data.shape[0]
+        time.sleep(0.001)
     mean_accum = mean_accum[count_accum>0]/count_accum[count_accum>0]
+    print(";",end='')
     return min_accum,max_accum,mean_accum
 
 class spectrum(gr.top_block):
@@ -58,7 +61,7 @@ class spectrum(gr.top_block):
         # Variables
         ##################################################
         self.tuning = tuning = 0
-        self.samp_rate = samp_rate = 200e6
+        self.samp_rate = samp_rate = SDR_BW#needs to be <BW of radio. eg at 200e6 for the x300 U160 spectrum_log.py froze after ~20 O overflows ~30 integrations 
         self.integration_time = integration_time = 100
         self.data_address = data_address = "tcp://127.0.0.1:5555"
         self.SDR_BW = SDR_BW
@@ -69,7 +72,8 @@ class spectrum(gr.top_block):
         ##################################################
         self.zeromq_push_sink_0 = zeromq.push_sink(gr.sizeof_gr_complex, FFT_size, data_address, 100, False, -1)
         self.uhd_usrp_source_0 = uhd.usrp_source(
-        	",".join(("addr0=192.168.41.2", "")),
+        	#",".join(("addr0=192.168.41.2", "")),#needed at ER
+                ",".join(("","")), #works at ASU
         	uhd.stream_args(
         		cpu_format="fc32",
         		channels=range(1),
