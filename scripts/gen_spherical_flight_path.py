@@ -34,7 +34,7 @@ o.add_option('--sortie_length',type=float,
 o.add_option('--nside',type=int,
     help='the nside of the desired healpix point grid')
 o.add_option('--max_points',type=int,default=75,
-    help='max number of points to put in the file. a pm planner 2 gets unreliable above 80. default=75')
+    help='max number of points to put in the file. apm planner 2 gets unreliable above 80. default=75')
 o.add_option('--pol_angle',type=float,default=0,
     help='angle of dipole wrt north [deg]')
 #o.add_option('--stripe_spacing',type=float,default=10,
