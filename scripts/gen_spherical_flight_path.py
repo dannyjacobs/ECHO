@@ -4,10 +4,11 @@ import optparse, healpy
 from pylab import *
 from flight_planning import print_MAV_WPT,print_MAV_YAW,APM_PLANNER_FILE_HEADER,R_earth,length
 """
-Input a waypoint file with the CURRENT POSITION as the first entry
-Output a new waypoint file for a spherical flight with waypoints on a healpix grid starting from the CURRENT POSITION in the input file.
+Input some basic parameters to
 
-jul 30 usage:python gen_grid_flight_path.py  ~/apmplanner2/missions/July16_2015_thudehome.txt --nstripes=10 --length=200 --center="33.3119545_-111.891176104545593" --alt=90 --stripe_spacing=5 > ~/apmplanner2/missions/grid_thude_v2.txt
+Output a new waypoint file for a spherical flight with waypoints on a healpix grid starting from the set CURRENT POSITION near the dish.
+
+test usage: python gen_spherical_flight_path_v3.py --radius=100 --min_height=6 --center="34.61995_-112.45059" --file_prefix="test_flightpath" --nside=16 --velocity=1 --max_points=999999 --sortie_length=30
 """
 
 o = optparse.OptionParser()
@@ -33,7 +34,7 @@ o.add_option('--sortie_length',type=float,
 o.add_option('--nside',type=int,
     help='the nside of the desired healpix point grid')
 o.add_option('--max_points',type=int,default=75,
-    help='max number of points to put in the file. apm planner 2 gets unreliable above 80. default=75')
+    help='max number of points to put in the file. a pm planner 2 gets unreliable above 80. default=75')
 o.add_option('--pol_angle',type=float,default=0,
     help='angle of dipole wrt north [deg]')
 #o.add_option('--stripe_spacing',type=float,default=10,
@@ -42,25 +43,24 @@ o.add_option('--pol_angle',type=float,default=0,
 #    help='number of stripes [REQUIRED]')
 #o.add_option('--length',type=float,
 #    help='Length of stripes in meters [REQUIRED]')
-#o.add_option('--center',type=str,
-#    help='lat_lon in degrees [REQUIRED]')
 #o.add_option('--alt',type=float,
 #    help='alt in meters [REQUIRED]')
 opts,args = o.parse_args(sys.argv[1:])
 
 #parse inputs
 center_lat,center_lon = map(float,opts.center.split('_'))
-current_waypoint = open(args[0]).readlines()[1]
+#random point near dish
+current_waypoint = "34.619813_-112.4504370_6" 
 
 
 
 #add a check that the target location is less than 100m from the launch position.
-current_lat,current_lon,current_alt = map(float,current_waypoint.split()[8:11])
+current_lat,current_lon,current_alt = map(float,current_waypoint.split("_"))
 ant_to_pos_dist = n.sqrt(((current_lat-center_lat)*n.pi/180*R_earth)**2+
                         ((current_lon-center_lon)*n.pi/180*R_earth)**2)#+
                         #current_alt**2)
 if ant_to_pos_dist > 1000:
-    print "ERROR distance between target location ({p} m) and starting uav position is > 30m".format(pant_to_pos_dist)
+    print "ERROR distance between target location ({p} m) and starting uav position is > 100m".format(ant_to_pos_dist)
     print "Exiting...."
     sys.exit()
 
@@ -114,14 +114,14 @@ plot(coords[:,1],coords[:,2])
 show()
 
 #estimate total flying distance
-flight_distance =0
+flight_distance = 0
 distances = []
 for i in xrange(1,len(coords)):
     distances.append(length(coords[i]-coords[i-1]))
     flight_distance += length(coords[i]-coords[i-1])
 print "total flight distance = {dist} [m]".format(dist=flight_distance)
 print "estimated flying time at {vel} m/s ={time} [minutes]".format(
-            vel=opts.velocity,time=flight_distance/opts.velocity/60)
+            vel=opts.velocity,time=flight_distance//opts.velocity/60)
 
 
 
@@ -139,7 +139,7 @@ header_lines = []
 #print "QGC WPL 110"
 header_lines.append(APM_PLANNER_FILE_HEADER)
 offset = 0
-header_lines.append(current_waypoint.strip())
+#header_lines.append(current_waypoint.strip())
 offset +=1
 #print pointing (sets the polarization)
 header_lines.append(str(offset)+'\t'+print_MAV_YAW(center_lat,center_lon,50,angle=opts.pol_angle-90,ROI_distance=5e3))
