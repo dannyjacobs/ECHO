@@ -103,8 +103,8 @@ show()
 flight_distance = 0
 distances = []
 for i in xrange(1,len(coords)):
-    distances.append(length(coords[i]-coords[i-1]))
-    flight_distance += length(coords[i]-coords[i-1])
+    distances.append(length(coords[i]-coords[i-1])) #distance between each waypoint
+    flight_distance += length(coords[i]-coords[i-1]) #running total of distance
 print "total flight distance = {dist} [m]".format(dist=flight_distance)
 print "estimated flying time at {vel} m/s ={time} [minutes]".format(
             vel=opts.velocity,time=flight_distance//opts.velocity/60)
@@ -121,15 +121,17 @@ coords[:,:2] *= 180/n.pi
 coords[:,0] += center_lat
 coords[:,1] += center_lon
 
+
+
+#text file creation
 header_lines = []
-#print "QGC WPL 110"
-header_lines.append(APM_PLANNER_FILE_HEADER)
+header_lines.append(APM_PLANNER_FILE_HEADER) #"QGC WPL 110"
 offset = 0
 #header_lines.append(current_waypoint.strip())
 offset +=1
 #print pointing (sets the polarization)
-header_lines.append(str(offset)+'\t'+print_MAV_YAW(center_lat,center_lon,50,angle=opts.pol_angle-90,ROI_distance=5e3))
-offset +=1
+header_lines.append(str(offset)+'\t'+print_MAV_YAW(center_lat,center_lon,50,angle=opts.pol_angle-90,ROI_distance=5e3)) #not needed with new yaw system?
+offset +=1 #also not needed if ^^ isn't needed
 header_offset = offset
 
 current_length = 0
@@ -151,7 +153,7 @@ for i,coord in enumerate(coords):
         lines = []
         current_length = 0
         offset = header_offset
-    lines.append(str(offset)+'\t'+print_MAV_WPT(coord[0],coord[1],coord[2]))
+    lines.append(str(offset)+'\t'+print_MAV_WPT(coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include angle
     offset += 1
 outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
 print "writing position file:",outfile, "with ",len(lines),"waypoints"
