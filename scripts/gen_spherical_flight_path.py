@@ -49,20 +49,6 @@ opts,args = o.parse_args(sys.argv[1:])
 
 #parse inputs
 center_lat,center_lon = map(float,opts.center.split('_'))
-#random point near dish
-current_waypoint = "34.619813_-112.4504370_6" 
-
-
-
-#add a check that the target location is less than 100m from the launch position.
-current_lat,current_lon,current_alt = map(float,current_waypoint.split("_"))
-ant_to_pos_dist = n.sqrt(((current_lat-center_lat)*n.pi/180*R_earth)**2+
-                        ((current_lon-center_lon)*n.pi/180*R_earth)**2)#+
-                        #current_alt**2)
-if ant_to_pos_dist > 1000:
-    print "ERROR distance between target location ({p} m) and starting uav position is > 100m".format(ant_to_pos_dist)
-    print "Exiting...."
-    sys.exit()
 
 #RADIAN conversion!!!
 #DELTA_ELEVATION = opts.delta_el*n.pi/180
