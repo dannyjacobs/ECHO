@@ -58,19 +58,19 @@ center_lat,center_lon = map(float,opts.center.split('_'))
 
 
 
-pixnums = n.arange(healpy.nside2npix(opts.nside))
-co_els,azimuths = healpy.pix2ang(opts.nside,pixnums,nest=False)
-elevations = n.pi/2 - co_els
-
-
+pixnums = n.arange(healpy.nside2npix(opts.nside)) #nside2npix=3072 when nside=16, so array from 0 to 3071
+co_els,azimuths = healpy.pix2ang(opts.nside,pixnums,nest=False) #colatitude and longitude in radians
+elevations = n.pi/2 - co_els #converts colatitude to latitude
+#elevations go from pi at the north pole to -pi at the south pole
+#azimuths go from 0 due north to 2pi all the way around
 
 
 print "computing elevation coverage"
-min_el = opts.min_height/opts.radius
-elevation_range = n.pi/2 - min_el
-g = elevations>min_el
-elevations = elevations[g]
-azimuths = azimuths[g]
+min_el = opts.min_height/opts.radius #typically 6/100
+elevation_range = n.pi/2 - min_el #not used anywhere
+g = elevations>min_el #an array that is the same length as elevations, with True in each index where elevation>min_el
+elevations = elevations[g] #removes all elevations below min_el
+azimuths = azimuths[g] #removes corresponding azimuths
 print "Generating healpix grid with {n} points".format(n=len(azimuths))
 print "min elevation = {min}, max elevation = {max}".format(
     min=elevations.min()*180/n.pi,max=elevations.max()*180/n.pi)
@@ -86,12 +86,12 @@ coords = []
 #        coords.append([opts.radius*n.cos(el)*n.cos(az),
 #        opts.radius*n.cos(el)*n.sin(az),
 #        alt])
-X = opts.radius*n.cos(elevations)*n.cos(azimuths)
-Y = opts.radius*n.cos(elevations)*n.sin(azimuths)
-Z = altitude_levels
+X = opts.radius*n.cos(elevations)*n.cos(azimuths) #x coordinate in meters from center
+Y = opts.radius*n.cos(elevations)*n.sin(azimuths) #y coordinate in meters from center
+Z = altitude_levels #z coordinate in altitude
 #coords = n.array(coords)
-coords = n.vstack((X,Y,Z)).T
-coords = n.flipud(coords)
+coords = n.vstack((X,Y,Z)).T #makes an array of [x,y,z] arrays
+coords = n.flipud(coords) #puts the first waypoint first
 print coords.shape
 subplot(211)
 plot(coords[:,0],coords[:,1])
