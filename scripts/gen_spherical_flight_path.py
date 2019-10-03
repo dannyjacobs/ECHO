@@ -8,7 +8,7 @@ Input some basic parameters to
 
 Output a new waypoint file for a spherical flight with waypoints on a healpix grid starting from the set CURRENT POSITION near the dish.
 
-test usage: python gen_spherical_flight_path_v3.py --radius=100 --min_height=6 --center="34.61995_-112.45059" --file_prefix="test_flightpath" --nside=16 --velocity=1 --max_points=999999 --sortie_length=30
+10/3 usage: python gen_spherical_flight_path.py --radius=100 --min_height=6 --center="34.61995_-112.45059" --file_prefix="test_flightpath" --nside=16 --velocity=1 --max_points=999999 --sortie_length=30 --yaw_angle=180
 """
 
 o = optparse.OptionParser()
