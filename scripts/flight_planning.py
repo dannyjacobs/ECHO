@@ -4,7 +4,7 @@ def length(x):
     #compute the length of a vector
     return n.sqrt(n.dot(x,x))
 
-def print_MAV_WPT(vel,yaw,lat,lon,alt,spline=False):
+def print_MAV_WPT(yaw,lat,lon,alt,spline=False):
     "generate the string commonly accepted by mission planner et al"
     """see https://pixhawk.ethz.ch/mavlink/ and
     http://qgroundcontrol.org/mavlink/waypoint_protocol
