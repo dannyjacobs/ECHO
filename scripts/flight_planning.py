@@ -10,12 +10,12 @@ def print_MAV_WPT(vel,yaw,lat,lon,alt,spline=False):
     http://qgroundcontrol.org/mavlink/waypoint_protocol
     and documented in Google Drive/ECHO/Memos/Programming_Auto_missions"""
     if spline:
-        return "0\t3\t82\t0\t{vel:18.16f}\t0\t{yaw:18.16f}\t{lat:18.16f}\t{lon:18.15f}\t{alt:18.16f}\t1".format(
-                vel=vel,yaw=yaw,lat=lat,lon=lon,alt=alt)
+        return "0\t3\t82\t0\t0\t0\t{yaw:18.2f}\t{lat:18.16f}\t{lon:18.15f}\t{alt:18.16f}\t1".format(
+                yaw=yaw,lat=lat,lon=lon,alt=alt)
 
     else: #use ordinary waypoint nav
-        return "0\t3\t16\t0\t{vel:18.16f}\t0\t{yaw:18.16f}\t{lat:18.16f}\t{lon:18.15f}\t{alt:18.16f}\t1".format(
-                vel=vel,yaw=yaw,lat=lat,lon=lon,alt=alt)
+        return "0\t3\t16\t0\t0\t0\t{yaw:18.2f}\t{lat:18.16f}\t{lon:18.15f}\t{alt:18.16f}\t1".format(
+                yaw=yaw,lat=lat,lon=lon,alt=alt)
 def print_MAV_YAW(lat,lon,alt,angle,ROI_distance=1e3):
     "angle = degrees of nose from north"
     """

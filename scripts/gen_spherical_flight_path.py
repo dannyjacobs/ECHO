@@ -155,7 +155,7 @@ for i,coord in enumerate(coords):
         lines = []
         current_length = 0
         offset = header_offset
-    lines.append(str(offset)+'\t'+print_MAV_WPT(opts.velocity,opts.yaw_angle,coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include yaw angle
+    lines.append(str(offset)+'\t'+print_MAV_WPT(opts.yaw_angle,coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include yaw angle
     offset += 1
 outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
 print "writing position file:",outfile, "with ",len(lines),"waypoints"
