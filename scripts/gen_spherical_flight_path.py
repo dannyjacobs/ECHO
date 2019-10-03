@@ -45,6 +45,8 @@ o.add_option('--pol_angle',type=float,default=0,
 #    help='Length of stripes in meters [REQUIRED]')
 #o.add_option('--alt',type=float,
 #    help='alt in meters [REQUIRED]')
+o.add_option('--yaw_angle',type=float,default=0,
+             help='angle the drone is point wrt north [deg]')
 opts,args = o.parse_args(sys.argv[1:])
 
 #parse inputs
@@ -125,13 +127,13 @@ coords[:,1] += center_lon
 
 #text file creation
 header_lines = []
-header_lines.append(APM_PLANNER_FILE_HEADER) #"QGC WPL 110"
 offset = 0
+header_lines.append(APM_PLANNER_FILE_HEADER) #"QGC WPL 110"
 #header_lines.append(current_waypoint.strip())
 offset +=1
 #print pointing (sets the polarization)
-header_lines.append(str(offset)+'\t'+print_MAV_YAW(center_lat,center_lon,50,angle=opts.pol_angle-90,ROI_distance=5e3)) #not needed with new yaw system?
-offset +=1 #also not needed if ^^ isn't needed
+#header_lines.append(str(offset)+'\t'+print_MAV_YAW(center_lat,center_lon,50,angle=opts.pol_angle-90,ROI_distance=5e3)) #not needed with new yaw system?
+#offset +=1 #also not needed if ^^ isn't needed
 header_offset = offset
 
 current_length = 0
@@ -153,7 +155,7 @@ for i,coord in enumerate(coords):
         lines = []
         current_length = 0
         offset = header_offset
-    lines.append(str(offset)+'\t'+print_MAV_WPT(coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include angle
+    lines.append(str(offset)+'\t'+print_MAV_WPT(opts.yaw_angle,coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include yaw angle
     offset += 1
 outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
 print "writing position file:",outfile, "with ",len(lines),"waypoints"
