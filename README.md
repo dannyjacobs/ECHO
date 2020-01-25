@@ -43,7 +43,7 @@ The code is organized into a few modules. The beam mapping pipeline steps are
   5. difference beams
 ### Modules
 NB: If a function is not mentioned here, it is because I don't think it matters any more. Such things will probably be culled in a future cleanup.
- #### plot_utils.py
+ #### `plot_utils.py`
  Functions for plotting, but also all functions relating to healpix gridding
  and manipulation including gridding.
   * `grid_to_healpix` :  grids aligned RF power vs XYZ position
@@ -52,7 +52,7 @@ NB: If a function is not mentioned here, it is because I don't think it matters 
   * `project_healpix` :  flattens from spherical healpix map to 2d gnomic projection
   * `rotate_hpm` :  rotates a healpix map about the polar axis. useful for plotting
   * Other functions, most of whom are deprecated.
- #### read_utils.py
+ #### `read_utils.py`
  Functions for reading and writing drone and beam data. Drone log file formats
  are not well documented and change all the time.
   * `read_map` : replacement for healpy read function that respects nans
@@ -69,7 +69,7 @@ NB: If a function is not mentioned here, it is because I don't think it matters 
   * `flag_angles` : flags outlier yaws input times,yaw_angles return matching flag array
   * `flag_waypoints` : flags a range of time around a list of waypoints
   * `apply_flagtimes` : Given a list of bad times, a buffer size and a time array, generate a flag table.
-#### position_utils.py
+#### `position_utils.py`
  * `latlon2xy` : about what you think
  * `to_spherical` : xyz to spherical
 #### `time_utils.py`
@@ -96,4 +96,3 @@ Scripts used in the 2017 paper are all run in [one master shell script](https://
   * valon_readwrite.py : program the valon transmitter
   * gen_spherical_flight_path.py : generate waypoints in a healpix pattern
   * CST_to_healpix.py : convert the beam file from CST Microwave studio to a healpix map. Note that this should eventually be replaced with [pyuvbeam](https://github.com/RadioAstronomySoftwareGroup/pyuvdata/blob/master/pyuvdata/uvbeam.py).
- 
