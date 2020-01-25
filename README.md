@@ -79,3 +79,14 @@ Most of these are of dubious necessity.
 #### `server_utils.py`
 Stuff developed to support real-time operations. This never worked very well with mavlink.
 ### Scripts
+Scripts used in the 2017 paper are all run in [one master shell script](https://github.com/dannyjacobs/ECHO_paper1/blob/master/scripts/make_plots.sh)
+ * plot_yaw.py
+ * plot_GB_pos_power_interp.py
+ * ECHO_zipper.py
+ * ECHO_mk_beam.py
+ * plot_ECHO_GB_power_rms_counts.py
+ * plot_ECHO_GB_maps.py
+ * plot_GB_slices.py
+ * ECHO_sub_tx_beam.py
+ * plot_ECHO_GB_ratios.py
+ * plot_GB_avg_slices.py
