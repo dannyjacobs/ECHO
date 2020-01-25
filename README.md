@@ -79,6 +79,7 @@ Most of these are of dubious necessity.
 #### `server_utils.py`
 Stuff developed to support real-time operations. This never worked very well with mavlink.
 ### Scripts
+#### Jacobs 2017
 Scripts used in the 2017 paper are all run in [one master shell script](https://github.com/dannyjacobs/ECHO_paper1/blob/master/scripts/make_plots.sh)
  * plot_yaw.py
  * plot_GB_pos_power_interp.py
@@ -90,3 +91,9 @@ Scripts used in the 2017 paper are all run in [one master shell script](https://
  * ECHO_sub_tx_beam.py
  * plot_ECHO_GB_ratios.py
  * plot_GB_avg_slices.py
+
+ #### Utility Scripts
+  * valon_readwrite.py : program the valon transmitter
+  * gen_spherical_flight_path.py : generate waypoints in a healpix pattern
+  * CST_to_healpix.py : convert the beam file from CST Microwave studio to a healpix map. Note that this should eventually be replaced with [pyuvbeam](https://github.com/RadioAstronomySoftwareGroup/pyuvdata/blob/master/pyuvdata/uvbeam.py).
+ 
