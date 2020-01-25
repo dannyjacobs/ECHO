@@ -23,8 +23,10 @@ Get this repo
 `git clone https:github.com/dannyjacobs/ECHO`
 
 Install using pip
-```cd ECHO
-pip install .```
+```
+cd ECHO
+pip install .
+```
 
 
 ## Organization
