@@ -91,6 +91,9 @@ Scripts used in the 2017 paper are all run in [one master shell script](https://
  * ECHO_sub_tx_beam.py
  * plot_ECHO_GB_ratios.py
  * plot_GB_avg_slices.py
+ * plot_MWAtile_slices.py
+ * MWATilemodel2hpm.py
+ * combine_MWAtile_maps.py
 
  #### Utility Scripts
   * valon_readwrite.py : program the valon transmitter
