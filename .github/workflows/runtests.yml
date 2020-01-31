@@ -11,7 +11,9 @@ jobs:
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@cleanup
+    - uses: actions/checkout@v2
+      with:
+        ref: cleanup
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
