@@ -10,10 +10,14 @@ setup_args = {
     'license': 'BSD',
     'package_dir': {'ECHO': 'src'},
     'packages': ['ECHO'],
-    'scripts': glob.glob('scripts/*'),
+    'scripts': glob.glob('scripts/*.py'),
     'version': __version__,
-    'package_data': {'ECHO': [op.join('data', '*')]}
+    'package_data': {'ECHO': [op.join('data', '*')]},
+    'setup_requires': ['pytest-runner', 'numpy'],
+    'install_requires': ['numpy', 'scipy', 'healpy'],
+    'tests_require': ['pytest', 'pytest-cases'],
+
 }
 
 if __name__ == '__main__':
-    apply(setup, (), setup_args)
+setup(**setup_args)
