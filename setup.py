@@ -4,6 +4,7 @@ import os.path as op
 
 __version__ = '0.0.1'
 
+
 setup_args = {
     'name': 'ECHO',
     'author': 'ECHO Collaboration',
@@ -20,4 +21,4 @@ setup_args = {
 }
 
 if __name__ == '__main__':
-setup(**setup_args)
+    setup(**setup_args)
