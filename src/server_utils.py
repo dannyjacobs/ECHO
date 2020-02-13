@@ -1,4 +1,4 @@
-import optpart,sys,threading,atexit
+import optparse,sys,threading,atexit
 import numpy as np
 from flask import Flask,jsonify
 from read_utils import get_data
