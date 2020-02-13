@@ -5,7 +5,7 @@ from read_utils import get_data
 from position_utils import interp_pos
 import time
 
-
+# =========== Start Selection. These lines are copied from ECHO_server.py to fix this code.
 o = optparse.OptionParser()
 o.set_description('Reads in GPS positional data in realtime from a user specified \
 text file. Starts a server which is queryable by a user on the same or another \
@@ -29,6 +29,7 @@ opts,args = o.parse_args(sys.argv[1:])
 if not opts.gps_file:
     print '\n Please enter valid file for GPS information\nExiting...\n\n'
     sys.exit()
+# ========= End Selection
 
 ''' NEED TO FIX THE CREATE_APP FUNCTION TO ACCOUNT FOR MODIFICATION OF GLOBAL QUANTITIES !!! '''
 dataLock=threading.Lock()
