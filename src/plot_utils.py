@@ -414,9 +414,9 @@ def animate_cuts(cuts_plot,cuts_E_line,cuts_H_line,hpx_beam,hpx_rms,ell,az):
 def add_cut_glyph(parent_fig=None,parent_axes=None,pos=(0.8,0.8),size=(.1),cut='NS',pol='NS'):
     #transformation stuff to put the little axis in the desired subplot
     if parent_fig is None:
-        parent_fig = gcf()
+        parent_fig = plt.gcf()
     if parent_axes is None:
-        parent_axes = gca()
+        parent_axes = plt.gca()
     axtrans = parent_axes.transAxes
     figtrans = parent_fig.transFigure.inverted()
     figpos = figtrans.transform(axtrans.transform(pos)) #get the desired position in figure units

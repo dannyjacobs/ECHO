@@ -1,4 +1,5 @@
 import numpy as np,healpy as hp
+import sys
 import glob
 from astropy.time import Time
 from scipy.interpolate import interp1d
@@ -486,15 +487,15 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
                                           all_Data[:,5])
         if ant == 'N':
             lat0,lon0 = (38.4248532,-79.8503723)
-            if 'NS' in inFile:
+            if 'NS' in infile:
                 spec_raw = all_Data[:,12:17] # N antenna, NS dipole
-            if 'EW' in inFile:
+            if 'EW' in infile:
                 spec_raw = all_Data[:,24:29] # N antenna, EW dipole
         elif ant == 'S':
             lat0,lon0 = (38.4239235,-79.8503418)
-            if 'NS' in inFile:
+            if 'NS' in infile:
                 spec_raw = all_Data[:,6:11] # S antenna, NS dipole
-            if 'EW' in inFile:
+            if 'EW' in infile:
                 spec_raw = all_Data[:,18:23] # S antenna, EW dipole
         spec_times = Time(spec_times,format='gps')
         lats = lats.squeeze()
@@ -539,7 +540,7 @@ def get_start_stop_times(infile):
     start_stop_times = []
     apm_files = glob.glob(infile)
     for apm_file in apm_files:
-        lines=open(filename).readlines()
+        lines=open(apm_file).readlines()
         weektimes = []
         for line in lines:
            if line.startswith('GPS'):

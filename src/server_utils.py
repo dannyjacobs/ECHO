@@ -3,8 +3,11 @@ import numpy as np
 from flask import Flask,jsonify
 from read_utils import get_data
 from position_utils import interp_pos
+import time
 
 ''' NEED TO FIX THE CREATE_APP FUNCTION TO ACCOUNT FOR MODIFICATION OF GLOBAL QUANTITIES !!! '''
+dataLock=threading.Lock()
+pool_time=0.3
 
 def create_app():
     app = Flask(__name__)
@@ -25,7 +28,7 @@ def create_app():
             lati,loni,alti = interp_pos(gps_raw)
             currlen = gps_raw.shape[0]
             if currlen == lastlen:
-                sleep(pool_time)
+                time.sleep(pool_time)
             elif currlen > lastlen:
                 lastlen = currlen
                 tmin,tmax = gps_raw[:,0].min(),gps_raw[:,0].max()
