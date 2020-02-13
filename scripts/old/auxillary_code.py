@@ -114,7 +114,7 @@ def interp(gps):
 
 
 # Stitches together two seperate GPS and SH files
-else:
+
     # Read in GPS data
     for inFile in args:
         if 'gps' in inFile:
@@ -405,8 +405,8 @@ def animate_peak(i,peak_plot,peak_line,spec_times,spec_raw,peaktimes,peakvals,\
     peaktimes.append(currtime)
     peakvals.append(peakval)
     peakfreqs.append(peakfreq)
-	rmss.append(rms)
-	if len(peakvals)<rmswindow:
+    rmss.append(rms)
+    if len(peakvals)<rmswindow:
 	    peakrmss.append(np.std(peakvals))
     else:
         peakrmss.append(np.std(peakvals[-rmswindow:]))
