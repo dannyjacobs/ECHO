@@ -17,7 +17,7 @@ def Guassian_2d(a,b,c,x,y):
 
 outFile = 'exemplary_output_file.txt'
 with open(outFile,'wb') as f:
-   print 'New file created: ',outFile
+   print('New file created: ',outFile)
 
 R_E = 6.3781e6
 freqs = [137.505,137.51,137.515,137.519,137.524,\

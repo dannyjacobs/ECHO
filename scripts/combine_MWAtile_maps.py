@@ -27,7 +27,7 @@ meanbeam = np.ma.sum(beams*counts,axis=0)/sumcounts
 meanerr = np.sqrt(np.ma.sum((errs**2 + beams**2)*counts,axis=0)/sumcounts - meanbeam**2)
 
 #normalizations going to be shot by the scalings, lets renormalize
-print "subtracting: ",np.ma.mean(meanbeam[:5])
+print("subtracting: ",np.ma.mean(meanbeam[:5]))
 meanbeam -= np.ma.mean(meanbeam[:5])
 
 #write it all out

@@ -46,19 +46,19 @@ elevations = n.pi/2 - co_els #converts colatitude to latitude
 #elevations go from pi at the north pole to -pi at the south pole
 #azimuths go from 0 due north to 2pi all the way around
 
-print "computing elevation coverage"
+print("computing elevation coverage")
 min_el = opts.min_height/opts.radius #typically 6/100
 elevation_range = n.pi/2 - min_el #not used anywhere
 g = elevations>min_el #an array that is the same length as elevations, with True in each index where elevation>min_el
 elevations = elevations[g] #removes all elevations below min_el
 azimuths = azimuths[g] #removes corresponding azimuths
-print "Generating healpix grid with {n} points".format(n=len(azimuths))
-print "min elevation = {min}, max elevation = {max}".format(
-    min=elevations.min()*180/n.pi,max=elevations.max()*180/n.pi)
+print("Generating healpix grid with {n} points".format(n=len(azimuths)))
+print("min elevation = {min}, max elevation = {max}".format(
+    min=elevations.min()*180/n.pi,max=elevations.max()*180/n.pi))
 
 altitude_levels = n.sin(elevations)*opts.radius #converts elevations into altitudes from min_el to radius
 
-print "computing altitudes in range: {min} - {max} meters".format(min=altitude_levels.min(),max=altitude_levels.max())
+print("computing altitudes in range: {min} - {max} meters".format(min=altitude_levels.min(),max=altitude_levels.max()))
 coords = []
 X = opts.radius*n.cos(elevations)*n.cos(azimuths) #x coordinate in meters from center
 Y = opts.radius*n.cos(elevations)*n.sin(azimuths) #y coordinate in meters from center
@@ -66,7 +66,7 @@ Z = altitude_levels #z coordinate in altitude
 coords = n.vstack((X,Y,Z)).T #makes an array of [x,y,z] arrays
 coords = n.flipud(coords) #puts the first waypoint first
 
-print coords.shape
+print(coords.shape)
 subplot(211)
 plot(coords[:,0],coords[:,1])
 subplot(212)
@@ -79,9 +79,9 @@ distances = []
 for i in xrange(1,len(coords)):
     distances.append(length(coords[i]-coords[i-1])) #distance between each waypoint
     flight_distance += length(coords[i]-coords[i-1]) #running total of distance
-print "total flight distance = {dist} [m]".format(dist=flight_distance)
-print "estimated flying time at {vel} m/s ={time} [minutes]".format(
-            vel=opts.velocity,time=flight_distance//opts.velocity/60)
+print("total flight distance = {dist} [m]".format(dist=flight_distance))
+print("estimated flying time at {vel} m/s ={time} [minutes]".format(
+            vel=opts.velocity,time=flight_distance//opts.velocity/60))
 
 #convert to lat, lon in radians
 coords[:,:2] /= R_earth
@@ -110,7 +110,7 @@ for i,coord in enumerate(coords):
         #convert from deg lat/lon back to m
     if (current_length >= opts.sortie_length and not opts.sortie_length is None) or offset>opts.max_points:
         outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
-        print "writing position file:",outfile, "with ",len(lines),"waypoints"
+        print("writing position file:",outfile, "with ",len(lines),"waypoints")
         outlines = header_lines+lines
         outlines = [l+'\n' for l in outlines]
         open(outfile,'w').writelines(outlines)
@@ -121,7 +121,7 @@ for i,coord in enumerate(coords):
     lines.append(str(offset)+'\t'+print_MAV_WPT(opts.yaw_angle,coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include yaw angle
     offset += 1
 outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
-print "writing position file:",outfile, "with ",len(lines),"waypoints"
+print("writing position file:",outfile, "with ",len(lines),"waypoints")
 outlines = header_lines+lines
 outlines = [l+'\n' for l in outlines] #add a cr to each line
 open(outfile,'w').writelines(outlines)

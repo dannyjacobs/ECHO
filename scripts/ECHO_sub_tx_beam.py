@@ -30,7 +30,7 @@ TXmodel = read_map(TXmodelFile)
 #rotate the data to match the model
 if ECHOmapFile.find('NS')!=-1:
     pol = 'NS'
-    print "rotating TXmodel to match NS beam"
+    print("rotating TXmodel to match NS beam")
     TXmodel = rotate_hpm(TXmodel,90,0,pol=pol)
 else:
     pol = 'EW'
@@ -46,7 +46,7 @@ if (opts.theta != 0) or (opts.phi != 0):
 #assume receiver beam gain = transmitter beam gain = 0 at zenith
 if True:
     print("normalizng the data map to the mean of the top few healpix pixels ")
-    print "\t subtracting",np.ma.mean(ECHOmap[:5])
+    print("\t subtracting",np.ma.mean(ECHOmap[:5]))
     echonorm = np.mean(ECHOmap[:5])
     ECHOmap -= echonorm
 TXmodel -= np.mean(TXmodel[:5])
@@ -56,9 +56,9 @@ TXmodel -= np.mean(TXmodel[:5])
 #solving for the ECHObeam map we get
 ECHObeam = ECHOmap - TXmodel
 
-print "saving output difference",
+print("saving output difference")
 outfile=ECHOmapFile[:-5]+'-'+os.path.basename(TXmodelFile[:-5])+'_rot.fits'
-print outfile
+print(outfile)
 write_map(outfile,ECHObeam)
 
 THETA,PHI,ECHOmapflat = project_healpix(ECHOmap)
@@ -85,4 +85,4 @@ cax=axes([.7,0.09,0.29,0.05])
 colorbar(diffax,cax=cax,orientation='horizontal',label='dB')
 draw()
 savefig('../figures/'+os.path.basename(outfile)[:-5]+'.png')
-print "done."
+print("done.")

@@ -57,7 +57,7 @@ def read_apm_logs(apm_files):
     versions = [apm_version(f) for f in apm_files]
     if len(set(versions))>1:
         for f,v in zip(apm_files,versions):
-            print f,v
+            print(f,v)
         raise(ValueError,"Found multiple apm versions. I don't know how to combine apm files between different versions.")
     postimes=[]
     angletimes=[]
@@ -288,14 +288,14 @@ def channel_select(freqs,rxspectrum,channel):
     """
     if type(channel)==int:
         if channel>len(freqs):
-            print "error: channel",channel,
-            print "not found in input freqs vector of length",len(freqs)
+            print("error: channel",channel)
+            print("not found in input freqs vector of length",len(freqs))
             return None
         mychan=channel
     elif type(channel)==float:
         if channel>freqs.max() or channel<freqs.min():
-            print "error: selected freq",channel,
-            print "not found in input freqs vector spanning",freqs.min(),freqs.max()
+            print("error: selected freq",channel)
+            print("not found in input freqs vector spanning",freqs.min(),freqs.max())
             return None
         mychan = np.abs(freqs-channel).argmin()
     return rxspectrum[:,mychan]
@@ -402,7 +402,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
         weektimes = []
         apm_files = glob.glob(infile)
         for apm_file in apm_files:
-            print 'Reading in %s...' %apm_file
+            print('Reading in %s...' %apm_file)
             lines = open(apm_file).readlines()
             if not len(lines) == 0:
                 for line in lines:
@@ -529,8 +529,8 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
 
 
     else:
-        print '\nNo valid filetype found for %s' %infile
-        print 'Exiting...\n\n'
+        print('\nNo valid filetype found for %s' %infile)
+        print('Exiting...\n\n')
         sys.exit()
 
 
@@ -593,7 +593,7 @@ def get_filter_times(infile,first_waypt=3,waypts=False):
         if waypts:
             for i in range(1,CMD_times.shape[0]):
                 waypoint_times.append(CMD_times[i].gps)
-    print start_stop_times
+    print(start_stop_times)
     start_stop_times = np.array(start_stop_times)
     if waypts:
         waypoint_times = np.array(waypoint_times)
