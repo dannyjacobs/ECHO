@@ -32,7 +32,7 @@ jobs:
         flake8 .
         # exit-zero treats all errors as warnings. Select flake8 defaults. The GitHub editor is 127 chars wide
         flake8 . --exit-zero --select=E,F,W,C90 --max-complexity=10 --max-line-length=127
-    # name: Test with pytest
-    #  run: |
-    #    pip install pytest pytest-cov
-    #    pytest -v --cov=ECHO --cov-report xml:./coverage.xml
+    name: Test with pytest
+    run: |
+      pip install pytest pytest-cov
+      pytest -v --cov=ECHO --cov-report xml:./coverage.xml

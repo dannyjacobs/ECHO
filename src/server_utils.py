@@ -25,10 +25,10 @@ opts,args = o.parse_args(sys.argv[1:])
 
 
 
-# Verify a GPS file was passed by the user
+"""# Verify a GPS file was passed by the user
 if not opts.gps_file:
     print '\n Please enter valid file for GPS information\nExiting...\n\n'
-    sys.exit()
+    sys.exit()"""
 # ========= End Selection
 
 ''' NEED TO FIX THE CREATE_APP FUNCTION TO ACCOUNT FOR MODIFICATION OF GLOBAL QUANTITIES !!! '''
