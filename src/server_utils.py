@@ -5,31 +5,32 @@ from read_utils import get_data
 from position_utils import interp_pos
 import time
 
-# =========== Start Selection. These lines are copied from ECHO_server.py to fix this code.
-o = optparse.OptionParser()
-o.set_description('Reads in GPS positional data in realtime from a user specified \
-text file. Starts a server which is queryable by a user on the same or another \
-machine. The query returns an interpolated GPS position which can be read by the \
-querier and used to accumulate GPS and spectral data into one output file.\
-See ECHO_accumulate.py for the output file format.')
+if __name__ == "__main__":
+    # =========== Start Selection. These lines are copied from ECHO_server.py to fix this code.
+    o = optparse.OptionParser()
+    o.set_description('Reads in GPS positional data in realtime from a user specified \
+    text file. Starts a server which is queryable by a user on the same or another \
+    machine. The query returns an interpolated GPS position which can be read by the \
+    querier and used to accumulate GPS and spectral data into one output file.\
+    See ECHO_accumulate.py for the output file format.')
 
-o.add_option('--gps_file',type=str,
-    help='File name for GPS positional data to be read')
-o.add_option('--dt',type=float,default=0.5,
-    help='User specified time interval for binning resolution')
-    #Since v_drone<2m/s, dt gives a maximum positional extrapolation range, i.e. dx~v*dt')
-o.add_option('--host',type=str,default='10.1.1.1',
-    help='Host address')
+    o.add_option('--gps_file',type=str,
+        help='File name for GPS positional data to be read')
+    o.add_option('--dt',type=float,default=0.5,
+        help='User specified time interval for binning resolution')
+        #Since v_drone<2m/s, dt gives a maximum positional extrapolation range, i.e. dx~v*dt')
+    o.add_option('--host',type=str,default='10.1.1.1',
+        help='Host address')
 
-opts,args = o.parse_args(sys.argv[1:])
+    opts,args = o.parse_args(sys.argv[1:])
 
 
 
-"""# Verify a GPS file was passed by the user
-if not opts.gps_file:
-    print '\n Please enter valid file for GPS information\nExiting...\n\n'
-    sys.exit()"""
-# ========= End Selection
+    """# Verify a GPS file was passed by the user
+    if not opts.gps_file:
+        print '\n Please enter valid file for GPS information\nExiting...\n\n'
+        sys.exit()"""
+    # ========= End Selection
 
 ''' NEED TO FIX THE CREATE_APP FUNCTION TO ACCOUNT FOR MODIFICATION OF GLOBAL QUANTITIES !!! '''
 dataLock=threading.Lock()
