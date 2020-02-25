@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 from matplotlib.pyplot import *
 from matplotlib import gridspec
 import numpy as np
@@ -44,7 +45,7 @@ fig,axarr = subplots(4,4,sharex=True,sharey=True,subplot_kw={'visible':False,'as
 imaxes = []
 for i in xrange(len(files)):
     for j in xrange(i,len(files)):
-        print(files[i],'/',files[j])
+        print((files[i],'/',files[j]))
         if i==j:
             R = maps[i]
             vmin=-15

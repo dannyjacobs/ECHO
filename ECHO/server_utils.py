@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import optparse,sys,threading,atexit
 import numpy as np
 from flask import Flask,jsonify
-from read_utils import get_data
-from position_utils import interp_pos
+from .read_utils import get_data
+from .position_utils import interp_pos
 import time
 
 # =========== Start Selection. These lines are copied from ECHO_server.py to fix this code.

@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 import numpy as n,sys
 import optparse, healpy
 from pylab import *
@@ -110,7 +111,7 @@ for i,coord in enumerate(coords):
         #convert from deg lat/lon back to m
     if (current_length >= opts.sortie_length and not opts.sortie_length is None) or offset>opts.max_points:
         outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
-        print("writing position file:",outfile, "with ",len(lines),"waypoints")
+        print(("writing position file:",outfile, "with ",len(lines),"waypoints"))
         outlines = header_lines+lines
         outlines = [l+'\n' for l in outlines]
         open(outfile,'w').writelines(outlines)
@@ -121,7 +122,7 @@ for i,coord in enumerate(coords):
     lines.append(str(offset)+'\t'+print_MAV_WPT(opts.yaw_angle,coord[0],coord[1],coord[2])) #probably adjust the MAV_WPT function to include yaw angle
     offset += 1
 outfile = opts.file_prefix+'_sortie'+str(sortie_count)+'.txt'
-print("writing position file:",outfile, "with ",len(lines),"waypoints")
+print(("writing position file:",outfile, "with ",len(lines),"waypoints"))
 outlines = header_lines+lines
 outlines = [l+'\n' for l in outlines] #add a cr to each line
 open(outfile,'w').writelines(outlines)

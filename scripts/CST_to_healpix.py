@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+from __future__ import print_function
 import numpy as n,sys,os
 import healpy as hpy
 import optparse
@@ -22,7 +23,7 @@ if opts.rot90:
 else:
     outfile = args[0].replace('.txt','.fits')
 outfile = os.path.basename(outfile)
-print("writing", outfile)
+print(("writing", outfile))
 #load the input CST txt file
 #find the healpix indices corresponding to the theta/phi
 #make a healpix map
@@ -50,6 +51,6 @@ hp_map -= hp_map[0]
 
 if opts.voltage:
     hp_map = 10**(hp_map/20.)
-print("max/min",hp_map.max(),hp_map.min())
+print(("max/min",hp_map.max(),hp_map.min()))
 hpy.write_map(outfile,hp_map,fits_IDL=False)
 print("Write successfull")

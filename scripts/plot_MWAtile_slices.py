@@ -1,3 +1,4 @@
+from __future__ import print_function
 import healpy as hp
 import numpy as n,os,sys
 import sys,optparse
@@ -66,7 +67,7 @@ axarr[0].grid()
 axarr[1].grid()
 
 if not opts.savefig is None:
-    print("plotting to", opts.savefig)
+    print(("plotting to", opts.savefig))
     savefig(opts.savefig)
 else:
     show()

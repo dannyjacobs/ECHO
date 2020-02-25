@@ -1,5 +1,6 @@
 #!//anaconda/bin/python
 
+from __future__ import print_function
 import healpy as hp
 import numpy as np
 from matplotlib.pyplot import *
@@ -46,7 +47,7 @@ if (opts.theta != 0) or (opts.phi != 0):
 #assume receiver beam gain = transmitter beam gain = 0 at zenith
 if True:
     print("normalizng the data map to the mean of the top few healpix pixels ")
-    print("\t subtracting",np.ma.mean(ECHOmap[:5]))
+    print(("\t subtracting",np.ma.mean(ECHOmap[:5])))
     echonorm = np.mean(ECHOmap[:5])
     ECHOmap -= echonorm
 TXmodel -= np.mean(TXmodel[:5])

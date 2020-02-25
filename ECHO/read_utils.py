@@ -1,9 +1,11 @@
+from __future__ import print_function
+from __future__ import absolute_import
 import numpy as np,healpy as hp
 import sys
 import glob
 from astropy.time import Time
 from scipy.interpolate import interp1d
-from time_utils import flight_time_filter,waypt_time_filter
+from .time_utils import flight_time_filter,waypt_time_filter
 from distutils.version import StrictVersion
 
 SEC_PER_WEEK = 604800
@@ -57,8 +59,8 @@ def read_apm_logs(apm_files):
     versions = [apm_version(f) for f in apm_files]
     if len(set(versions))>1:
         for f,v in zip(apm_files,versions):
-            print(f,v)
-        raise(ValueError,"Found multiple apm versions. I don't know how to combine apm files between different versions.")
+            print((f,v))
+        raise ValueError
     postimes=[]
     angletimes=[]
     positions = []
@@ -288,14 +290,14 @@ def channel_select(freqs,rxspectrum,channel):
     """
     if type(channel)==int:
         if channel>len(freqs):
-            print("error: channel",channel)
-            print("not found in input freqs vector of length",len(freqs))
+            print(("error: channel",channel))
+            print(("not found in input freqs vector of length",len(freqs)))
             return None
         mychan=channel
     elif type(channel)==float:
         if channel>freqs.max() or channel<freqs.min():
-            print("error: selected freq",channel)
-            print("not found in input freqs vector spanning",freqs.min(),freqs.max())
+            print(("error: selected freq",channel))
+            print(("not found in input freqs vector spanning",freqs.min(),freqs.max()))
             return None
         mychan = np.abs(freqs-channel).argmin()
     return rxspectrum[:,mychan]

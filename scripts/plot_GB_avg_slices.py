@@ -1,3 +1,4 @@
+from __future__ import print_function
 import healpy as hp
 import numpy as n
 import sys,optparse

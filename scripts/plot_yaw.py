@@ -1,3 +1,4 @@
+from __future__ import print_function
 from matplotlib.pyplot import *
 import sys,glob
 import numpy as np
@@ -13,8 +14,8 @@ assert(len(apm_files)>0)
 
 #get data
 postimes,positions,angletimes,angles,cmdtimes,cmds = read_apm_logs(apm_files)
-print('gps start-end',postimes[0].iso,postimes[-1].iso)
-print('att start-end',angletimes[0].iso,angletimes[-1].iso)
+print(('gps start-end',postimes[0].iso,postimes[-1].iso))
+print(('att start-end',angletimes[0].iso,angletimes[-1].iso))
 
 
 

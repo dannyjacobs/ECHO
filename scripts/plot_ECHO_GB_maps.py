@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from __future__ import print_function
 from matplotlib.pyplot import *
 from matplotlib import gridspec
 import numpy as np

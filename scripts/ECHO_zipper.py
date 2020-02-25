@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 import time,optparse,sys
 from glob import glob
@@ -29,11 +30,11 @@ opts,args = o.parse_args(sys.argv[1:])
 #find the data files
 rxfiles = glob(opts.rx_files)
 assert(len(rxfiles)>0)
-print("found",len(rxfiles),"rx data files")
+print(("found",len(rxfiles),"rx data files"))
 
 apm_files = glob(opts.apm_files)
 assert(len(apm_files)>0)
-print("found",len(apm_files),"apm files")
+print(("found",len(apm_files),"apm files"))
 #load the apm data
 positiontimes,positions,angletimes,angles,cmdtimes,CMDnums = read_apm_logs(apm_files)
 
@@ -61,14 +62,14 @@ print("flagging based on yaw")
 yawmask,badyawtimes = flag_angles(angletimes,angles,2)
 posmask = apply_flagtimes(positiontimes,badyawtimes,1.0)
 rx_interp = np.ma.masked_where(posmask,rx_interp)
-print("total flags after yaw flagging:",np.sum(rx_interp.mask))
+print(("total flags after yaw flagging:",np.sum(rx_interp.mask)))
 
 
 #flag based on waypoints
 print("flagging based on waypoints")
 cmdmask = apply_flagtimes(positiontimes,cmdtimes,0.5)
 rx_interp = np.ma.masked_where(cmdmask,rx_interp)
-print("total flags after cmd flagging:",np.sum(rx_interp.mask))
+print(("total flags after cmd flagging:",np.sum(rx_interp.mask)))
 
 #output the zippered data in standard ECHO accumulated format
 """

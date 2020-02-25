@@ -1,5 +1,6 @@
-import read_utils
-import plot_utils
-import position_utils
-import time_utils
-import server_utils
+from __future__ import absolute_import
+from . import read_utils
+from . import plot_utils
+from . import position_utils
+from . import time_utils
+from . import server_utils

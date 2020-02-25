@@ -1,3 +1,4 @@
+from __future__ import print_function
 import healpy as hp
 import numpy as n,os,sys
 import sys,optparse
@@ -135,7 +136,7 @@ for ax in axarr.ravel():
     ax.xaxis.set_ticks(np.arange(-80,100,20))
 
 if not opts.savefig is None:
-    print("plotting to", opts.savefig)
+    print(("plotting to", opts.savefig))
     fig.savefig(opts.savefig)
 else:
     show()
