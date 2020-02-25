@@ -35,4 +35,4 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest pytest-cov
-        pytest -v --cov=ECHO --cov-report xml:./coverage.xml
+        pytest -v ECHO --cov=ECHO --cov-report xml:./coverage.xml
