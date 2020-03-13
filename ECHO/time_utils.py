@@ -1,5 +1,7 @@
 import numpy as np
 from astropy.time import Time
+from datetime import datetime
+
 
 
 def unix_to_gps(t):
@@ -41,3 +43,24 @@ def flight_time_filter(timeranges,times):
 def waypt_time_filter(waypt_times,times):
     inds = np.array([inrange(waypt_times,t) for t in times])
     return inds
+
+def DatetimetoUnix(data):
+    """Function to convert timestamps to unix time through an array.
+
+    Args:
+        logged_data (array): array of data including timestamps in the first column.
+
+    Returns:
+        timeconv_data: an array of the same shape as the input array, with timestamps in unix format.
+
+    """
+    timeconv_data = data
+    for row in timeconv_data:
+        timestamp = row[0]
+        timestamp = datetime.strptime(timestamp, '%m/%d/%Y %I:%M:%S %p')           
+        timestamp = Time(timestamp, format='datetime')
+        unix_time = timestamp.unix
+        unix_time = unix_time + (7*3600) #MST to GMT
+        row[0] = unix_time
+        
+    return timeconv_data
