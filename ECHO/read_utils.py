@@ -699,7 +699,7 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
     
         global_data = np.genfromtxt(name+'_vehicle_global_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,9)) 
         global_data[:,0] = global_data[:,0]/1e6
-        global_data[:,3] = global_data[:,3] #-1477.8
+        global_data[:,3] = global_data[:,3]-1477.8
 
         local_data = np.genfromtxt(name+'_vehicle_local_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,4,5,6,20,21))
         local_data[:,0] = local_data[:,0]/1e6
@@ -715,7 +715,6 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
         msg_filter = messages.split(',') if messages else None
         log=pyu.ULog(ulog, message_name_filter_list=msg_filter)
         biglist=[]
-        checklist=[]
         for data in log.data_list:
             data_keys = [f.field_name for f in data.field_data]
             data_keys.remove('timestamp')
@@ -727,7 +726,6 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
                     rowlist.append(data.data[data_keys[k]][i])
                 datalist.append(rowlist)
             biglist.append((str(data.name),np.asarray(datalist, dtype=float)))
-            checklist.append(datalist)
 
         for i,mess in enumerate(msg_filter):
             if "global" in biglist[i][0]:
@@ -738,7 +736,7 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
                 gps_data = biglist[i][1][:,[0,1,2,3,4]]
         
         global_data[:,0] = global_data[:,0]/1e6
-        global_data[:,3] = global_data[:,3] #-1477.8
+        global_data[:,3] = global_data[:,3]-1477.8
         
         local_data[:,0] = local_data[:,0]/1e6
         local_data[:,6] = local_data[:,6]*-1
