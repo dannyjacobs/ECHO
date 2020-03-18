@@ -1,4 +1,3 @@
-from __future__ import print_function
 from ECHO.plot_utils import make_polycoll,project_healpix,nf,fmt,cmap_discretize
 from ECHO.read_utils import read_map
 import numpy as np,optparse
@@ -62,7 +61,7 @@ cb.set_label('dB')
 #make the std plot
 ax2 = subplot(132)
 axis('equal')
-print(rms)
+print rms
 rmscoll = make_polycoll(rms,cmap=cm.jet)
 rmscoll.set_clim(0,2)
 ax2.add_collection(rmscoll)
@@ -84,7 +83,7 @@ axis('equal')
 #quantize the counts into log bins
 # bins = np.digitize(counts,[0,1,10,100])
 # counts[bins] = np.array([0,1,10,100])
-print((counts.min(),counts.max()))
+print counts.min(),counts.max()
 cmap = cmap_discretize(cm.bone_r,10)
 #counts = np.log(counts)
 countscoll = make_polycoll(counts,cmap=cmap)
@@ -106,7 +105,7 @@ cb = colorbar(countscoll, ax=ax3,orientation='horizontal')
 #         np.ceil((counts.max()-counts.min())/6)))
 cb.set_label('sample count')
 if not opts.savefig is None:
-    print(("saving to",opts.savefig))
+    print "saving to",opts.savefig
     savefig(opts.savefig)
 else:
     show()

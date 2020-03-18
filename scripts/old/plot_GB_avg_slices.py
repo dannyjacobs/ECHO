@@ -1,4 +1,3 @@
-from __future__ import print_function
 import healpy as hp
 import numpy as n
 import sys,optparse
@@ -26,7 +25,7 @@ beamfiles = ['../data/GB_rx_model_beam_NS.fits',
 fig,axarr = subplots(1,3,sharey=True,sharex=True,figsize=(12,4))
 labels=['NS','EW','all']
 #cross cut coordinates
-print("plotting E and H plane slices")
+print "plotting E and H plane slices"
 alt = n.linspace(-n.pi,n.pi,num=100)
 az = n.zeros_like(alt)
 

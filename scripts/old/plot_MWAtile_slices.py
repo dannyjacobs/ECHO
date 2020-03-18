@@ -1,4 +1,3 @@
-from __future__ import print_function
 import healpy as hp
 import numpy as n,os,sys
 import sys,optparse
@@ -23,7 +22,7 @@ rx_model = '../data/MWA_Tile_nside32_X.fits'
 
 
 #cross cut coordinates
-print("plotting E and H plane slices")
+print "plotting E and H plane slices"
 alt = n.linspace(-n.pi/2,n.pi/2)
 az = n.zeros_like(alt)
 
@@ -67,7 +66,7 @@ axarr[0].grid()
 axarr[1].grid()
 
 if not opts.savefig is None:
-    print(("plotting to", opts.savefig))
+    print "plotting to", opts.savefig
     savefig(opts.savefig)
 else:
     show()

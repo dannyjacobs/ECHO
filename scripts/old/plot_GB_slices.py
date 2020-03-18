@@ -1,4 +1,3 @@
-from __future__ import print_function
 import healpy as hp
 import numpy as n,os,sys
 import sys,optparse
@@ -35,7 +34,7 @@ rxtx_model = '../data/ECHO_ORBCOMM_model.fits'
 #Try a short dipole model.
 
 #cross cut coordinates
-print("plotting E and H plane slices")
+print "plotting E and H plane slices"
 alt = n.linspace(-n.pi/2,n.pi/2)
 az = n.zeros_like(alt)
 
@@ -136,7 +135,7 @@ for ax in axarr.ravel():
     ax.xaxis.set_ticks(np.arange(-80,100,20))
 
 if not opts.savefig is None:
-    print(("plotting to", opts.savefig))
+    print "plotting to", opts.savefig
     fig.savefig(opts.savefig)
 else:
     show()

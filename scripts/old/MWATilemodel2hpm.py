@@ -1,4 +1,3 @@
-from __future__ import print_function
 from mwapy.pb import primary_beam
 import optparse,sys
 import healpy as hp
@@ -39,7 +38,7 @@ rX,rY=primary_beam.MWA_Tile_full_EE(h5filepath, theta, phi,
                                      freq=opts.freq*1e6, delays=delays,
                                      zenithnorm=True, power=True )
 rX = dB(rX.squeeze()) #convert to power dB
-print(("subtracting ",rX[0]))
+print "subtracting ",rX[0]
 rX -= rX[0] #normalize to peak
 rY = dB(rY.squeeze())
 rY -= rY[0]

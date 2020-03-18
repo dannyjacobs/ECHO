@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-from __future__ import print_function
 from matplotlib.pyplot import *
 from matplotlib import gridspec
 import numpy as np
@@ -47,7 +46,7 @@ cols = int(np.ceil(len(files)/rows))
 #gs1.update(bottom=0.2)
 axs = []
 for i,filename in enumerate(files):
-    print(i)
+    print i
     #ax = subplot(gs1[i])
     ax = subplot(rows,cols,i+1)
     axs.append(ax)

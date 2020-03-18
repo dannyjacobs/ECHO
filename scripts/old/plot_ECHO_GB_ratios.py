@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-from __future__ import print_function
 from matplotlib.pyplot import *
 from matplotlib import gridspec
 import numpy as np
@@ -30,8 +29,8 @@ if True: #use the fitted transmitter map
             files.append(infiles[i].replace('.fits','-137MHz_tx_farfield_dist6.8cm_rot.fits'))
 else:
     files = [f.replace('.fits','-bicolog_legs_360_rot.fits') for f in infiles]
-print("loading:")
-print('\n'.join(files))
+print "loading:"
+print '\n'.join(files)
 #load all the files
 maps = [read_map(filename) for filename in files]
 #rotate the NS maps
@@ -45,7 +44,7 @@ fig,axarr = subplots(4,4,sharex=True,sharey=True,subplot_kw={'visible':False,'as
 imaxes = []
 for i in xrange(len(files)):
     for j in xrange(i,len(files)):
-        print((files[i],'/',files[j]))
+        print files[i],'/',files[j]
         if i==j:
             R = maps[i]
             vmin=-15
