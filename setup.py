@@ -15,7 +15,7 @@ setup_args = {
     'version': __version__,
     'package_data': {'ECHO': [op.join('data', '*')]},
     'setup_requires': ['pytest-runner', 'numpy'],
-    'install_requires': ['numpy', 'scipy', 'healpy', 'flask'],
+    'install_requires': ['numpy', 'scipy', 'healpy', 'flask', 'pyulog'],
     'tests_require': ['pytest', 'pytest-cases'],
 
 }
