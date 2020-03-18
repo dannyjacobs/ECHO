@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import optparse,sys,threading,atexit
 import numpy as np
 from flask import Flask,jsonify
-from read_utils import get_data
-from position_utils import interp_pos
+from .read_utils import get_data
+from .position_utils import interp_pos
 import time
 
 if __name__ == "__main__":
@@ -23,6 +24,7 @@ if __name__ == "__main__":
         help='Host address')
 
     opts,args = o.parse_args(sys.argv[1:])
+
 
 
 

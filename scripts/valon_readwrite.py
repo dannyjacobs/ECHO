@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+from __future__ import print_function
 import valon_synth as vs
 import sys
 import optparse
@@ -31,9 +32,9 @@ bRF = mySynth.get_rf_level(8)
 
 # If no options passed, print existing values
 if not opts.p is True:
-   print "\nSYNTH_A, SYNTH_B:"
-   print "Frequency: %0.4f, %0.4f" %(aFreq,bFreq)
-   print "RF Level: %d, %d\n" %(aRF,bRF)
+   print("\nSYNTH_A, SYNTH_B:")
+   print("Frequency: %0.4f, %0.4f" %(aFreq,bFreq))
+   print("RF Level: %d, %d\n" %(aRF,bRF))
 # Modify values if
 else:
    if not opts.freq is None:
@@ -61,10 +62,10 @@ else:
 
    if success:
       # Print info for A, B
-      print "\nSYNTH_A, SYNTH_B:"
-      print "Frequency: %0.2f, %0.2f" %(aFreq,bFreq)
-      print "RF Level: %d, %d" %(aRF,bRF)
-      print "\nSettings flashed successfully.\n"
+      print("\nSYNTH_A, SYNTH_B:")
+      print("Frequency: %0.2f, %0.2f" %(aFreq,bFreq))
+      print("RF Level: %d, %d" %(aRF,bRF))
+      print("\nSettings flashed successfully.\n")
    else:
-      print "\nError flashing settings to memory. Exiting...\n"
+      print("\nError flashing settings to memory. Exiting...\n")
       sys.exit()

@@ -1,10 +1,14 @@
+from __future__ import print_function
+from __future__ import absolute_import
 import numpy as np,healpy as hp
 import sys
 import glob
 from astropy.time import Time
 from scipy.interpolate import interp1d
-from time_utils import flight_time_filter,waypt_time_filter
+from .time_utils import flight_time_filter,waypt_time_filter, DatetimetoUnix
 from distutils.version import StrictVersion
+import pyulog.core as pyu
+import pyulog.ulog2csv as pyucsv
 
 SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
@@ -57,8 +61,8 @@ def read_apm_logs(apm_files):
     versions = [apm_version(f) for f in apm_files]
     if len(set(versions))>1:
         for f,v in zip(apm_files,versions):
-            print f,v
-        raise(ValueError,"Found multiple apm versions. I don't know how to combine apm files between different versions.")
+            print((f,v))
+        raise ValueError
     postimes=[]
     angletimes=[]
     positions = []
@@ -288,14 +292,14 @@ def channel_select(freqs,rxspectrum,channel):
     """
     if type(channel)==int:
         if channel>len(freqs):
-            print "error: channel",channel,
-            print "not found in input freqs vector of length",len(freqs)
+            print(("error: channel",channel))
+            print(("not found in input freqs vector of length",len(freqs)))
             return None
         mychan=channel
     elif type(channel)==float:
         if channel>freqs.max() or channel<freqs.min():
-            print "error: selected freq",channel,
-            print "not found in input freqs vector spanning",freqs.min(),freqs.max()
+            print(("error: selected freq",channel))
+            print(("not found in input freqs vector spanning",freqs.min(),freqs.max()))
             return None
         mychan = np.abs(freqs-channel).argmin()
     return rxspectrum[:,mychan]
@@ -364,7 +368,34 @@ def flag_waypoints(postimes,waypoint_times):
     """
     return np.zeros(len(postimes))
 
+def mission_endpoint_flagging(pos_data,wpt_data):
+    """Read in position and waypoint array, flag all waypoints
 
+    Args:
+        ulog (int): the ulog to be converted.
+
+    Returns:
+        flagged_array: array of flagged data.
+        mission_data: array of valid mission data.
+    
+    """
+    flagged_indices = []
+    mission_indices = []
+    mission_start = 0
+    mission_end = wpt_data[-1][0]
+    
+    for row in wpt_data:
+        if row[1] == 1:
+            mission_start = row[0]
+            break
+    
+    for index,row in enumerate(pos_data):
+        if row[0]<mission_start or row[0]>mission_end: flagged_indices.append(index)
+        else: mission_indices.append(index)
+    
+    flagged_data = np.delete(pos_data,mission_indices,0)
+    mission_data = np.delete(pos_data,flagged_indices,0)
+    return flagged_data, mission_data
 
 
 def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
@@ -402,7 +433,7 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
         weektimes = []
         apm_files = glob.glob(infile)
         for apm_file in apm_files:
-            print 'Reading in %s...' %apm_file
+            print('Reading in %s...' %apm_file)
             lines = open(apm_file).readlines()
             if not len(lines) == 0:
                 for line in lines:
@@ -529,8 +560,8 @@ def get_data(infile,filetype=None,freqs=[],freq=0.0,freq_chan=None,
 
 
     else:
-        print '\nNo valid filetype found for %s' %infile
-        print 'Exiting...\n\n'
+        print('\nNo valid filetype found for %s' %infile)
+        print('Exiting...\n\n')
         sys.exit()
 
 
@@ -593,10 +624,126 @@ def get_filter_times(infile,first_waypt=3,waypts=False):
         if waypts:
             for i in range(1,CMD_times.shape[0]):
                 waypoint_times.append(CMD_times[i].gps)
-    print start_stop_times
+    print(start_stop_times)
     start_stop_times = np.array(start_stop_times)
     if waypts:
         waypoint_times = np.array(waypoint_times)
         return start_stop_times,waypoint_times
     else:
         return start_stop_times
+    
+def read_tlog_txt(tlog):
+    """Read in text files converted from tlogs, put them into appropriate arrays.
+
+    Args:
+        tlog (int): the text tlog to be read.
+
+    Returns:
+        wpt_array: waypoints.
+        global_array: global position.
+        local_array: local position.
+        gps_array: gps raw data.
+    """
+    wpt_data = []
+    global_data = []
+    local_data = []
+    gps_data = []
+    #att_data = []
+    
+    lines = open(tlog).readlines()
+    for line in lines:
+
+        if line.find('mavlink_mission_item_reached_t') != -1:
+            datapoints = line.split()
+            if datapoints[11]=='mavlink_mission_item_reached_t': wpt_data.append([datapoints[0]+' '+datapoints[1]+' '+datapoints[2],datapoints[13]])
+        elif line.find('mavlink_global_position_int_t') != -1:
+            datapoints = line.split()
+            if datapoints[15]!='time_boot_ms': global_data.append([datapoints[0]+' '+datapoints[1]+' '+datapoints[2],float(datapoints[13])/1e3,float(datapoints[15])/1e7,float(datapoints[17])/1e7,(float(datapoints[19])/1e3)-1477.8,float(datapoints[29])/1e2])
+        elif line.find('mavlink_local_position_ned_t') != -1:
+            datapoints = line.split()
+            if datapoints[15]!='time_boot_ms': local_data.append([datapoints[0]+' '+datapoints[1]+' '+datapoints[2],float(datapoints[13])/1e3,datapoints[15],datapoints[17],float(datapoints[19])*-1])
+        elif line.find('mavlink_gps_raw_int_t') !=- 1:
+            datapoints = line.split()
+            if datapoints[15]!='time_usec': gps_data.append([datapoints[0]+' '+datapoints[1]+' '+datapoints[2],float(datapoints[13])/1e6,float(datapoints[15])/1e7,float(datapoints[17])/1e7,float(datapoints[19])/1e3])
+        #elif line.find('mavlink_attitude_t') != -1:
+            #datapoints = line.split()
+            #if datapoints[15]!='body_roll_rate' and datapoints[15]!='time_boot_ms': att_data.append([datapoints[1],datapoints[13],datapoints[15],datapoints[17],datapoints[19]])
+            
+    wpt_data = DatetimetoUnix(wpt_data)
+    global_Data = DatetimetoUnix(global_data)
+    local_data = DatetimetoUnix(local_data)
+    gps_data = DatetimetoUnix(gps_data)
+    #DatetimetoUnix(att_data)
+    
+    wpt_array = np.array(wpt_data,dtype='int')
+    global_array = np.array(global_data,dtype='float')
+    local_array = np.array(local_data,dtype='float')
+    gps_array = np.array(gps_data,dtype='float')
+    #att_array = np.array(att_data)
+    return wpt_array, global_array, local_array, gps_array#, att_array
+
+def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local_position,vehicle_gps_position'):
+    """Read in ulog file, put them into appropriate arrays, then save to .csv
+
+    Args:
+        ulog (int): the ulog to be converted.
+
+    Returns:
+        global_array: global position.
+        local_array: local position.
+        gps_array: gps raw data.
+    """
+    name = ulog[:-4]
+    if output:
+        pyucsv.convert_ulog2csv(ulog,messages=messages, output=output ,delimiter=',')
+    
+        global_data = np.genfromtxt(name+'_vehicle_global_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,9)) 
+        global_data[:,0] = global_data[:,0]/1e6
+        global_data[:,3] = global_data[:,3]-1477.8
+
+        local_data = np.genfromtxt(name+'_vehicle_local_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,4,5,6,20,21))
+        local_data[:,0] = local_data[:,0]/1e6
+        local_data[:,6] = local_data[:,6]*-1
+
+        gps_data = np.genfromtxt(name+'_vehicle_gps_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,4))
+        gps_data[:,0] = gps_data[:,0]/1e6
+        gps_data[:,1] = gps_data[:,1]/1e6
+        gps_data[:,2] = gps_data[:,2]/1e7
+        gps_data[:,3] = gps_data[:,3]/1e7
+        gps_data[:,4] = gps_data[:,4]/1e3
+    else:
+        msg_filter = messages.split(',') if messages else None
+        log=pyu.ULog(ulog, message_name_filter_list=msg_filter)
+        biglist=[]
+        for data in log.data_list:
+            data_keys = [f.field_name for f in data.field_data]
+            data_keys.remove('timestamp')
+            data_keys.insert(0, 'timestamp')
+            datalist=[]
+            for i in range(len(data.data['timestamp'])):
+                rowlist=[]
+                for k in range(len(data_keys)):
+                    rowlist.append(data.data[data_keys[k]][i])
+                datalist.append(rowlist)
+            biglist.append((str(data.name),np.asarray(datalist, dtype=float)))
+
+        for i,mess in enumerate(msg_filter):
+            if "global" in biglist[i][0]:
+                global_data = biglist[i][1][:,[0,1,2,3,9]]
+            if "local" in biglist[i][0]:
+                local_data = biglist[i][1][:,[0,1,2,3,4,5,6,20,21]]
+            if "gps" in biglist[i][0]:
+                gps_data = biglist[i][1][:,[0,1,2,3,4]]
+        
+        global_data[:,0] = global_data[:,0]/1e6
+        global_data[:,3] = global_data[:,3]-1477.8
+        
+        local_data[:,0] = local_data[:,0]/1e6
+        local_data[:,6] = local_data[:,6]*-1
+    
+        gps_data[:,0] = gps_data[:,0]/1e6
+        gps_data[:,1] = gps_data[:,1]/1e6
+        gps_data[:,2] = gps_data[:,2]/1e7
+        gps_data[:,3] = gps_data[:,3]/1e7
+        gps_data[:,4] = gps_data[:,4]/1e3
+    return global_data, local_data, gps_data

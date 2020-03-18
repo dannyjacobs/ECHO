@@ -1,3 +1,5 @@
+from __future__ import print_function
+from __future__ import absolute_import
 import numpy as np,os,sys
 import healpy as hp
 import math
@@ -7,8 +9,8 @@ from matplotlib import cm,colors
 import matplotlib.pyplot as plt
 from matplotlib._png import read_png
 
-from position_utils import latlon2xy,to_spherical
-from time_utils import gps_to_HMS,find_peak
+from .position_utils import latlon2xy,to_spherical
+from .time_utils import gps_to_HMS,find_peak
 
 def cmap_discretize(cmap, N):
     """Return a discrete colormap from the continuous colormap cmap.
@@ -32,7 +34,7 @@ def cmap_discretize(cmap, N):
     indices = np.linspace(0, 1., N+1)
     cdict = {}
     for ki,key in enumerate(('red','green','blue')):
-        cdict[key] = [ (indices[i], colors_rgba[i-1,ki], colors_rgba[i,ki]) for i in xrange(N+1) ]
+        cdict[key] = [ (indices[i], colors_rgba[i-1,ki], colors_rgba[i,ki]) for i in range(N+1) ]
     # Return colormap object.
     return colors.LinearSegmentedColormap(cmap.name + "_%d"%N, cdict, 1024)
 
@@ -108,7 +110,7 @@ def grid_theta_phi_to_healpix(theta,phi,inbeam):
         phi (CW longitude angle, deg)
         inbeam: input beam values matching the corresponding theta and phi coords
     """
-    print len(theta),len(phi),len(inbeam)
+    print((len(theta),len(phi),len(inbeam)))
     nside = hp.npix2nside(len(inbeam))
     pixes = hp.ang2pix(nside,theta,phi)
     beam = np.zeros(hp.nside2npix(nside))
@@ -313,7 +315,7 @@ def animate_peak(i,peak_plot,peak_line,noise_line,pkrms_plot,pkrms_line,spec_tim
     peakvals.append(peakval)
     peakfreqs.append(peakfreq)
     rmss.append(rms)
-    print peaktimes[-1],peakfreqs[-1],peakvals[-1],rmss[-1]
+    print((peaktimes[-1],peakfreqs[-1],peakvals[-1],rmss[-1]))
 
     labels = []
     for label in peak_plot.get_xticks():
