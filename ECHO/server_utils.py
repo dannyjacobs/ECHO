@@ -27,9 +27,10 @@ if __name__ == "__main__":
 
 
 
-    # Verify a GPS file was passed by the user
-    """if not opts.gps_file:
-        print('\n Please enter valid file for GPS information\nExiting...\n\n')
+
+    """# Verify a GPS file was passed by the user
+    if not opts.gps_file:
+        print '\n Please enter valid file for GPS information\nExiting...\n\n'
         sys.exit()"""
     # ========= End Selection
 
