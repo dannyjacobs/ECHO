@@ -377,22 +377,22 @@ def mission_endpoint_flagging(pos_data,wpt_data):
     Returns:
         flagged_array: array of flagged data.
         mission_data: array of valid mission data.
-    
+
     """
     flagged_indices = []
     mission_indices = []
     mission_start = 0
     mission_end = wpt_data[-1][0]
-    
+
     for row in wpt_data:
         if row[1] == 1:
             mission_start = row[0]
             break
-    
+
     for index,row in enumerate(pos_data):
         if row[0]<mission_start or row[0]>mission_end: flagged_indices.append(index)
         else: mission_indices.append(index)
-    
+
     flagged_data = np.delete(pos_data,mission_indices,0)
     mission_data = np.delete(pos_data,flagged_indices,0)
     return flagged_data, mission_data
@@ -631,7 +631,7 @@ def get_filter_times(infile,first_waypt=3,waypts=False):
         return start_stop_times,waypoint_times
     else:
         return start_stop_times
-    
+
 def read_tlog_txt(tlog):
     """Read in text files converted from tlogs, put them into appropriate arrays.
 
@@ -649,7 +649,7 @@ def read_tlog_txt(tlog):
     local_data = []
     gps_data = []
     #att_data = []
-    
+
     lines = open(tlog).readlines()
     for line in lines:
 
@@ -668,13 +668,13 @@ def read_tlog_txt(tlog):
         #elif line.find('mavlink_attitude_t') != -1:
             #datapoints = line.split()
             #if datapoints[15]!='body_roll_rate' and datapoints[15]!='time_boot_ms': att_data.append([datapoints[1],datapoints[13],datapoints[15],datapoints[17],datapoints[19]])
-            
+
     wpt_data = DatetimetoUnix(wpt_data)
-    global_Data = DatetimetoUnix(global_data)
+    global_data = DatetimetoUnix(global_data)
     local_data = DatetimetoUnix(local_data)
     gps_data = DatetimetoUnix(gps_data)
     #DatetimetoUnix(att_data)
-    
+
     wpt_array = np.array(wpt_data,dtype='int')
     global_array = np.array(global_data,dtype='float')
     local_array = np.array(local_data,dtype='float')
@@ -696,8 +696,8 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
     name = ulog[:-4]
     if output:
         pyucsv.convert_ulog2csv(ulog,messages=messages, output=output ,delimiter=',')
-    
-        global_data = np.genfromtxt(name+'_vehicle_global_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,9)) 
+
+        global_data = np.genfromtxt(name+'_vehicle_global_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,9))
         global_data[:,0] = global_data[:,0]/1e6
         global_data[:,3] = global_data[:,3]-1477.8
 
@@ -734,16 +734,18 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
                 local_data = biglist[i][1][:,[0,1,2,3,4,5,6,20,21]]
             if "gps" in biglist[i][0]:
                 gps_data = biglist[i][1][:,[0,1,2,3,4]]
-        
+
         global_data[:,0] = global_data[:,0]/1e6
         global_data[:,3] = global_data[:,3]-1477.8
-        
+
         local_data[:,0] = local_data[:,0]/1e6
         local_data[:,6] = local_data[:,6]*-1
-    
+
         gps_data[:,0] = gps_data[:,0]/1e6
         gps_data[:,1] = gps_data[:,1]/1e6
         gps_data[:,2] = gps_data[:,2]/1e7
         gps_data[:,3] = gps_data[:,3]/1e7
         gps_data[:,4] = gps_data[:,4]/1e3
+
+        #u_log_dict = {'global_position_u':,'local_position_u':,'gps_position_u':gps_data}
     return global_data, local_data, gps_data
