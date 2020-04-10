@@ -69,7 +69,9 @@ class Observation:
     
     def combine_sorties(self):
         #combine multiple sorties into a dataproduct
-        #Customize fields?
+        
+        #TODO: rewrite using sort_sorties()
+        
         if 'mission_data' in dir(self.sortie_list[0]):
             combined_arr = self.sortie_list[0].mission_data
             for sortie in self.sortie_list[1:]:
@@ -77,13 +79,17 @@ class Observation:
                     print("Unable to combine: " +sortie.name + " mission data not flagged")
                     break
                 combined_arr = np.vstack((combined_arr, sortie.mission_data))
-            self.dataproduct = np.sort(combined_arr, axis=0)
+            self.dataproduct = np.sort(combined_arr, axis=0)  #remove after rewrite
         else:
             print("Unable to combine: " +self.sortie_list[0].name + " mission data not flagged")
 
         #sort by time first
     def interpolate_rx(self):
-        #Takes position-times of the drone and uses them to create RX information of the same dimensions as position data.
+        '''#Takes position-times of the drone and uses them to create RX information of the same dimensions as position data.
+        
+        Returns: 
+            Array with columns: 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg), Radio Spectra'
+        '''
         
         #sort sorties by time
         sorties = self.sort_sorties()
@@ -98,14 +104,28 @@ class Observation:
             indices = np.nonzero(np.logical_and(rx_times >= start_time , rx_times <= end_time))
             times = target_data['Observation1']['time'][list(indices[0])]
             t_rx.append(Time(times,scale='utc',format='unix'))
-            rx_data.append(target_data['Observation1']['Tuning1']['XX'][indices[0],512])
+            rx_data.append(target_data['Observation1']['Tuning1']['XX'][indices[0],512])  #Need to program in multiple tunings and Polarizations
         
         rx = np.concatenate(rx_data)
         t_rx = np.concatenate(t_rx)
         pos_times = np.concatenate(pos_times)
         postimes = Time(pos_times, format = 'unix')
         time_info =  Time(t_rx,scale='utc')
-        self.interp_rx = read_utils.interp_rx(postimes, time_info, rx)
+        interp_rx = read_utils.interp_rx(postimes, time_info, rx)
+        
+        for i,sortie in enumerate(sorties):
+            if i == 0:
+                sortie_full_mission = sortie.mission_data
+            else:
+                sortie_full_mission = np.vstack((sortie_full_mission, sortie.mission_data))
+
+        interp_arr = np.zeros((interp_rx.shape[0],1))
+        for i, interp in enumerate(interp_rx):
+            interp_arr[i,0] = interp
+
+        self.refined_array = np.hstack((sortie_full_mission, interp_arr))
+        
+        
         pass
     
     def make_fits():
