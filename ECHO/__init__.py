@@ -8,6 +8,10 @@ from . import server_utils
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdate
+import pandas as pd
+import h5py 
+from astropy.time import Time
+
 
 import ECHO.read_utils as rd
 import ECHO.time_utils
@@ -50,12 +54,64 @@ class Observation:
             sortie.flag_waypoints()
             #flag yaws
             sortie.flag_yaws
-            
-    def combine_sorties():
+    
+    def sort_sorties(self):
+        '''
+        At any point we may need to sort the list of sorties by time. 
+        It's preferable to do this rather than sort the data arrays after combining.
+        '''
+        #get list of sorties
+        sorties = self.sortie_list
+        #check first time in each sortie
+        #order sorties by first time
+        s = sorted(sorties, key = lambda sortie:sortie.t_dict['global_t'][0,0])
+        return s
+    
+    def combine_sorties(self):
         #combine multiple sorties into a dataproduct
         #Customize fields?
-        
+        if 'mission_data' in dir(self.sortie_list[0]):
+            combined_arr = self.sortie_list[0].mission_data
+            for sortie in self.sortie_list[1:]:
+                if 'mission_data' not in dir(self.sortie_list[0]): 
+                    print("Unable to combine: " +sortie.name + " mission data not flagged")
+                    break
+                combined_arr = np.vstack((combined_arr, sortie.mission_data))
+            self.dataproduct = np.sort(combined_arr, axis=0)
+        else:
+            print("Unable to combine: " +self.sortie_list[0].name + " mission data not flagged")
+
         #sort by time first
+    def interpolate_rx(self):
+        #Takes position-times of the drone and uses them to create RX information of the same dimensions as position data.
+        
+        #sort sorties by time
+        sorties = self.sort_sorties()
+        rx_data = []
+        t_rx = []
+        pos_times = []
+        for i,sortie in enumerate(sorties):
+            start_time, end_time = sortie.mission_data[0,0], sortie.mission_data[-1,0]
+            pos_times.append(list(sortie.mission_data[:,0]))
+            target_data = h5py.File(sortie.data,'r')
+            rx_times = target_data['Observation1']['time'][()]
+            indices = np.nonzero(np.logical_and(rx_times >= start_time , rx_times <= end_time))
+            times = target_data['Observation1']['time'][list(indices[0])]
+            t_rx.append(Time(times,scale='utc',format='unix'))
+            rx_data.append(target_data['Observation1']['Tuning1']['XX'][indices[0],512])
+        
+        rx = np.concatenate(rx_data)
+        t_rx = np.concatenate(t_rx)
+        pos_times = np.concatenate(pos_times)
+        postimes = Time(pos_times, format = 'unix')
+        time_info =  Time(t_rx,scale='utc')
+        self.interp_rx = read_utils.interp_rx(postimes, time_info, rx)
+        pass
+    
+    def make_fits():
+        pass
+    
+    def make_beam():
         pass
 
     class Sortie:
@@ -80,9 +136,10 @@ class Observation:
             bootstart = self.u_dict["gps_position_u"][0][1] - self.u_dict["gps_position_u"][0][0]
             for key,data in self.t_dict.items():
                 if key!="log_type":
-                    data[:,0] = data[:,1]+bootstart
-                    data = np.delete(data, 1, 1)
-                    self.t_dict[key]=data
+                    if key!='waypoint_t':
+                        data[:,0] = data[:,1]+bootstart
+                        data = np.delete(data, 1, 1)
+                        self.t_dict[key]=data
             for key,data in self.u_dict.items():
                 if key!="log_type":
                     data[:,0] = data[:,0]+bootstart
@@ -159,4 +216,6 @@ class Observation:
             
             #position
             
+        def plot_flags():
             
+            pass

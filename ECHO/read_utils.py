@@ -315,7 +315,7 @@ def interp_rx(postimes,rxtimes,rx):
     Note: this is just a general interpolation function that uses astropy times
        and can be used for anything
     """
-    power_interp_model = interp1d(rxtimes.gps,rx)
+    power_interp_model = interp1d(rxtimes.gps,rx, fill_value="extrapolate")
     rx_interp = power_interp_model(postimes.gps)
     return rx_interp
 def flag_apm_pos(postimes,positions,waypoint_times=None):
@@ -574,8 +574,8 @@ def get_start_stop_times(infile):
         lines=open(apm_file).readlines()
         weektimes = []
         for line in lines:
-           if line.startswith('GPS'):
-              weektimes.append(map(float,line.split(',')[3:5]))
+            if line.startswith('GPS'):
+                weektimes.append(map(float,line.split(',')[3:5]))
         weektimes = np.array(weektimes)
         seconds = weektimes[:,1]*SEC_PER_WEEK + weektimes[:,0]/1000.
         times = Time(seconds, format='gps')
