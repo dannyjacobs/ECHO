@@ -13,10 +13,6 @@ import h5py
 from astropy.time import Time
 
 
-import ECHO.read_utils as rd
-import ECHO.time_utils
-import ECHO.position_utils as pos
-
 
 class Observation:
     
