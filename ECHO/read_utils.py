@@ -9,6 +9,7 @@ from .time_utils import flight_time_filter,waypt_time_filter, DatetimetoUnix
 from distutils.version import StrictVersion
 import pyulog.core as pyu
 import pyulog.ulog2csv as pyucsv
+import h5py
 
 SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
@@ -16,6 +17,7 @@ def dB(x):
     return 10*np.log10(x)
 def dB2(x): #this is the definition of dB for Voltages
     return 20*np.log10(x)
+
 def concat_times(Ts):
     "input a list of astropy time vectors"
     "return a single concatenated time vector"
@@ -749,3 +751,40 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
 
         #u_log_dict = {'global_position_u':,'local_position_u':,'gps_position_u':gps_data}
     return global_data, local_data, gps_data
+
+def read_h5(dataFile):
+    """Read in ulog file, put them into appropriate arrays, then save to .csv
+
+    Args:
+        target_data (HDF5 data file): the datafile for the received power for the target antenna, saved in in h5 format.
+
+    Returns:
+        dataDict: A dictionary containing the observation data. Includes observations, tunings, times, XX and YY polarizations, frequencies
+    """
+    #data consists of one or more observations, each consisting of a time array and tuning arrays.
+    #Get number of observations
+    #for each observation, get tunings and time
+    #for each tuning get 
+
+
+    target_data = h5py.File(dataFile,'r')
+    keys = [key for key in target_data.keys()]
+    #obs_keys = [obsKey for key in keys]
+    dataDict = {}
+    for key in keys:
+        obsKeys = [obsKey for obsKey in target_data[key].keys()]
+        obsDict = {}
+        for obsKey in obsKeys:
+            if obsKey == 'time':
+                obsDict[obsKey] = np.asarray(target_data[key][obsKey])
+            if obsKey != 'time':
+                tuningKeys = [tunKey for tunKey in target_data[key][obsKey].keys()]
+                tunDict = {}
+                dataKeys = []
+                for tunKey in tuningKeys:
+                    #print(key, obsKey, tunKey)
+                    data = np.asarray(target_data[key][obsKey][tunKey])
+                    tunDict[tunKey] = data
+                obsDict[obsKey] = tunDict
+        dataDict[key] = obsDict   
+    return dataDict

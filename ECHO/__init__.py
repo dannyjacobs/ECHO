@@ -6,12 +6,13 @@ from . import time_utils
 from . import server_utils
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdate
 import pandas as pd
 import h5py 
 from astropy.time import Time
-
+import healpy as hp
 
 
 class Observation:
@@ -27,6 +28,7 @@ class Observation:
     def __init__(self):
         self.sortie_list = []
         self.num_sorties = 0
+        self.isFlagged = False
         
     def addSortie(self, tlog, ulog, data):
         #add a sortie to this observation
@@ -39,8 +41,10 @@ class Observation:
     
     def flagSorties(self):
         '''
-        Flag the global data in each sortie
-        return flagged data, mission data
+        Flag the global data in each sortie.
+        
+        Output: flagged data, mission data
+        
         '''
         for sortie in self.sortie_list:
             print(sortie["name"])
@@ -49,12 +53,17 @@ class Observation:
             #flag waypoints
             sortie.flag_waypoints()
             #flag yaws
-            sortie.flag_yaws
+            #sortie.flag_yaws()
     
     def sort_sorties(self):
         '''
         At any point we may need to sort the list of sorties by time. 
         It's preferable to do this rather than sort the data arrays after combining.
+        
+        Sort our current list of sorties by time, using the first entry in each.
+        
+        Output:
+            s: Sortie object
         '''
         #get list of sorties
         sorties = self.sortie_list
@@ -64,6 +73,13 @@ class Observation:
         return s
     
     def combine_sorties(self):
+        '''
+        Combine sorties.
+        
+        Output:
+            
+        '''
+
         #combine multiple sorties into a dataproduct
         
         #TODO: rewrite using sort_sorties()
@@ -81,9 +97,10 @@ class Observation:
 
         #sort by time first
     def interpolate_rx(self):
-        '''#Takes position-times of the drone and uses them to create RX information of the same dimensions as position data.
+        '''
+        Takes position-times of the drone and uses them to create RX information of the same dimensions as position data.
         
-        Returns: 
+        Output: 
             Array with columns: 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg), Radio Spectra'
         '''
         
@@ -100,7 +117,11 @@ class Observation:
             indices = np.nonzero(np.logical_and(rx_times >= start_time , rx_times <= end_time))
             times = target_data['Observation1']['time'][list(indices[0])]
             t_rx.append(Time(times,scale='utc',format='unix'))
-            rx_data.append(target_data['Observation1']['Tuning1']['XX'][indices[0],512])  #Need to program in multiple tunings and Polarizations
+            rx_data.append(
+                read_utils.dB(
+                    target_data['Observation1']['Tuning1']['XX'][indices[0],512]
+                )
+            )  #Need to program in multiple tunings and Polarizations
         
         rx = np.concatenate(rx_data)
         t_rx = np.concatenate(t_rx)
@@ -120,20 +141,84 @@ class Observation:
             interp_arr[i,0] = interp
 
         self.refined_array = np.hstack((sortie_full_mission, interp_arr))
-        
+        self.rx_full = rx
+        self.t_rx_full = time_info
         
         pass
     
-    def make_fits():
-        pass
+    def make_fits(self):
+        '''
+        Read in the refined array and create a fits file.
+        
+        Output:
+        
+        lat0 = 34.3486      #mru: 34.3482865
+        lon0 = -106.8857    #mru:-106.886013
+        '''
+        
+        hpx_beam,hpx_rms,hpx_counts = plot_utils.grid_to_healpix(
+            self.refined_array[1:,1],
+            self.refined_array[1:,2],
+            self.refined_array[1:,3],
+            self.refined_array[1:,5],
+            lat0 = 34.3482865, #self.refined_array[0,1],
+            lon0 = -106.886013, #self.refined_array[0,2],
+            nside = 8
+        )
+        
+        hp.write_map('./NS_corrected_beam.fits',hpx_beam)
+        hp.write_map('./NS_corrected_rms.fits',hpx_rms)
+        hp.write_map('./NS_corrected_counts.fits',hpx_counts)
+        
     
-    def make_beam():
-        pass
+    def make_beam(self):
+        '''
+        
+        '''
+        
+        countsfile = './NS_corrected_counts.fits'
+        beamfile = './NS_corrected_beam.fits'
+        
+        counts = read_utils.read_map(countsfile)
+        beam = read_utils.read_map(beamfile)
+        beam -= beam.max()
+
+        THETA,PHI,IM = plot_utils.project_healpix(beam)
+        X,Y = np.meshgrid(
+            np.linspace(-1,1,num=THETA.shape[0]),
+            np.linspace(-1,1,num=THETA.shape[1])
+            )
+
+        hp.mollview(beam)
+
+        plt.figure()
+        ax1 = plt.subplot(111)
+        plt.axis('equal')
+        beamcoll = plot_utils.make_polycoll(beam,cmap=matplotlib.cm.jet)
+        beamcoll.set_clim(-2.3,0)
+        ax1.add_collection(beamcoll)
+        CS = ax1.contour(X,Y,THETA*180/np.pi,[20,40,60],colors='k')
+        CS.levels = [plot_utils.nf(val) for val in CS.levels]
+        plt.clabel(CS, inline=1, fontsize=10,fmt=plot_utils.fmt)
+        ax1.autoscale_view()
+        ax1.set_yticklabels([])
+        ax1.set_xticklabels([])
+        ax1.set_title('Gridded power')
+        cb = plt.colorbar(beamcoll, ax=ax1,orientation='horizontal')
+        tick_locator = matplotlib.ticker.MaxNLocator(nbins=5)
+        cb.locator = tick_locator
+        cb.update_ticks()
+        cb.set_label('dB')
 
     class Sortie:
         '''
         A sortie is created by three files: a ulog, a tlog, and an LWA data file.
         The data from these files is read and compiled into arrays.
+        
+        Input:
+        
+        Output:
+        
         '''
         def __init__(self, sortie_tlog, sortie_ulog, sortie_data, sortie_num, sortie_name=None):
             self.ulog = sortie_ulog
@@ -164,27 +249,70 @@ class Observation:
                     self.u_dict[key]=data
 
         def read(self):
+            '''
+            Read in the sortie from associated data files.
+            
+            Output:
+            
+            '''
             sortie_tlog = read_utils.read_tlog_txt(self.tlog)
-            sortie_ulog = read_utils.read_ulog(self.ulog,messages="vehicle_global_position,vehicle_local_position,vehicle_gps_position")
-            self.t_dict={"log_type":"t","waypoint_t":sortie_tlog[0],"global_t":sortie_tlog[1],"local_t":sortie_tlog[2],"gps_t":sortie_tlog[3]}
-            self.u_dict={"log_type":"u",'global_position_u':sortie_ulog[0],'local_position_u':sortie_ulog[1],'gps_position_u':sortie_ulog[2]}
-
+            sortie_ulog = read_utils.read_ulog(
+                self.ulog,
+                messages="vehicle_global_position,vehicle_local_position,vehicle_gps_position"
+            )
+            self.t_dict={
+                "log_type":"t",
+                "waypoint_t":sortie_tlog[0],
+                "global_t":sortie_tlog[1],
+                "local_t":sortie_tlog[2],
+                "gps_t":sortie_tlog[3]
+            }
+            self.u_dict={
+                "log_type":"u",
+                'global_position_u':sortie_ulog[0],
+                'local_position_u':sortie_ulog[1],
+                'gps_position_u':sortie_ulog[2]
+            }
+            #TODO: Add data read instead of reading in interpolate_rx
+            self.data_dict = read_utils.read_h5(self.data)
+            
+            
         def flag_waypoints(self):
+            '''
+            Flag data arrays based on waypoint data.
+            
+            Output:
+            
+            '''
             # flag based on mission waypoints
             pass
 
         def flag_endpoints(self):
+            '''
+            Flag data arrays based on mission start/end.
+            
+            Output:
+            
+            '''
             # flag based on mission waypoints
-            self.flagged_data, self.mission_data = read_utils.mission_endpoint_flagging(self.t_dict["global_t"], self.t_dict["waypoint_t"])
+            self.flagged_data, self.mission_data = read_utils.mission_endpoint_flagging(
+                self.t_dict["global_t"], 
+                self.t_dict["waypoint_t"]
+            )
 
         def flag_yaws(self):
-            # flag based on mission waypoints
+            # flag based on yaw position
             pass
         
         ### Plotting Functions
         
+        #flesh this out, lower priority
+        
         def plot(self):
             #This makes a plot of various views of the drone data.
+            
+            
+            
             fig1 = plt.figure()
             plt.plot(self.t_dict['global_t'][:,1],self.t_dict['global_t'][:,2],'b.')
             plt.plot(self.u_dict['global_position_u'][:,1],self.u_dict['global_position_u'][:,2],'r.', alpha=0.25)
