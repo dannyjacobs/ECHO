@@ -236,6 +236,7 @@ class Observation:
             M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
             M = np.ma.masked_where(hp.UNSEEN==M,M)
             M.fill_value = hp.UNSEEN
+            
             counts = self.hpx_counts
             beam = M
         
