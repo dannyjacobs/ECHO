@@ -287,7 +287,8 @@ class Observation:
             self.data = sortie_data
             self.sortie_num=sortie_num
             if not sortie_name:
-                self.name = "sortie"+f"{sortie_num:02d}"
+                #self.name = "sortie"+f"{sortie_num:02d}"
+                self.name = "sortie%(sortienum)02d"%{'sortienum':sortie_num}
             flag_mask = []
 
         def get_bootstart(self):
