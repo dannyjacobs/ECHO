@@ -25,10 +25,16 @@ class Observation:
     
     '''
     
-    def __init__(self):
+    def __init__(self, lat, lon, frequency=None, channel=None, description=None):
         self.sortie_list = []
         self.num_sorties = 0
         self.isFlagged = False
+        self.lat = lat
+        self.lon = lon
+        self.ref_frequency = frequency
+        self.ref_channel = channel
+        if description is not None:
+            self.description = description
         
     def addSortie(self, tlog, ulog, data):
         #add a sortie to this observation
@@ -96,32 +102,62 @@ class Observation:
             print("Unable to combine: " +self.sortie_list[0].name + " mission data not flagged")
 
         #sort by time first
-    def interpolate_rx(self):
+    def interpolate_rx(self, obsNum, tuning, polarization, frequency=None, channel=None):
         '''
         Takes position-times of the drone and uses them to create RX information of the same dimensions as position data.
+        Input:
+            frequency: float, the frequency of the reference channel in Mhz
+            channel: int, the reference channel
+            obsNum: int, the number of the observation to use
+            tuning: int, the number of the tuning to use
+            pol: str, which polarization to use ('XX', 'YY', 'YX', 'XY')
+        
         
         Output: 
             Array with columns: 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg), Radio Spectra'
         '''
         
-        #sort sorties by time
+        #add ability to select frequency channel
+        
+        
+        obs='Observation'+str(obsNum)
+        
+        tun='Tuning'+str(tuning)
+        pol = polarization        
+        
         sorties = self.sort_sorties()
         rx_data = []
         t_rx = []
         pos_times = []
         for i,sortie in enumerate(sorties):
+            #get frequency channel of sortie
+
+            #target_data = h5py.File(sortie.data,'r')
+            target_data = sortie.data_dict
+            if channel:
+                freqchan=channel
+            else: 
+                if not frequency:
+                    frequency=self.ref_frequency 
+                #get channel
+                center_freq=frequency*1e6 #into Hz
+                target_data = sortie.data_dict
+                freq_arr=target_data[obs][tun]['freq']
+                get_ind=np.where(freq_arr<center_freq)[0][-1]
+                freqchan=get_ind
+                
             start_time, end_time = sortie.mission_data[0,0], sortie.mission_data[-1,0]
             pos_times.append(list(sortie.mission_data[:,0]))
-            target_data = h5py.File(sortie.data,'r')
-            rx_times = target_data['Observation1']['time'][()]
+            
+            rx_times = target_data[obs]['time'][()]
             indices = np.nonzero(np.logical_and(rx_times >= start_time , rx_times <= end_time))
-            times = target_data['Observation1']['time'][list(indices[0])]
+            times = target_data[obs]['time'][list(indices[0])]
             t_rx.append(Time(times,scale='utc',format='unix'))
             rx_data.append(
                 read_utils.dB(
-                    target_data['Observation1']['Tuning1']['XX'][indices[0],512]
+                    target_data[obs][tun][pol][indices[0],freqchan] #freqchan, 512]
                 )
-            )  #Need to program in multiple tunings and Polarizations
+            )  
         
         rx = np.concatenate(rx_data)
         t_rx = np.concatenate(t_rx)
@@ -146,41 +182,60 @@ class Observation:
         
         pass
     
-    def make_fits(self):
+    def make_beam(self, lat=None, lon=None, fits=False):
         '''
-        Read in the refined array and create a fits file.
+        RENAME TO MAKE BEAM
+        Read in the refined array and create a beam file (FITS).
         
         Output:
         
         lat0 = 34.3486      #mru: 34.3482865
         lon0 = -106.8857    #mru:-106.886013
         '''
+        if not lat:
+            targetLat=self.lat
+        else:
+            targetLat=lat
+        if not lon:
+            targetLon=self.lon
+        else:
+            targetLon=lon
         
         hpx_beam,hpx_rms,hpx_counts = plot_utils.grid_to_healpix(
             self.refined_array[1:,1],
             self.refined_array[1:,2],
             self.refined_array[1:,3],
             self.refined_array[1:,5],
-            lat0 = 34.3482865, #self.refined_array[0,1],
-            lon0 = -106.886013, #self.refined_array[0,2],
+            lat0 = targetlat, #self.refined_array[0,1],
+            lon0 = targetlon, #self.refined_array[0,2], 
             nside = 8
         )
         
-        hp.write_map('./NS_corrected_beam.fits',hpx_beam)
-        hp.write_map('./NS_corrected_rms.fits',hpx_rms)
-        hp.write_map('./NS_corrected_counts.fits',hpx_counts)
+        if fits==True:
+            hp.write_map('./NS_corrected_beam.fits',hpx_beam)
+            hp.write_map('./NS_corrected_rms.fits',hpx_rms)
+            hp.write_map('./NS_corrected_counts.fits',hpx_counts)
+        
+        self.hpx_beam = hpx_beam
+        self.hpx_rms = hpx_rms
+        self.hpx_counts = hpx_counts
         
     
-    def make_beam(self):
-        '''
+    def plot_beam(self, fits=None):
+        '''        
+        
         
         '''
         
-        countsfile = './NS_corrected_counts.fits'
-        beamfile = './NS_corrected_beam.fits'
+        if fits:
+            countsfile = './NS_corrected_counts.fits'
+            beamfile = './NS_corrected_beam.fits'
+            counts = read_utils.read_map(countsfile)
+            beam = read_utils.read_map(beamfile)
+        else:
+            counts = self.hpx_counts
+            beam = self.hpx_beam
         
-        counts = read_utils.read_map(countsfile)
-        beam = read_utils.read_map(beamfile)
         beam -= beam.max()
 
         THETA,PHI,IM = plot_utils.project_healpix(beam)
@@ -307,6 +362,7 @@ class Observation:
         ### Plotting Functions
         
         #flesh this out, lower priority
+        #plot waterfalls, channels
         
         def plot(self):
             #This makes a plot of various views of the drone data.
