@@ -206,35 +206,38 @@ class Observation:
             self.refined_array[1:,2],
             self.refined_array[1:,3],
             self.refined_array[1:,5],
-            lat0 = targetlat, #self.refined_array[0,1],
-            lon0 = targetlon, #self.refined_array[0,2], 
+            lat0 = targetLat, #self.refined_array[0,1],
+            lon0 = targetLon, #self.refined_array[0,2], 
             nside = 8
         )
         
         if fits==True:
-            hp.write_map('./NS_corrected_beam.fits',hpx_beam)
-            hp.write_map('./NS_corrected_rms.fits',hpx_rms)
-            hp.write_map('./NS_corrected_counts.fits',hpx_counts)
+            hp.write_map('./NS_corrected_beam.fits',hpx_beam, overwrite=True)
+            hp.write_map('./NS_corrected_rms.fits',hpx_rms, overwrite=True)
+            hp.write_map('./NS_corrected_counts.fits',hpx_counts, overwrite=True)
         
         self.hpx_beam = hpx_beam
         self.hpx_rms = hpx_rms
         self.hpx_counts = hpx_counts
         
     
-    def plot_beam(self, fits=None):
+    def plot_beam(self, fits=False):
         '''        
         
         
         '''
         
-        if fits:
+        if fits==True:
             countsfile = './NS_corrected_counts.fits'
             beamfile = './NS_corrected_beam.fits'
             counts = read_utils.read_map(countsfile)
             beam = read_utils.read_map(beamfile)
         else:
+            M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
+            M = np.ma.masked_where(hp.UNSEEN==M,M)
+            M.fill_value = hp.UNSEEN
             counts = self.hpx_counts
-            beam = self.hpx_beam
+            beam = M
         
         beam -= beam.max()
 
@@ -248,7 +251,7 @@ class Observation:
 
         plt.figure()
         ax1 = plt.subplot(111)
-        plt.axis('equal')
+        ax1.axis('equal')
         beamcoll = plot_utils.make_polycoll(beam,cmap=matplotlib.cm.jet)
         beamcoll.set_clim(-2.3,0)
         ax1.add_collection(beamcoll)
@@ -264,6 +267,8 @@ class Observation:
         cb.locator = tick_locator
         cb.update_ticks()
         cb.set_label('dB')
+        
+
 
     class Sortie:
         '''
