@@ -36,10 +36,11 @@ class Observation:
         if description is not None:
             self.description = description
         
-    def addSortie(self, tlog, ulog, data):
+    def addSortie(self, tlog, ulog, data, sortie_name=None, sortie_title=None):
         #add a sortie to this observation
+        #def __init__(self, sortie_tlog, sortie_ulog, sortie_data, sortie_num, sortie_name=None, sortie_title=None)
         self.num_sorties+=1
-        self.sortie_list.append(self.Sortie(tlog, ulog, data, sortie_num=self.num_sorties))
+        self.sortie_list.append(self.Sortie(sortie_tlog=tlog, sortie_ulog=ulog, sortie_data=data, sortie_name=sortie_name, sortie_title=sortie_title, sortie_num=self.num_sorties, ))
         
     def read_sorties(self):
         for sortie in self.sortie_list:
@@ -281,11 +282,12 @@ class Observation:
         Output:
         
         '''
-        def __init__(self, sortie_tlog, sortie_ulog, sortie_data, sortie_num, sortie_name=None):
+        def __init__(self, sortie_tlog, sortie_ulog, sortie_data, sortie_num, sortie_name=None, sortie_title=None):
             self.ulog = sortie_ulog
             self.tlog = sortie_tlog
             self.data = sortie_data
             self.sortie_num=sortie_num
+            self.title=sortie_title
             if not sortie_name:
                 #self.name = "sortie"+f"{sortie_num:02d}"
                 self.name = "sortie%(sortienum)02d"%{'sortienum':sortie_num}
@@ -338,7 +340,8 @@ class Observation:
             #TODO: Add data read instead of reading in interpolate_rx
             self.data_dict = read_utils.read_h5(self.data)
             
-            
+        #function to adjust gain?
+        
         def flag_waypoints(self):
             '''
             Flag data arrays based on waypoint data.
@@ -382,7 +385,7 @@ class Observation:
             plt.xlabel('Latitude (deg)')
             plt.xticks(rotation=45)
             plt.ylabel('Longitude (deg)')
-            plt.title('NS Mid GLOBAL Position')
+            plt.title(self.title + 'Global Position')
             plt.axis('square')
             plt.grid()
             plt.legend(['Tlogs','Ulogs'],bbox_to_anchor=(1.35,1))
@@ -412,7 +415,7 @@ class Observation:
             ax3 = fig2.add_subplot(313)
             ax3.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,3],'b-')
             ax3.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,3],'r-',alpha=0.5)
-            ax3.title.set_text('NS Mid Global Z')
+            ax3.title.set_text('Global Z')
             #plt.xticks(rotation=15)
             ax3.axes.get_yaxis().set_visible(False)
             #ax3.xaxis.set_major_formatter(date_formatter)
