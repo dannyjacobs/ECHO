@@ -317,7 +317,7 @@ def interp_rx(postimes,rxtimes,rx):
     Note: this is just a general interpolation function that uses astropy times
        and can be used for anything
     """
-    power_interp_model = interp1d(rxtimes.gps,rx, fill_value="extrapolate")
+    power_interp_model = interp1d(rxtimes.gps,rx, bounds_error=False) 
     rx_interp = power_interp_model(postimes.gps)
     return rx_interp
 def flag_apm_pos(postimes,positions,waypoint_times=None):
@@ -687,10 +687,10 @@ def read_tlog_txt(tlog):
 def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local_position,vehicle_gps_position'):
     """Read in ulog file, put them into appropriate arrays, then save to .csv
 
-    Args:
+    Input:
         ulog (int): the ulog to be converted.
 
-    Returns:
+    Output:
         global_array: global position.
         local_array: local position.
         gps_array: gps raw data.
@@ -753,19 +753,15 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
     return global_data, local_data, gps_data
 
 def read_h5(dataFile):
-    """Read in ulog file, put them into appropriate arrays, then save to .csv
+    """
+    Read in ulog file, put them into appropriate arrays
 
-    Args:
+    Input:
         target_data (HDF5 data file): the datafile for the received power for the target antenna, saved in in h5 format.
 
-    Returns:
+    Output:
         dataDict: A dictionary containing the observation data. Includes observations, tunings, times, XX and YY polarizations, frequencies
     """
-    #data consists of one or more observations, each consisting of a time array and tuning arrays.
-    #Get number of observations
-    #for each observation, get tunings and time
-    #for each tuning get 
-
 
     target_data = h5py.File(dataFile,'r')
     keys = [key for key in target_data.keys()]

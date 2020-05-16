@@ -442,7 +442,8 @@ def get_interp_val(m,theta,phi,nest=False):
     p = np.array(r[0:4])
     w = np.array(r[4:8])
     w = np.ma.array(w)
-    w.mask = m2[p].mask
+    if np.ma.is_masked(m2):
+        w.mask = m2[p].mask
     del r
     val = np.ma.sum(m2[p]*w/np.ma.sum(w,axis=0),axis=0)
     return val
