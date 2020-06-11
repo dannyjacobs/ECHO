@@ -784,3 +784,33 @@ def read_h5(dataFile):
                 obsDict[obsKey] = tunDict
         dataDict[key] = obsDict   
     return dataDict
+
+def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
+    '''
+    Reads in a ASCII formatted CST export file and returns a healpix map.
+    Also saves a .fits file to the current directory.
+    This function is an adaptation of CST_to_healpix.py in the ECHO github.
+    beamfile = CST export file
+    outfile = name of the generated fits file, string
+    nside = number of sides per healpix pixel, must be 2^n int, 8 is typical
+    rot = rotates around the pole by 90deg*rot
+    zflip = inverts the Z axis
+    '''
+    
+    raw_data = np.loadtxt(beamfile,skiprows=2,usecols=(0,1,2))
+    thetas = raw_data[:,0]*np.pi/180 #radians
+    phis = raw_data[:,1]*np.pi/180 #radians
+    gain = raw_data[:,2]
+    #account for stupid CST full circle cuts
+    phis[thetas<0] += np.pi
+    thetas[thetas<0] = np.abs(thetas[thetas<0])
+    
+    phis += rot*(np.pi/2)
+    if zflip==True: thetas = np.pi - thetas
+    
+    hp_indices = hp.ang2pix(nside,thetas,phis)
+    hp_map = np.zeros(hp.nside2npix(nside))
+    hp_map[hp_indices] = gain
+    hp_map -= hp_map.max()
+    hp.write_map(outfile,hp_map,fits_IDL=False,overwrite=True)
+    return hp_map

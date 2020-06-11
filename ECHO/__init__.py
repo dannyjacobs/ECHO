@@ -238,6 +238,12 @@ class Observation:
         
         return
     
+    def diffrence_beams():
+        '''
+        Take the difference of healpix beams, plot.
+        '''
+        pass
+    
     def plot_beam(self, fits=False,beamfile=None,countsfile=None):
         '''        
         Plot the healpix beam from our observation object. Optionally plot beams read in from beam files.
@@ -293,7 +299,11 @@ class Observation:
         return
     
     def plot_slices(self):
-        alt=np.linspace(-np.pi/2, np.pi/2)
+        '''
+        Plot E and H plane slices of the beam
+        '''
+        radTheta=np.pi/2
+        alt=np.linspace(-radTheta, radTheta)
         az=np.zeros_like(alt)
 
         M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
@@ -315,6 +325,32 @@ class Observation:
         plt.grid()
         plt.xlabel('$\\theta$ (deg)')
         plt.ylabel('H plane\n [dB V/m]')
+        
+        return
+    
+    def plot_polar(self):
+        '''
+        Plot polar diagrams of the received beam.
+        
+        '''
+        radPhi=np.pi
+        az=np.linspace(-radPhi, radPhi)
+        alt=np.zeros_like(az)
+        alt[:]=np.pi/2
+
+        M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
+        M = np.ma.masked_where(hp.UNSEEN==M,M)
+        M.fill_value = hp.UNSEEN
+        beam_map = M
+        beam_map -= beam_map.max()
+        
+        pol_slice = plot_utils.get_interp_val(beam_map,alt,az)
+        
+        ax=plt.subplot(111, projection='polar')
+        ax.plot((az+np.pi)*180/np.pi, pol_slice)
+        ax.set_rmax(5)
+        ax.set_rmin(-10)
+        ax.grid(True)
         
         return
 
@@ -526,3 +562,62 @@ class Observation:
         def plot_flags():
             
             pass
+    class Beam:
+        '''
+        
+        The Beam class is the container object for various ECHO beams.
+        a beam can be made using data from the observation object.
+        
+        
+        This will likely use pyuvbeam for stuff.
+        '''
+        def __init__():
+            pass
+        
+        pass
+
+class Model:
+    '''
+    Model to simulate link budget, this is mostly structural for now
+    Requires:
+        Drone Position (XYZ)
+        Drone Attitude (Roll Pitch Yaw)
+        Drone Beam
+        RX Beam
+        
+    '''
+    
+    def __init__():
+        
+        pass
+    
+    def get_distance():
+        
+        pass
+    
+    def link_budget():
+        
+        pass
+    
+    
+    class drone:
+        '''
+        Model of our drone, includes positions, attitudes, beam
+        
+        '''
+        def __init(self):
+            
+            pass
+    
+    class antenna:
+        '''
+        Model of our antenna, includes position, beam
+        
+        '''
+        def __init__(self):
+            pass
+    
+    #define RX center
+    #define drone position
+    
+    

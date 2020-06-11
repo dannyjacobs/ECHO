@@ -492,3 +492,41 @@ def add_diagram(axs,xys,xytexts,colors,labels=None):
                                         alpha=0.0
                                         ),
                         size=16)
+
+def mollview(beam,title):
+    hp.mollview(beam,title=title,unit='dBi',coord=['C'])
+    hp.graticule(coord='C')
+    for ra_label in range(0,360,30):
+        hp.projtext(ra_label-0.01, 0, str(ra_label), lonlat=True, coord='C')
+    hp.projtext(180, 30, '+30', lonlat=True, coord='C')
+    hp.projtext(180, 60, '+60', lonlat=True, coord='C')
+    hp.projtext(180, -30, '-30', lonlat=True, coord='C')
+    hp.projtext(180, -60, '-60', lonlat=True, coord='C')
+
+def healpix_grid(beams,title,subtitles,rows,cols):
+    plt.figure()
+    plt.axis('equal')
+    plt.suptitle(title)
+    
+    for i,beam in enumerate(beams):
+        THETA,PHI,IM = project_healpix(beam)
+        X,Y = np.meshgrid(
+                np.linspace(-1,1,num=THETA.shape[0]),
+                np.linspace(-1,1,num=THETA.shape[1]))
+        
+        ax = plt.subplot(rows,cols,i+1)
+        beamcoll = make_polycoll(beam,cmap=cm.jet)
+        beamcoll.set_clim(-60,0.1)
+        ax.add_collection(beamcoll)
+        CS = ax.contour(X,Y,THETA*180/np.pi,[20,40,60],colors='k')
+        CS.levels = [nf(val) for val in CS.levels]
+        plt.clabel(CS, inline=1, fontsize=10,fmt=fmt)
+        ax.autoscale_view()
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+        ax.set_title(subtitles[i])
+        cb = plt.colorbar(beamcoll,ax=ax,orientation='horizontal',pad=0.05)
+        tick_locator = ticker.MaxNLocator(nbins=5)
+        cb.locator = tick_locator
+        cb.update_ticks()
+        cb.set_label('dBi')
