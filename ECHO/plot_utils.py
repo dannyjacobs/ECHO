@@ -5,7 +5,7 @@ import healpy as hp
 import math
 from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
-from matplotlib import cm,colors
+from matplotlib import cm,colors,ticker
 import matplotlib.pyplot as plt
 from matplotlib._png import read_png
 
