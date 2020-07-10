@@ -4,11 +4,14 @@ import numpy as np,healpy as hp
 import sys
 import glob
 from astropy.time import Time
+
 from scipy.interpolate import interp1d
 from .time_utils import flight_time_filter,waypt_time_filter, DatetimetoUnix
 from distutils.version import StrictVersion
 import pyulog.core as pyu
 import pyulog.ulog2csv as pyucsv
+from pyuvdata import UVBeam
+from pyuvdata.data import DATA_PATH
 import h5py
 
 SEC_PER_WEEK = 604800
@@ -814,3 +817,23 @@ def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
     hp_map -= hp_map.max()
     hp.write_map(outfile,hp_map,fits_IDL=False,overwrite=True)
     return hp_map
+
+def read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol):
+    '''
+    Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
+    
+    CST_txtfile = CST export file
+    beam_type (str): 
+    frequency (list, Hz): 
+    telescope_name (str): The instrument name 
+    feed_name (str): The name of the feed 
+    feed_version (str): The version of the feed
+    model_name (str): Name for the model 
+    model_version (str): version of the model
+    feed_pol (str): polarization of the feed ('x','y','xx','yy')
+    '''
+    beam = UVBeam()
+    beam.read_cst_beam(CST_txtfile, beam_type=beam_type, frequency=frequency, 
+                   telescope_name=telescope_name, feed_name=feed_name, feed_version=feed_version, 
+                   model_name = model_name, model_version=model_version, feed_pol=feed_pol)
+    return beam

@@ -9,11 +9,66 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdate
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 import h5py 
 from astropy.time import Time
 import healpy as hp
 
+
+class Beam:
+    '''
+
+    The Beam class is the container object for various ECHO beams.
+    a beam can be made using data from the observation object.
+
+
+    This will likely use pyuvbeam for stuff.
+    '''
+    def __init__(self):
+        self.beamlist = []
+        self.efield = None
+        self.power = None
+        pass
+
+    def read_cst_beam(self,CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol):
+        '''
+        Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
+
+        CST_txtfile = CST export file
+        beam_type (str): 
+        frequency (list, Hz): 
+        telescope_name (str): The instrument name 
+        feed_name (str): The name of the feed 
+        feed_version (str): The version of the feed
+        model_name (str): Name for the model 
+        model_version (str): version of the model
+        feed_pol (str): polarization of the feed ('x','y','xx','yy')
+        '''
+        newbeam = read_utils.read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol)
+        self.beamlist.append(newbeam)
+        if beam_type == 'efield':
+            self.efield = newbeam
+        return 
+
+    def make_power_beam(self, beam):
+        pow_beam = beam.efield_to_power(inplace = False)
+        self.power = pow_beam
+        return pow_beam
+    
+    def plot_efield(self):
+        plot_utils.plot_efield(self.efield)
+        return
+    def plot_efield_interp(self):
+        plot_utils.plot_efield_interp(self.efield)
+        return
+    def plot_power(self):
+        if self.power == None:
+            print('No existing power beam.')
+        else:
+            plot_utils.plot_power(self.power)
+        return
 
 class Observation:
     '''
@@ -241,8 +296,28 @@ class Observation:
     def diffrence_beams():
         '''
         Take the difference of healpix beams, plot.
+        Requires multiple beams
         '''
         pass
+    
+    def plot_mollview(self, *args, **kwargs):
+        beam=self.hpx_beam
+        plot_utils.mollview(beam, 'Target Beam', *args, **kwargs)
+        
+        return
+    
+    
+    def plot_grid(self, *args, **kwargs):
+        M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
+        M = np.ma.masked_where(hp.UNSEEN==M,M)
+        M.fill_value = hp.UNSEEN
+        
+        M -= M.max()
+        
+        beams=[M]
+        plot_utils.healpix_grid(beams, 'Target Directivity', '1', 1, 1,*args, **kwargs)
+        
+        return
     
     def plot_beam(self, fits=False,beamfile=None,countsfile=None):
         '''        
@@ -274,7 +349,7 @@ class Observation:
             np.linspace(-1,1,num=THETA.shape[0]),
             np.linspace(-1,1,num=THETA.shape[1])
             )
-
+        
         hp.mollview(beam)
 
         plt.figure()
@@ -298,7 +373,7 @@ class Observation:
         
         return
     
-    def plot_slices(self):
+    def plot_slices(self, figsize=None, *args, **kwargs):
         '''
         Plot E and H plane slices of the beam
         '''
@@ -315,20 +390,20 @@ class Observation:
         slice_E = plot_utils.get_interp_val(beam_map,alt,az)
         slice_H = plot_utils.get_interp_val(beam_map,alt,az+np.pi/2)
         
-        plt.figure()
-        plt.plot(alt*180/np.pi,slice_E,'-k',lw=2)
+        plt.figure(figsize=figsize)
+        plt.plot(alt*180/np.pi,slice_E,'-k',lw=2, *args, **kwargs)
         plt.grid()
         plt.xlabel('$\\theta$ (deg)')
         plt.ylabel('E plane\n [dB V/m]')
-        plt.figure()
-        plt.plot(alt*180/np.pi,slice_H,'-k',lw=2)
+        plt.figure(figsize=figsize)
+        plt.plot(alt*180/np.pi,slice_H,'-k',lw=2, *args, **kwargs)
         plt.grid()
         plt.xlabel('$\\theta$ (deg)')
         plt.ylabel('H plane\n [dB V/m]')
         
         return
     
-    def plot_polar(self):
+    def plot_polar(self,*args, **kwargs):
         '''
         Plot polar diagrams of the received beam.
         
@@ -353,7 +428,22 @@ class Observation:
         ax.grid(True)
         
         return
-
+    
+    def plot_isometric(self, figsize=(5,5), *args, **kwargs):
+        xs=self.refined_array[:,1]
+        ys=self.refined_array[:,2]
+        zs=self.refined_array[:,3]
+        fig = plot_utils.plot_position_3d(xs, ys, zs, figsize, *args, **kwargs)
+        
+        #fig = plt.figure()
+        #ax = fig.add_subplot(111, projection='3d')
+        #ax.plot(xs, ys, zs=0, zdir='z')
+        fig.axes[0].set_xlabel('Latitude')
+        fig.axes[0].set_ylabel('Longitude')
+        fig.axes[0].set_zlabel('Altitude')
+        
+        return
+    
     class Sortie:
         '''
         A sortie is created by three files: a ulog, a tlog, and an LWA data file.
@@ -562,19 +652,6 @@ class Observation:
         def plot_flags():
             
             pass
-    class Beam:
-        '''
-        
-        The Beam class is the container object for various ECHO beams.
-        a beam can be made using data from the observation object.
-        
-        
-        This will likely use pyuvbeam for stuff.
-        '''
-        def __init__():
-            pass
-        
-        pass
 
 class Model:
     '''
