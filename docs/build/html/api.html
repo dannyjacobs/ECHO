@@ -1,0 +1,786 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference &#8212; ECHO 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ECHO 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API Reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-ECHO">
+<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-ECHO" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="ECHO.Beam">
+<em class="property">class </em><code class="sig-prename descclassname">ECHO.</code><code class="sig-name descname">Beam</code><a class="headerlink" href="#ECHO.Beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Beam class is the container object for various ECHO beams.</p>
+<p>A beam can be made using data from the observation object. This will likely use pyuvbeam for stuff.</p>
+<dl class="py attribute">
+<dt id="ECHO.Beam.beamlist">
+<code class="sig-name descname">beamlist</code><a class="headerlink" href="#ECHO.Beam.beamlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of beams created with this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ECHO.Beam.efield">
+<code class="sig-name descname">efield</code><a class="headerlink" href="#ECHO.Beam.efield" title="Permalink to this definition">¶</a></dt>
+<dd><p>numpy array for efield data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ECHO.Beam.power">
+<code class="sig-name descname">power</code><a class="headerlink" href="#ECHO.Beam.power" title="Permalink to this definition">¶</a></dt>
+<dd><p>numpy array for efield data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Beam.read_cst_beam">
+<code class="sig-name descname">read_cst_beam</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">CST_txtfile</span></em>, <em class="sig-param"><span class="n">beam_type</span></em>, <em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">telescope_name</span></em>, <em class="sig-param"><span class="n">feed_name</span></em>, <em class="sig-param"><span class="n">feed_version</span></em>, <em class="sig-param"><span class="n">model_name</span></em>, <em class="sig-param"><span class="n">model_version</span></em>, <em class="sig-param"><span class="n">feed_pol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Beam.read_cst_beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>= CST export file</strong> (<em>CST_txtfile</em>) – </p></li>
+<li><p><strong>beam_type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>frequency</strong> (<em>list</em><em>, </em><em>Hz</em>) – </p></li>
+<li><p><strong>telescope_name</strong> (<em>str</em>) – The instrument name</p></li>
+<li><p><strong>feed_name</strong> (<em>str</em>) – The name of the feed</p></li>
+<li><p><strong>feed_version</strong> (<em>str</em>) – The version of the feed</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – Name for the model</p></li>
+<li><p><strong>model_version</strong> (<em>str</em>) – version of the model</p></li>
+<li><p><strong>feed_pol</strong> (<em>str</em>) – polarization of the feed (‘x’,’y’,’xx’,’yy’)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ECHO.Observation">
+<em class="property">class </em><code class="sig-prename descclassname">ECHO.</code><code class="sig-name descname">Observation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lat</span></em>, <em class="sig-param"><span class="n">lon</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class object for making observations.</p>
+<dl class="py class">
+<dt id="ECHO.Observation.Sortie">
+<em class="property">class </em><code class="sig-name descname">Sortie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sortie_tlog</span></em>, <em class="sig-param"><span class="n">sortie_ulog</span></em>, <em class="sig-param"><span class="n">sortie_data</span></em>, <em class="sig-param"><span class="n">sortie_num</span></em>, <em class="sig-param"><span class="n">ref_f</span></em>, <em class="sig-param"><span class="n">sortie_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sortie_title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sortie is created by three files: a ulog, a tlog, and an LWA data file.
+The data from these files is read and compiled into arrays.</p>
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.apply_bootstart">
+<code class="sig-name descname">apply_bootstart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.apply_bootstart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts drone data on absolute GPS-based time scale.</p>
+<p>Uses GPS messages in on-board ulog to calibrate times of positions logged on ground station.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.flag_endpoints">
+<code class="sig-name descname">flag_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.flag_endpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag data arrays based on mission start/end.</p>
+<p>Reads in “global_t” and “waypoint_t” from the tlog data dictionary.</p>
+<p>“global_t” contains continuous position data from drone telemetry during the entire sortie.
+“waypoint_t” contains the position data for each navigational waypoint used to maneuver the drone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>mission_data:</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>flagged_data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.flag_waypoints">
+<code class="sig-name descname">flag_waypoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.flag_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag data arrays based on waypoint data.</p>
+<p>Args:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.flag_yaws">
+<code class="sig-name descname">flag_yaws</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.flag_yaws" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.get_bootstart">
+<code class="sig-name descname">get_bootstart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.get_bootstart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the GPS time to calculate the time at drone boot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.get_freq_chans">
+<code class="sig-name descname">get_freq_chans</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.get_freq_chans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the channel for our reference frequency.</p>
+<p>Args:</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates multiple plots showing position data for sortie.</p>
+<p>Tlog X/Y Position, ULog X/Y Position, X Position / Time, Y Position / Time, Z Position / Time:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ULog X/Y Position:
+X Position / Time:
+Y Position / Time:
+Z Position / Time:</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Tlog X/Y Position</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.plot_flags">
+<code class="sig-name descname">plot_flags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.plot_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a plot showing flagged positions for sortie.</p>
+<p>Return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.Sortie.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.Sortie.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in the sortie from associated data files.</p>
+<p>The stored tlog, ulog, and receiver datafiles are opened and copied into dictionaries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing info from the sortie tlog
+u_dict (dict): A dictionary containing info from the sortie ulog
+data_dict (dict): A dictionary containing info from the sortie receiver datafile</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>t_dict (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.addSortie">
+<code class="sig-name descname">addSortie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tlog</span></em>, <em class="sig-param"><span class="n">ulog</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">sortie_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sortie_title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.addSortie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a sortie to the current observation class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tlog</strong> (<em>file</em>) – txt file for the tlog data</p></li>
+<li><p><strong>ulog</strong> (<em>file</em>) – txt file for the ulog data</p></li>
+<li><p><strong>data</strong> (<em>file</em>) – txt file for the receiver data</p></li>
+<li><p><strong>sortie_name</strong> (<em>str</em>) – unique name for this sortie</p></li>
+<li><p><strong>sortie_title</strong> (<em>str</em>) – display title for this sortie</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.combine_sorties">
+<code class="sig-name descname">combine_sorties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.combine_sorties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine our current list of sorties to create a data object for position.</p>
+<p>Sorts currently added sorties by timestamp, then aggregates into a single array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>‘Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg)’ for every sortie</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dataproduct (array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.diffrence_beams">
+<code class="sig-name descname">diffrence_beams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.diffrence_beams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the difference of healpix beams, plot. Requires multiple beams.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.flagSorties">
+<code class="sig-name descname">flagSorties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.flagSorties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag the sortie for start and endpoints, as well as waypoints.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.interpolate_rx">
+<code class="sig-name descname">interpolate_rx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obsNum</span></em>, <em class="sig-param"><span class="n">tuning</span></em>, <em class="sig-param"><span class="n">polarization</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.interpolate_rx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes position-times of the drone and interpolate the receiver data to the same dimensions as position data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>float</em>) – , the frequency of the reference channel in Mhz</p></li>
+<li><p><strong>channel</strong> (<em>int</em>) – the reference channel</p></li>
+<li><p><strong>obsNum</strong> (<em>int</em>) – the number of the observation to use</p></li>
+<li><p><strong>tuning</strong> (<em>int</em>) – the number of the tuning to use</p></li>
+<li><p><strong>pol</strong> (<em>str</em>) – which polarization to use (‘XX’, ‘YY’, ‘YX’, ‘XY’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>‘Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg), Radio Spectra’</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>refined_array (array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.make_beam">
+<code class="sig-name descname">make_beam</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lat</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lon</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.make_beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in the refined array and create a beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>)</strong> (<em>lon</em>) – latitude of the receiver instrument</p></li>
+<li><p><strong>(</strong><strong>)</strong> – longitude of the receiver instrument</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.plot_beam">
+<code class="sig-name descname">plot_beam</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fits</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">beamfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">countsfile</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.plot_beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the healpix beam from our observation object.</p>
+<p>Optionally plot beams read in from beam files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fits</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>beamfile</strong> (<em>str</em>) – </p></li>
+<li><p><strong>countsfile</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.plot_grid">
+<code class="sig-name descname">plot_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.plot_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a grid view of the beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Variable length argument list.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.plot_isometric">
+<code class="sig-name descname">plot_isometric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">5, 5</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.plot_isometric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot polar diagrams of the received beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figsize</strong> (<em>tuple</em>) – figure size for plot</p></li>
+<li><p><strong>*args</strong> – Variable length argument list.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.plot_mollview">
+<code class="sig-name descname">plot_mollview</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.plot_mollview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a mollview of the beam using</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Variable length argument list.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.plot_polar">
+<code class="sig-name descname">plot_polar</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.plot_polar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot polar diagrams of the received beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Variable length argument list.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.plot_slices">
+<code class="sig-name descname">plot_slices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.plot_slices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot E and H plane slices of the beam</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>figsize</strong> (<em>tuple</em>) – figure size for plot</p></li>
+<li><p><strong>*args</strong> – Variable length argument list.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.read_sorties">
+<code class="sig-name descname">read_sorties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.read_sorties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in the data files for a given sortie.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.sort_sorties">
+<code class="sig-name descname">sort_sorties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.sort_sorties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort our current list of sorties by time, using the first entry in each.</p>
+<p>At any point we may need to sort the list of sorties by time.
+It’s preferable to do this rather than sort the data arrays after combining.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Sortie object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>s</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ECHO.Observation.write_beam">
+<code class="sig-name descname">write_beam</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prefix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.Observation.write_beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the beam file out to .fits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prefix</strong> (<em>str</em>) – A string used to name and identify the output files.</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-ECHO.plot_utils"></span><dl class="py function">
+<dt id="ECHO.plot_utils.cmap_discretize">
+<code class="sig-prename descclassname">ECHO.plot_utils.</code><code class="sig-name descname">cmap_discretize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmap</span></em>, <em class="sig-param"><span class="n">N</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.plot_utils.cmap_discretize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a discrete colormap from the continuous colormap cmap.</p>
+<blockquote>
+<div><p>cmap: colormap instance, eg. cm.jet.
+N: number of colors.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Example</dt><dd><p>x = resize(arange(100), (5,100))
+djet = cmap_discretize(cm.jet, 5)
+imshow(x, cmap=djet)</p>
+</dd>
+</dl>
+<p>borrowed from
+<a class="reference external" href="http://scipy.github.io/old-wiki/pages/Cookbook/Matplotlib/ColormapTransformations">http://scipy.github.io/old-wiki/pages/Cookbook/Matplotlib/ColormapTransformations</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.plot_utils.grid_theta_phi_to_healpix">
+<code class="sig-prename descclassname">ECHO.plot_utils.</code><code class="sig-name descname">grid_theta_phi_to_healpix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">phi</span></em>, <em class="sig-param"><span class="n">inbeam</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.plot_utils.grid_theta_phi_to_healpix" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>inputs:</dt><dd><p>theta (angle down from pixel 0, deg)
+phi (CW longitude angle, deg)
+inbeam: input beam values matching the corresponding theta and phi coords</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.plot_utils.grid_to_healpix">
+<code class="sig-prename descclassname">ECHO.plot_utils.</code><code class="sig-name descname">grid_to_healpix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lats</span></em>, <em class="sig-param"><span class="n">lons</span></em>, <em class="sig-param"><span class="n">alts</span></em>, <em class="sig-param"><span class="n">rx</span></em>, <em class="sig-param"><span class="n">lat0</span></em>, <em class="sig-param"><span class="n">lon0</span></em>, <em class="sig-param"><span class="n">nside</span><span class="o">=</span><span class="default_value">8</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.plot_utils.grid_to_healpix" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>input:</dt><dd><p>lats (deg)
+lons (deg)
+alts (m) (relative)
+rx: power in dB
+lat0: lat of rx ant (deg)
+lon0: lon of rx ant
+nside: of healpix map</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ECHO.plot_utils.nf">
+<em class="property">class </em><code class="sig-prename descclassname">ECHO.plot_utils.</code><code class="sig-name descname">nf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.plot_utils.nf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.plot_utils.rotate_hpm">
+<code class="sig-prename descclassname">ECHO.plot_utils.</code><code class="sig-name descname">rotate_hpm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hpm</span></em>, <em class="sig-param"><span class="n">rot_phi</span></em>, <em class="sig-param"><span class="n">rot_theta</span></em>, <em class="sig-param"><span class="n">pol</span><span class="o">=</span><span class="default_value">'EW'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.plot_utils.rotate_hpm" title="Permalink to this definition">¶</a></dt>
+<dd><p>rotate hpm about phi, then theta (degrees)
+if pol=EW theta is rotated about the X axis (default)
+if pol=NS theta is rotated about the Y axis</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.plot_utils.rotate_hpm_old">
+<code class="sig-prename descclassname">ECHO.plot_utils.</code><code class="sig-name descname">rotate_hpm_old</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hpm</span></em>, <em class="sig-param"><span class="n">angle</span></em>, <em class="sig-param"><span class="n">theta_angle</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.plot_utils.rotate_hpm_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>rotate hpm angle degrees around the zero pixel (ie around the north pole)</p>
+</dd></dl>
+
+<span class="target" id="module-ECHO.read_utils"></span><dl class="py function">
+<dt id="ECHO.read_utils.CST_to_hp">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">CST_to_hp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">beamfile</span></em>, <em class="sig-param"><span class="n">outfile</span></em>, <em class="sig-param"><span class="n">nside</span><span class="o">=</span><span class="default_value">8</span></em>, <em class="sig-param"><span class="n">rot</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">zflip</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.CST_to_hp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in a ASCII formatted CST export file and returns a healpix map.
+Also saves a .fits file to the current directory.
+This function is an adaptation of CST_to_healpix.py in the ECHO github.
+beamfile = CST export file
+outfile = name of the generated fits file, string
+nside = number of sides per healpix pixel, must be 2^n int, 8 is typical
+rot = rotates around the pole by 90deg*rot
+zflip = inverts the Z axis</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.apm_version">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">apm_version</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.apm_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an apm file and try to detirmine the version of the firmware which wrote it</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.channel_select">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">channel_select</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">freqs</span></em>, <em class="sig-param"><span class="n">rxspectrum</span></em>, <em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.channel_select" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>input:</dt><dd><p>freqs: measured frequences in MHz
+rxspectrum: power in volt^2 shape(len(times),len(freqs))
+channel: give a channel as an int or a float frequency in MHz</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a single vector ntimes long</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.concat_times">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">concat_times</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Ts</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.concat_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>input a list of astropy time vectors</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.flag_angles">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">flag_angles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">angletimes</span></em>, <em class="sig-param"><span class="n">angles</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.flag_angles" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>input:</dt><dd><p>angletimes:astropy.time.Time vector
+angles: (1,len(angletimes))</p>
+<p>sigma: flag values more than this many sigmas above the mean</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>mask
+times during which angles are bad</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.flag_apm_pos">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">flag_apm_pos</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">postimes</span></em>, <em class="sig-param"><span class="n">positions</span></em>, <em class="sig-param"><span class="n">waypoint_times</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.flag_apm_pos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>input:</dt><dd><p>postimes: astropy.time.Time vector
+positions: (3,len(postimes)), lat (deg),lon (deg),relalt (m)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.flag_waypoints">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">flag_waypoints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">postimes</span></em>, <em class="sig-param"><span class="n">waypoint_times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.flag_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>input:</dt><dd><p>postimes: astropy.time.Time vector matching GPS solutions
+waypoint_times: astropy.time.Time entries matching times reached wypts</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>flags on the postimes time base (ie matching len(postimes))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.interp_rx">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">interp_rx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">postimes</span></em>, <em class="sig-param"><span class="n">rxtimes</span></em>, <em class="sig-param"><span class="n">rx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.interp_rx" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>input:</dt><dd><p>postimes: astropy.Time.Time vector (output points)
+rxtime: astropy.time.Time vector (input points)
+Assumes that both position and spectrum data have been properly flagged
+and that the flags match between the two</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>interpolation of the rx power to the gps times</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Note: this is just a general interpolation function that uses astropy times</dt><dd><p>and can be used for anything</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.mission_endpoint_flagging">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">mission_endpoint_flagging</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pos_data</span></em>, <em class="sig-param"><span class="n">wpt_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.mission_endpoint_flagging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in position and waypoint array, flag all waypoints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ulog</strong> (<em>int</em>) – the ulog to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of flagged data.
+mission_data: array of valid mission data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>flagged_array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_CST_puv">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_CST_puv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">CST_txtfile</span></em>, <em class="sig-param"><span class="n">beam_type</span></em>, <em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">telescope_name</span></em>, <em class="sig-param"><span class="n">feed_name</span></em>, <em class="sig-param"><span class="n">feed_version</span></em>, <em class="sig-param"><span class="n">model_name</span></em>, <em class="sig-param"><span class="n">model_version</span></em>, <em class="sig-param"><span class="n">feed_pol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_CST_puv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.</p>
+<p>CST_txtfile = CST export file
+beam_type (str):
+frequency (list, Hz):
+telescope_name (str): The instrument name
+feed_name (str): The name of the feed
+feed_version (str): The version of the feed
+model_name (str): Name for the model
+model_version (str): version of the model
+feed_pol (str): polarization of the feed (‘x’,’y’,’xx’,’yy’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_apm_log">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_apm_log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">apm_file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_apm_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>read in an apm log file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_apm_logs">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_apm_logs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">apm_files</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_apm_logs" title="Permalink to this definition">¶</a></dt>
+<dd><p>input:
+apm_files: a list of apm logs
+waypoints: range of waypoints to include [1,-1] will get everything between first and last
+return: positiontimes,positions,angletimes,angles
+times are astropy.time.Time vectors
+positions are (3,ntimes) in order lat,lon,alt
+angles are (1,ntimes) with only yaw (todo, add roll,pitch)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_echo_spectrum">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_echo_spectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infiles</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_echo_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>input: filenames
+filenames: list of string paths pointing to files generated by get_sh_spectra</p>
+<blockquote>
+<div><p>(or similar)</p>
+</div></blockquote>
+<p>return: times,frequencies,spectrumwaterfall
+times: astropy.time.Time object
+frequencies: in MHz
+spectrumwaterfall: shape=(len(times),len(frequencies))</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_h5">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataFile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_h5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in ulog file, put them into appropriate arrays</p>
+<dl class="simple">
+<dt>Input:</dt><dd><p>target_data (HDF5 data file): the datafile for the received power for the target antenna, saved in in h5 format.</p>
+</dd>
+<dt>Output:</dt><dd><p>dataDict: A dictionary containing the observation data. Includes observations, tunings, times, XX and YY polarizations, frequencies</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_orbcomm_spectrum">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_orbcomm_spectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">infiles</span></em>, <em class="sig-param"><span class="n">ant</span></em>, <em class="sig-param"><span class="n">pol</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_orbcomm_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>input: filenames,ant,pol
+filenames: list of string paths pointing to files generated by Neben, getsatfourchanNG
+ant: ‘N’ or ‘S’
+pol: ‘EW’ or ‘NS’</p>
+<p>return: times,frequencies,spectrumwaterfall
+times: astropy.time.Time object
+frequencies: in MHz
+spectrumwaterfall: shape=(len(times),len(frequencies))</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_tlog_txt">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_tlog_txt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tlog</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_tlog_txt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in text files converted from tlogs, put them into appropriate arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tlog</strong> (<em>int</em>) – the text tlog to be read.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>waypoints.
+global_array: global position.
+local_array: local position.
+gps_array: gps raw data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>wpt_array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.read_ulog">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">read_ulog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ulog</span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">messages</span><span class="o">=</span><span class="default_value">'vehicle_global_position,vehicle_local_position,vehicle_gps_position'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.read_ulog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in ulog file, put them into appropriate arrays, then save to .csv</p>
+<dl class="simple">
+<dt>Input:</dt><dd><p>ulog (int): the ulog to be converted.</p>
+</dd>
+<dt>Output:</dt><dd><p>global_array: global position.
+local_array: local position.
+gps_array: gps raw data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ECHO.read_utils.write_map">
+<code class="sig-prename descclassname">ECHO.read_utils.</code><code class="sig-name descname">write_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">M</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.read_utils.write_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>write out a masked healpix map with the correct fill values</p>
+</dd></dl>
+
+<span class="target" id="module-ECHO.server_utils"></span><span class="target" id="module-ECHO.time_utils"></span><dl class="py function">
+<dt id="ECHO.time_utils.DatetimetoUnix">
+<code class="sig-prename descclassname">ECHO.time_utils.</code><code class="sig-name descname">DatetimetoUnix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ECHO.time_utils.DatetimetoUnix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to convert timestamps to unix time through an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logged_data</strong> (<em>array</em>) – array of data including timestamps in the first column.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an array of the same shape as the input array, with timestamps in unix format.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>timeconv_data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ECHO 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API Reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Daniel C. Jacobs, Mickey Horn, Mrudala Gopalkrishna, David Lewis.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+  </body>
+</html>

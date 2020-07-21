@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to ECHO’s documentation! &#8212; ECHO 0.0.1 documentation</title>
+    <title>Tutorial &#8212; ECHO 0.0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -17,7 +17,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tutorial" href="tutorial.html" /> 
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Welcome to ECHO’s documentation!" href="index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,10 +30,13 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tutorial.html" title="Tutorial"
+          <a href="api.html" title="API Reference"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ECHO 0.0.1 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Welcome to ECHO’s documentation!</a></li> 
+        <li class="right" >
+          <a href="index.html" title="Welcome to ECHO’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ECHO 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial</a></li> 
       </ul>
     </div>  
 
@@ -41,30 +45,21 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-echo-s-documentation">
-<h1>Welcome to ECHO’s documentation!<a class="headerlink" href="#welcome-to-echo-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>The External Calibrator for Hydrogen Arrays (ECHO) is a system for calibrating wide-field radio frequency arrays using a radio transmitter mounted on a drone. Primarily targeting (but not exclusively limited to) arrays operating in the sub-GHz band targeting highly redshifted 21cm radiation from the early universe.</p>
-<p>This repository contains software used to operate drone mounted calibrator sources and then collect and reduce the resulting data.</p>
-<div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorial.html#reading-in-data">Reading in data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial.html#working-with-sorties">Working with sorties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial.html#reading-in-beams">Reading in beams</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
-</ul>
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>ECHO is used to inspect and combine drone data and receiver data from any telescope and radio receiver.</p>
+<div class="section" id="reading-in-data">
+<h2>Reading in data<a class="headerlink" href="#reading-in-data" title="Permalink to this headline">¶</a></h2>
+<p>Data in ECHO consists of log files from the drone as well as efield or power data from the receiving instrument.</p>
 </div>
+<div class="section" id="working-with-sorties">
+<h2>Working with sorties<a class="headerlink" href="#working-with-sorties" title="Permalink to this headline">¶</a></h2>
+<p>Any data used is organized into sorties. Sorties are the associated data from the drone flight and the received data during that flight.</p>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
+<div class="section" id="reading-in-beams">
+<h2>Reading in beams<a class="headerlink" href="#reading-in-beams" title="Permalink to this headline">¶</a></h2>
+<p>To further investigate an instrument’s response during a sortie, it is helpful to look at the beam pattern of the instrument.</p>
+</div>
 </div>
 
 
@@ -74,19 +69,26 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to ECHO’s documentation!</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#">Tutorial</a><ul>
+<li><a class="reference internal" href="#reading-in-data">Reading in data</a></li>
+<li><a class="reference internal" href="#working-with-sorties">Working with sorties</a></li>
+<li><a class="reference internal" href="#reading-in-beams">Reading in beams</a></li>
+</ul>
+</li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to ECHO’s documentation!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="tutorial.html"
-                        title="next chapter">Tutorial</a></p>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">API Reference</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
+      <li><a href="_sources/tutorial.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -114,10 +116,13 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="tutorial.html" title="Tutorial"
+          <a href="api.html" title="API Reference"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">ECHO 0.0.1 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Welcome to ECHO’s documentation!</a></li> 
+        <li class="right" >
+          <a href="index.html" title="Welcome to ECHO’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ECHO 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorial</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -18,33 +18,37 @@ import healpy as hp
 
 
 class Beam:
-    '''
-
-    The Beam class is the container object for various ECHO beams.
-    a beam can be made using data from the observation object.
-
-
-    This will likely use pyuvbeam for stuff.
+    '''The Beam class is the container object for various ECHO beams.
+    
+    A beam can be made using data from the observation object. This will likely use pyuvbeam for stuff.
+    
+    Attributes:
+        beamlist (list): List of beams created with this class.
+        efield (array, optional): numpy array for efield data.
+        power (array, optional): numpy array for efield data.
     '''
     def __init__(self):
+        '''
+        Initial function for the beam class.
+        '''
         self.beamlist = []
         self.efield = None
         self.power = None
         pass
 
     def read_cst_beam(self,CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol):
-        '''
-        Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
-
-        CST_txtfile = CST export file
-        beam_type (str): 
-        frequency (list, Hz): 
-        telescope_name (str): The instrument name 
-        feed_name (str): The name of the feed 
-        feed_version (str): The version of the feed
-        model_name (str): Name for the model 
-        model_version (str): version of the model
-        feed_pol (str): polarization of the feed ('x','y','xx','yy')
+        '''Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
+        
+        Args:
+            CST_txtfile = CST export file
+            beam_type (str): 
+            frequency (list, Hz): 
+            telescope_name (str): The instrument name 
+            feed_name (str): The name of the feed 
+            feed_version (str): The version of the feed
+            model_name (str): Name for the model 
+            model_version (str): version of the model
+            feed_pol (str): polarization of the feed ('x','y','xx','yy')
         '''
         newbeam = read_utils.read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol)
         self.beamlist.append(newbeam)
@@ -76,17 +80,14 @@ class Observation:
     '''
     
     def __init__(self, lat, lon, frequency=None, description=None):
-        '''
-        Create an observation for a particular target antenna.
-        Input
-            lat: float, latitude of receiving antenna (degrees)
-            lon: float, longitude of receiving antenna (degrees)
-            frequency: the reference frequency of the transmitter (MHz)
-            channel: int, The reference channel of the transmitter 
-            description: str, text string with information about observation
-
-        Output
-            Creates an object that contains multiple sorties, as  well as methods to analyze them.
+        '''Create an observation for a particular target antenna.
+        
+        Args:
+            lat (float):, latitude of receiving antenna (degrees)
+            lon (float), longitude of receiving antenna (degrees)
+            frequency (int): the reference frequency of the transmitter (MHz)
+            channel (int), The reference channel of the transmitter 
+            description (str):, text string with information about observation
 
         '''
         
@@ -101,24 +102,33 @@ class Observation:
         return
         
     def addSortie(self, tlog, ulog, data, sortie_name=None, sortie_title=None):
-        #add a sortie to this observation
-        #def __init__(self, sortie_tlog, sortie_ulog, sortie_data, sortie_num, sortie_name=None, sortie_title=None)
+        '''Add a sortie to the current observation class.
+        
+        Args:
+            tlog (file): txt file for the tlog data
+            ulog (file): txt file for the ulog data
+            data (file): txt file for the receiver data
+            sortie_name (str): unique name for this sortie
+            sortie_title (str): display title for this sortie
+            
+        '''
+        
         self.num_sorties+=1
         self.sortie_list.append(self.Sortie(sortie_tlog=tlog, sortie_ulog=ulog, sortie_data=data, sortie_name=sortie_name, sortie_title=sortie_title, sortie_num=self.num_sorties, ref_f=self.ref_frequency ))
         
         return
         
     def read_sorties(self):
+        '''Reads in the data files for a given sortie.
+            
+        '''
         for sortie in self.sortie_list:
             sortie.read()
             sortie.get_freq_chans()
         return
     
     def flagSorties(self):
-        '''
-        Flag the global data in each sortie.
-        
-        Output: flagged data, mission data
+        '''Flag the sortie for start and endpoints, as well as waypoints.
         
         '''
         for sortie in self.sortie_list:
@@ -133,13 +143,13 @@ class Observation:
         return
     
     def sort_sorties(self):
-        '''
+        '''Sort our current list of sorties by time, using the first entry in each.
+
         At any point we may need to sort the list of sorties by time. 
         It's preferable to do this rather than sort the data arrays after combining.
         
-        Sort our current list of sorties by time, using the first entry in each.
         
-        Output:
+        Returns:
             s: Sortie object
         '''
         #get list of sorties
@@ -151,17 +161,14 @@ class Observation:
         return s
     
     def combine_sorties(self):
-        '''
-        Combine sorties. Sorts currently added sorties by timestamp, then aggregates into a single array
+        '''Combine our current list of sorties to create a data object for position.
         
-        Output: 
-            Array containing: 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg)' for every sortie
+        Sorts currently added sorties by timestamp, then aggregates into a single array
+        
+        Returns: 
+            dataproduct (array): 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg)' for every sortie
             
         '''
-
-        #combine multiple sorties into a dataproduct
-        
-        #TODO: rewrite using sort_sorties()
         
         if 'mission_data' in dir(self.sortie_list[0]):
             combined_arr = self.sortie_list[0].mission_data
@@ -177,20 +184,18 @@ class Observation:
         return
     
     def interpolate_rx(self, obsNum, tuning, polarization):
-        '''
-        Takes position-times of the drone and uses them to interpolate the receiver 
-        data to the same dimensions as position data.
+        '''Takes position-times of the drone and interpolate the receiver data to the same dimensions as position data.
         
-        Input:
-            frequency: float, the frequency of the reference channel in Mhz
-            channel: int, the reference channel
-            obsNum: int, the number of the observation to use
-            tuning: int, the number of the tuning to use
-            pol: str, which polarization to use ('XX', 'YY', 'YX', 'XY')
+        Args:
+            frequency (float):, the frequency of the reference channel in Mhz
+            channel (int): the reference channel
+            obsNum (int): the number of the observation to use
+            tuning (int): the number of the tuning to use
+            pol (str): which polarization to use ('XX', 'YY', 'YX', 'XY')
         
         
-        Output: 
-            Array with columns: 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg), Radio Spectra'
+        Returns: 
+            refined_array (array): 'Epoch Time(s), Lat(deg), Lon(deg), Alt(m from ground), Yaw(deg), Radio Spectra'
         '''
                
         
@@ -248,10 +253,12 @@ class Observation:
         return
     
     def make_beam(self, lat=None, lon=None):
-        '''
-        Read in the refined array and create a beam.
-        Input:
-        Output:
+        '''Read in the refined array and create a beam.
+        
+        Args:
+            lat (): latitude of the receiver instrument
+            lon (): longitude of the receiver instrument
+        Returns:
 
         '''
         if not lat:
@@ -280,11 +287,12 @@ class Observation:
         return
         
     def write_beam(self,prefix):
-        '''
-        Write the beam file out to .fits.
-        Input:
+        '''Write the beam file out to .fits.
+        
+        Args:
             prefix (str): A string used to name and identify the output files.
-        Output:
+        
+        Returns:
             
         '''
         hp.write_map(prefix+'_beam.fits',self.hpx_beam, overwrite=True)
@@ -294,13 +302,18 @@ class Observation:
         return
     
     def diffrence_beams():
-        '''
-        Take the difference of healpix beams, plot.
-        Requires multiple beams
+        '''Take the difference of healpix beams, plot. Requires multiple beams.
+        
         '''
         pass
     
     def plot_mollview(self, *args, **kwargs):
+        '''Plot a mollview of the beam using
+        
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        '''
         beam=self.hpx_beam
         plot_utils.mollview(beam, 'Target Beam', *args, **kwargs)
         
@@ -308,6 +321,12 @@ class Observation:
     
     
     def plot_grid(self, *args, **kwargs):
+        '''Plot a grid view of the beam.
+        
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        '''
         M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
         M = np.ma.masked_where(hp.UNSEEN==M,M)
         M.fill_value = hp.UNSEEN
@@ -320,14 +339,16 @@ class Observation:
         return
     
     def plot_beam(self, fits=False,beamfile=None,countsfile=None):
-        '''        
-        Plot the healpix beam from our observation object. Optionally plot beams read in from beam files.
+        '''Plot the healpix beam from our observation object. 
         
-        Input
+        Optionally plot beams read in from beam files.
+        
+        Args:
             fits (bool):
             beamfile (str):
             countsfile (str):
-        Output:
+        
+        Returns:
             
         '''
         
@@ -374,8 +395,15 @@ class Observation:
         return
     
     def plot_slices(self, figsize=None, *args, **kwargs):
-        '''
-        Plot E and H plane slices of the beam
+        '''Plot E and H plane slices of the beam
+        
+        Args:
+            figsize (tuple): figure size for plot
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        
+        Returns:
+        
         '''
         radTheta=np.pi/2
         alt=np.linspace(-radTheta, radTheta)
@@ -404,8 +432,11 @@ class Observation:
         return
     
     def plot_polar(self,*args, **kwargs):
-        '''
-        Plot polar diagrams of the received beam.
+        '''Plot polar diagrams of the received beam.
+        
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
         
         '''
         radPhi=np.pi
@@ -430,6 +461,14 @@ class Observation:
         return
     
     def plot_isometric(self, figsize=(5,5), *args, **kwargs):
+        '''Plot polar diagrams of the received beam.
+        
+        Args:
+            figsize (tuple): figure size for plot
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+        
+        '''
         xs=self.refined_array[:,1]
         ys=self.refined_array[:,2]
         zs=self.refined_array[:,3]
@@ -449,10 +488,6 @@ class Observation:
         A sortie is created by three files: a ulog, a tlog, and an LWA data file.
         The data from these files is read and compiled into arrays.
         
-        Input:
-        
-        Output:
-        
         '''
         def __init__(self, sortie_tlog, sortie_ulog, sortie_data, sortie_num, ref_f, sortie_name=None, sortie_title=None):
             self.ulog = sortie_ulog
@@ -469,20 +504,18 @@ class Observation:
             return
 
         def get_bootstart(self):
-            '''
-             Uses the GPS time to calculate the time at drone boot.
-             
-             Output: 
-                 bootstart (int): 
+            '''Uses the GPS time to calculate the time at drone boot.
+            
             '''
             bootstart = self.u_dict["gps_position_u"][0][1] - self.u_dict["gps_position_u"][0][0]
             
             return bootstart
 
         def apply_bootstart(self):
-            '''
-            Puts drone data on absolute GPS-based time scale. Uses GPS messages in 
-            on-board ulog to calibrate times of positions logged on ground station.
+            '''Puts drone data on absolute GPS-based time scale. 
+            
+            Uses GPS messages in on-board ulog to calibrate times of positions logged on ground station.
+            
             '''
             bootstart = self.u_dict["gps_position_u"][0][1] - self.u_dict["gps_position_u"][0][0]
             for key,data in self.t_dict.items():
@@ -501,6 +534,13 @@ class Observation:
             return
         
         def get_freq_chans(self):
+            '''Find the channel for our reference frequency.
+
+            Args:
+
+            Returns:
+
+            '''
             frequency=self.ref_frequency
             obs='Observation1'
             tun='Tuning1'
@@ -511,14 +551,14 @@ class Observation:
             return get_ind
         
         def read(self):
-            '''
-            Read in the sortie from associated data files. The stored tlog, ulog, and 
-            receiver datafiles are opened and copied into dictionaries.
+            '''Read in the sortie from associated data files. 
             
-            Output:
-                t_dict: A dictionary containing info from the sortie tlog
-                u_dict: A dictionary containing info from the sortie ulog
-                data_dict: A dictionary containing info from the sortie receiver datafile
+            The stored tlog, ulog, and receiver datafiles are opened and copied into dictionaries.
+            
+            Returns:
+                t_dict (dict): A dictionary containing info from the sortie tlog
+                u_dict (dict): A dictionary containing info from the sortie ulog
+                data_dict (dict): A dictionary containing info from the sortie receiver datafile
             '''
             sortie_tlog = read_utils.read_tlog_txt(self.tlog)
             sortie_ulog = read_utils.read_ulog(
@@ -547,24 +587,23 @@ class Observation:
         #function to adjust gain?
         
         def flag_waypoints(self):
-            '''
-            Flag data arrays based on waypoint data.
+            '''Flag data arrays based on waypoint data.
             
-            Output:
+            Args:
             
             '''
             # flag based on mission waypoints
             pass
 
         def flag_endpoints(self):
-            '''
-            Flag data arrays based on mission start/end. Reads in "global_t" and 
-            "waypoint_t" from the tlog data dictionary.
+            '''Flag data arrays based on mission start/end. 
+            
+            Reads in "global_t" and "waypoint_t" from the tlog data dictionary.
             
             "global_t" contains continuous position data from drone telemetry during the entire sortie.
             "waypoint_t" contains the position data for each navigational waypoint used to maneuver the drone.
             
-            Output:
+            Return:
                 flagged_data:
                 mission_data:
             '''
@@ -582,19 +621,17 @@ class Observation:
         
         ### Plotting Functions
         
-        #flesh this out, lower priority
-        #plot waterfalls, channels
-        
         def plot(self):
-            '''
-            Creates multiple plots showing position data for sortie.
+            '''Creates multiple plots showing position data for sortie. 
             
-            Output:
-                Tlog X/Y Position
-                ULog X/Y Position
-                X Position / Time
-                Y Position / Time
-                Z Position / Time
+            Tlog X/Y Position, ULog X/Y Position, X Position / Time, Y Position / Time, Z Position / Time:
+            
+            Return:
+                Tlog X/Y Position:
+                ULog X/Y Position:
+                X Position / Time:
+                Y Position / Time:
+                Z Position / Time:
             
             '''
             
@@ -650,51 +687,11 @@ class Observation:
             return
             
         def plot_flags():
+            '''Creates a plot showing flagged positions for sortie.
             
-            pass
-
-class Model:
-    '''
-    Model to simulate link budget, this is mostly structural for now
-    Requires:
-        Drone Position (XYZ)
-        Drone Attitude (Roll Pitch Yaw)
-        Drone Beam
-        RX Beam
-        
-    '''
-    
-    def __init__():
-        
-        pass
-    
-    def get_distance():
-        
-        pass
-    
-    def link_budget():
-        
-        pass
-    
-    
-    class drone:
-        '''
-        Model of our drone, includes positions, attitudes, beam
-        
-        '''
-        def __init(self):
+            Return:
             
+            '''
             pass
-    
-    class antenna:
-        '''
-        Model of our antenna, includes position, beam
-        
-        '''
-        def __init__(self):
-            pass
-    
-    #define RX center
-    #define drone position
     
     
