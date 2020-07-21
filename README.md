@@ -1,4 +1,6 @@
 ![](https://github.com/dannyjacobs/ECHO/workflows/Run%20Tests/badge.svg)
+[![Documentation Status](https://readthedocs.org/projects/external-calibrator-for-hydrogen-arrays-echo/badge/?version=latest)](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/en/latest/?badge=latest)
+
 
 The External Calibrator for Hydrogen Arrays (ECHO) is a system for calibrating wide-field radio frequency arrays using a radio transmitter mounted on a drone.
 Primarily targeting (but not exclusively limited to) arrays operating in the sub-GHz band targeting highly redshifted
