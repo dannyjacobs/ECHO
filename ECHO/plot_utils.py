@@ -7,7 +7,7 @@ from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
 from matplotlib import cm,colors,ticker
 import matplotlib.pyplot as plt
-from matplotlib.image import mpimg
+import matplotlib.image as mpimg
 
 from .position_utils import latlon2xy,to_spherical
 from .time_utils import gps_to_HMS,find_peak
