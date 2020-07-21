@@ -7,7 +7,7 @@ from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
 from matplotlib import cm,colors,ticker
 import matplotlib.pyplot as plt
-from matplotlib._png import read_png
+from matplotlib.image import mpimg
 
 from .position_utils import latlon2xy,to_spherical
 from .time_utils import gps_to_HMS,find_peak
@@ -429,7 +429,7 @@ def add_cut_glyph(parent_fig=None,parent_axes=None,pos=(0.8,0.8),size=(.1),cut='
     ax.set_xticks([])
     ax.set_frame_on(False)
     myglyph = '/home/echo/src/ECHO/data/cut_glyphs_cut{cut}_rx{pol}_tx{pol}.png'.format(cut=cut,pol=pol)
-    glyph = read_png(myglyph)
+    glyph = mpimg.imread(myglyph)
     ax.imshow(glyph,interpolation='none')
     return
 

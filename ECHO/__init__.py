@@ -40,7 +40,7 @@ class Beam:
         '''Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
         
         Args:
-            CST_txtfile = CST export file
+            CST_txtfile: CST export file
             beam_type (str): 
             frequency (list, Hz): 
             telescope_name (str): The instrument name 
@@ -77,18 +77,18 @@ class Beam:
 class Observation:
     '''
     The class object for making observations.
-    '''
     
-    def __init__(self, lat, lon, frequency=None, description=None):
-        '''Create an observation for a particular target antenna.
-        
-        Args:
+    Args:
             lat (float):, latitude of receiving antenna (degrees)
             lon (float), longitude of receiving antenna (degrees)
             frequency (int): the reference frequency of the transmitter (MHz)
             channel (int), The reference channel of the transmitter 
             description (str):, text string with information about observation
-
+    '''
+    
+    def __init__(self, lat, lon, frequency=None, description=None):
+        '''Create an observation for a particular target antenna.
+        
         '''
         
         self.sortie_list = []
