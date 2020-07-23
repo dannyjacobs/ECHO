@@ -73,6 +73,30 @@ class Beam:
         else:
             plot_utils.plot_power(self.power)
         return
+    def plot_power_interp(self):
+        if self.power == None:
+            print('No existing power beam.')
+        else:
+            plot_utils.plot_power_interp(self.power)
+        return
+    def plot_escatter(self):
+        plot_utils.plot_healpix_escatter(self.efield)
+        return
+    def plot_escatter_interp(self):
+        plot_utils.plot_hp_escatter_interp(self.efield)
+        return
+    def plot_powscatter(self):
+        if self.power == None:
+            print('No existing power beam.')
+        else:
+            plot_utils.plot_healpix_powscatter(self.power)
+        return
+    def plot_powscatter_interp(self):
+        if self.power == None:
+            print('No existing power beam.')
+        else:
+            plot_utils.plot_hp_powscatter_interp(self.power)
+        return
 
 class Observation:
     '''
