@@ -10,8 +10,8 @@ The External Calibrator for Hydrogen Arrays (ECHO) is a system for calibrating w
 This repository contains software used to operate drone mounted calibrator sources and then collect and reduce the resulting data.
 
 .. csv-table:: ECHO_Summary3
-   :header: "name", "firstname", "age"
-   :widths: 20, 20, 10
+   :header: "Version", "Source", "Frame", "Name", "Mount (STL"), "Transmitter (datasheet)", "Antenna", "Flight Software"
+   :widths: auto
 
-   "Smith", "John", 40
-   "Smith", "John, Junior", 20
+   "1", "A new zealand company?", "Octo", "Brain", " ", " ", "BicoLOG 5070", " "
+   "6", "looking for off-the-shelf, long flighttime", "Steadidrone Vader X8", "Vader", "Vader_Mount (3 parts + Generic_BicoLOG_Mount)", "Blackbox", "BicoLOG 5070", "PX4"
