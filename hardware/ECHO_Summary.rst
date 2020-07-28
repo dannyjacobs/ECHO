@@ -3,4 +3,12 @@
    :widths: auto
 
    "1", "A new zealand company?", "Octo", "Brain", " ", " ", "BicoLOG 5070", " "
+   "2", "Flamewheel", "Quad", "Crater", " ", " ", "BicoLOG 5070", " "
+   "3", "todo", "3D-Robotics X8", Pancake, " ", " ", BicoLOG 5070", " "
+   "4", "todo", "3D-Robotics X8", Waffle, "Sliding_Mount (2 parts)", "Blackbox", BicoLOG 5070", " "
+   "5", "todo", "3D-Robotics X8", Killer, "X8_Mount_v1 (1 part)", "Blackbox", BicoLOG 5070", " "
    "6", "looking for off-the-shelf, long flighttime", "Steadidrone Vader X8", "Vader", "Vader_Mount (3 parts + Generic_BicoLOG_Mount)", "Blackbox", "BicoLOG 5070", "PX4"
+   "7", "looking for off-the-shelf, smaller", "Yuneec H520", "Yuneec", "Yuneec_Mount (2 parts + Generic_BicoLOG_Mount)", "Valon 5009", "BicoLOG 5070", "Yuneec"
+   "8", "unhappy with Vader and Yuneec", "3D-Robotics X8", "Killer", "X8_Mount_v2 (1 part + Generic_BicoLOG_Mount)", "Valon 5009", "BicoLOG 5070", "PX4"
+   "9", "suggestion from JD", "F550", "Chiropter", "Chiropter_Mount_v1 (2 parts + Generic_BicoLOG_Mount)", "Valon 5009", "BicoLOG 5070", "PX4"
+   "10", "improvements from Sevilleta", "F550", "Chiropter", "Chiropter_Mount_v2 (2 parts + Generic_BicoLOG_Mount)", "Custom", "BicoLOG 5070", "PX4"
