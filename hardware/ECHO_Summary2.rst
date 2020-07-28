@@ -2,14 +2,14 @@
 	:widths: 25 25 50
    	:header-rows: 1
 
-	* - Version
+      * - Version
 	- Source
 	- Frame
 	- Mount (STL)
 	- Transmitter (datasheet)
 	- Antenna
 	- Flight Software
-	* - 1
+      * - 1
 	- A new zealand company?
 	- Octo
 	- Brain
@@ -17,7 +17,7 @@
 	- 
 	- BicoLOG 5070
 	- 
-	* - 2
+      * - 2
 	- Flamewheel
 	- Quad
 	- Crater
@@ -25,7 +25,7 @@
 	- 
 	- BicoLOG 5070
 	- 
-	* - 3
+      * - 3
 	- todo
 	- 3D-Robotics X8
 	- Pancake
@@ -33,7 +33,7 @@
 	- 
 	- BicoLOG 5070
 	- 
-	* - 4
+      * - 4
 	- todo
 	- 3D-Robotics X8
 	- Waffle
@@ -41,7 +41,7 @@
 	- 
 	- BicoLOG 5070
 	- 
-	* - 5
+      * - 5
 	- todo
 	- 3D-Robotics X8
 	- Killer
@@ -49,7 +49,7 @@
 	- 
 	- BicoLOG 5070
 	- 
-	* - 6
+      * - 6
 	- looking for off-the-shelf, long flighttime
 	- Steadidrone Vader X8
 	- Vader
