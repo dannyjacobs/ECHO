@@ -822,19 +822,9 @@ def read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, f
     '''
     Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
     
-    NOTE: PYUVBEAM IS BEING USED IN A NONSTANDARD WAY! 
-    
-    We are currently using ENU coordinates (local tangent plane coordinates) for 
-    our drone. However, pyuvbeam uses az_za coordinates, which projects the Efield 
-    polarization onto theta and phi coordinates. this means that we are storing our 
-    E_North and E_West polarization data in E_Theta and E-Phi respectively.
-    
-    We are proposing a PR to pyuvbeam to handle ENU natively, but for now we are continuing to 
-    use pyuvbeam in this way to continue with analysis.  
-    
     CST_txtfile: CST export file
-    beam_type (str): 
-    frequency (list, Hz): 
+    beam_type (str): efield or power
+    frequency (list, Hz): our reference frequency
     telescope_name (str): The instrument name 
     feed_name (str): The name of the feed 
     feed_version (str): The version of the feed
