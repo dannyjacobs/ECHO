@@ -7,6 +7,10 @@ API Reference
 ================================
 .. automodule:: ECHO
    :members:
+.. automodule:: ECHO.observations
+   :members:
+.. automodule:: ECHO.beams
+   :members:
 .. automodule:: ECHO.plot_utils
    :members:
 .. automodule:: ECHO.read_utils
