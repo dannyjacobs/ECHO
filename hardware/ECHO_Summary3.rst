@@ -9,16 +9,9 @@ The External Calibrator for Hydrogen Arrays (ECHO) is a system for calibrating w
 
 This repository contains software used to operate drone mounted calibrator sources and then collect and reduce the resulting data.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+.. csv-table:: ECHO_Summary3
+   :header: "name", "firstname", "age"
+   :widths: 20, 20, 10
 
-   Tutorial <tutorial>
-   API Reference <api>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   "Smith", "John", 40
+   "Smith", "John, Junior", 20
