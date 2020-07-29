@@ -10,3 +10,5 @@ astropy-healpix
 scipy
 pyulog
 flask
+pytest
+pytest-cases
