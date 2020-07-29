@@ -514,7 +514,7 @@ def healpix_grid(beams,title,subtitles,rows,cols):
         X,Y = np.meshgrid(
                 np.linspace(-1,1,num=THETA.shape[0]),
                 np.linspace(-1,1,num=THETA.shape[1]))
-        
+
         ax = plt.subplot(rows,cols,i+1)
         beamcoll = make_polycoll(beam,cmap=cm.jet)
         beamcoll.set_clim(-60,0.1)
@@ -531,7 +531,7 @@ def healpix_grid(beams,title,subtitles,rows,cols):
         cb.locator = tick_locator
         cb.update_ticks()
         cb.set_label('dBi')
-        
+
 def plot_position_3d(xs, ys, zs, figsize=(5,5), *args, **kwargs):
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111, projection='3d')
@@ -547,7 +547,7 @@ def plot_efield(efield_beam):
 
 
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     ax2 = plt.subplot(122, sharey=ax1)
@@ -558,7 +558,7 @@ def plot_efield(efield_beam):
 
     plt.subplots_adjust(wspace=0)
     plt.suptitle('E-Field Linear', fontsize=14)
-    
+
     return
 
 def plot_efield_interp(efield_beam):
@@ -572,7 +572,7 @@ def plot_efield_interp(efield_beam):
     ax1 = plt.subplot(121)
     ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     az_array = np.ones(100)*89*np.pi/180
@@ -594,7 +594,7 @@ def plot_power(pow_beam):
     ax1 = plt.subplot(121)
     ax1.plot(pow_beam.axis2_array*180/np.pi, pow_beam.data_array[0, 0, 0, 0, :, 0],'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     ax2 = plt.subplot(122, sharey=ax1)
@@ -618,7 +618,7 @@ def plot_power_interp(pow_beam):
     ax1 = plt.subplot(121)
     ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     az_array = np.ones(100)*89*np.pi/180
@@ -642,7 +642,7 @@ def plot_healpix_escatter(efield_beam):
     lon, lat = hpx_obj.healpix_to_lonlat(hpx_beam.pixel_array)
 
     plt.figure(figsize=(12,8))
-    hpxplot = plt.scatter(lon, lat, c=np.abs(hpx_beam.data_array[1,0,0,0,:]), norm=colors.LogNorm()) 
+    hpxplot = plt.scatter(lon, lat, c=np.abs(hpx_beam.data_array[1,0,0,0,:]), norm=colors.LogNorm())
     plt.xlabel('Longitude (rads)')
     plt.ylabel('Latitude (rads)')
     plt.colorbar(hpxplot)
@@ -656,7 +656,7 @@ def plot_healpix_powscatter(pow_beam):
     lon, lat = hpxpow_obj.healpix_to_lonlat(hpxpow_beam.pixel_array)
 
     plt.figure(figsize=(12,8))
-    plt.scatter(lon*180/np.pi, lat*180/np.pi, c=abs(hpxpow_beam.data_array[0,0,0,0,:]), norm=colors.LogNorm()) 
+    plt.scatter(lon*180/np.pi, lat*180/np.pi, c=abs(hpxpow_beam.data_array[0,0,0,0,:]), norm=colors.LogNorm())
     plt.xlabel('Longitude (rads)')
     plt.ylabel('Latitude (rads)')
     #plt.title()
@@ -675,7 +675,7 @@ def plot_hp_escatter_interp(efield_beam):
     ax1 = plt.subplot(121)
     ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     az_array = np.ones(100)*89*np.pi/180
@@ -704,7 +704,7 @@ def plot_hp_powscatter_interp(pow_beam):
     ax1 = plt.subplot(121)
     ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     az_array = np.ones(100)*89*np.pi/180

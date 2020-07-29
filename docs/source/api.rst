@@ -19,4 +19,3 @@ API Reference
    :members:
 .. automodule:: ECHO.time_utils
    :members:
-

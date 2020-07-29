@@ -43,7 +43,7 @@ The code is organized into a few modules. The beam mapping pipeline steps are
   1. subtract transmitter model
   2. plot beam maps
   3. plot slices
-  4. plot drone events and dynamics  
+  4. plot drone events and dynamics
   5. difference beams
 ### Modules
 NB: If a function is not mentioned here, it is because I don't think it matters any more. Such things will probably be culled in a future cleanup.

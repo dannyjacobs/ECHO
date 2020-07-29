@@ -18,4 +18,3 @@ Any data used is organized into sorties. Sorties are the associated data from th
 Reading in beams
 ----------------
 To further investigate an instrument's response during a sortie, it is helpful to look at the beam pattern of the instrument.
-

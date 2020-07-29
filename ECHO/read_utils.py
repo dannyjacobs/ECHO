@@ -320,7 +320,7 @@ def interp_rx(postimes,rxtimes,rx):
     Note: this is just a general interpolation function that uses astropy times
        and can be used for anything
     """
-    power_interp_model = interp1d(rxtimes.gps,rx, bounds_error=False) 
+    power_interp_model = interp1d(rxtimes.gps,rx, bounds_error=False)
     rx_interp = power_interp_model(postimes.gps)
     return rx_interp
 def flag_apm_pos(postimes,positions,waypoint_times=None):
@@ -785,7 +785,7 @@ def read_h5(dataFile):
                     data = np.asarray(target_data[key][obsKey][tunKey])
                     tunDict[tunKey] = data
                 obsDict[obsKey] = tunDict
-        dataDict[key] = obsDict   
+        dataDict[key] = obsDict
     return dataDict
 
 def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
@@ -799,7 +799,7 @@ def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
     rot = rotates around the pole by 90deg*rot
     zflip = inverts the Z axis
     '''
-    
+
     raw_data = np.loadtxt(beamfile,skiprows=2,usecols=(0,1,2))
     thetas = raw_data[:,0]*np.pi/180 #radians
     phis = raw_data[:,1]*np.pi/180 #radians
@@ -807,10 +807,10 @@ def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
     #account for stupid CST full circle cuts
     phis[thetas<0] += np.pi
     thetas[thetas<0] = np.abs(thetas[thetas<0])
-    
+
     phis += rot*(np.pi/2)
     if zflip==True: thetas = np.pi - thetas
-    
+
     hp_indices = hp.ang2pix(nside,thetas,phis)
     hp_map = np.zeros(hp.nside2npix(nside))
     hp_map[hp_indices] = gain
@@ -821,19 +821,19 @@ def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
 def read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol):
     '''
     Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
-    
+
     CST_txtfile: CST export file
     beam_type (str): efield or power
     frequency (list, Hz): our reference frequency
-    telescope_name (str): The instrument name 
-    feed_name (str): The name of the feed 
+    telescope_name (str): The instrument name
+    feed_name (str): The name of the feed
     feed_version (str): The version of the feed
-    model_name (str): Name for the model 
+    model_name (str): Name for the model
     model_version (str): version of the model
     feed_pol (str): polarization of the feed ('x','y','xx','yy')
     '''
     beam = UVBeam()
-    beam.read_cst_beam(CST_txtfile, beam_type=beam_type, frequency=frequency, 
-                   telescope_name=telescope_name, feed_name=feed_name, feed_version=feed_version, 
+    beam.read_cst_beam(CST_txtfile, beam_type=beam_type, frequency=frequency,
+                   telescope_name=telescope_name, feed_name=feed_name, feed_version=feed_version,
                    model_name = model_name, model_version=model_version, feed_pol=feed_pol)
     return beam
