@@ -37,5 +37,3 @@ tight_layout()
 '''
 
 show()
-
-

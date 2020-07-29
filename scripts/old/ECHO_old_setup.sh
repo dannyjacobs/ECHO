@@ -11,4 +11,4 @@ read apm_loc
 
 open $apm_loc/APM\ Planner\ 2.0.app/
 
-mavproxy.py --master=$port --baudrate=$baud --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14551 
+mavproxy.py --master=$port --baudrate=$baud --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14551
