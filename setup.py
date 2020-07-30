@@ -2,7 +2,7 @@ from distutils.core import setup
 import glob
 import os.path as op
 
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
