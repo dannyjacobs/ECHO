@@ -380,7 +380,7 @@ int main()
 		//printf("%.2ld",timestamp);
 		gettimeofday(&timestamp,NULL);
 	    printf("%.2f",1.0*(timestamp.tv_sec*1e6+timestamp.tv_usec)/1.0e6);
-		
+
 		for (i = 0; i<traceSize; i++)
 		{
 			printf(",%6.3f", min[i]);

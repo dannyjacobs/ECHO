@@ -1,0 +1,26 @@
+version: 2.1
+orbs:
+    python: circleci/python@0.3.2
+
+jobs:
+    build:
+        executor: python/default
+        steps:
+            - checkout
+            - python/load-cache
+            - python/install-deps
+            - python/save-cache
+            - run:
+                command: |
+                    pre-commit -a
+                name: run pre-commit
+            - run:
+                command: |
+                    pytest ./tests -v
+
+
+#Build our module, flake8, run tests
+workflows:
+  build_and_test:
+    jobs:
+      - build

@@ -57,10 +57,10 @@ def DatetimetoUnix(data):
     timeconv_data = data
     for row in timeconv_data:
         timestamp = row[0]
-        timestamp = datetime.strptime(timestamp, '%m/%d/%Y %I:%M:%S %p')           
+        timestamp = datetime.strptime(timestamp, '%m/%d/%Y %I:%M:%S %p')
         timestamp = Time(timestamp, format='datetime')
         unix_time = timestamp.unix
         unix_time = unix_time + (7*3600) #MST to GMT
         row[0] = unix_time
-        
+
     return timeconv_data

@@ -4,10 +4,11 @@ import numpy as np,os,sys
 import healpy as hp
 import math
 from healpy import _healpy_pixel_lib as pixlib
+from astropy_healpix import HEALPix
 from matplotlib.collections import PolyCollection
 from matplotlib import cm,colors,ticker
 import matplotlib.pyplot as plt
-from matplotlib._png import read_png
+import matplotlib.image as mpimg
 
 from .position_utils import latlon2xy,to_spherical
 from .time_utils import gps_to_HMS,find_peak
@@ -429,7 +430,7 @@ def add_cut_glyph(parent_fig=None,parent_axes=None,pos=(0.8,0.8),size=(.1),cut='
     ax.set_xticks([])
     ax.set_frame_on(False)
     myglyph = '/home/echo/src/ECHO/data/cut_glyphs_cut{cut}_rx{pol}_tx{pol}.png'.format(cut=cut,pol=pol)
-    glyph = read_png(myglyph)
+    glyph = mpimg.imread(myglyph)
     ax.imshow(glyph,interpolation='none')
     return
 
@@ -513,7 +514,7 @@ def healpix_grid(beams,title,subtitles,rows,cols):
         X,Y = np.meshgrid(
                 np.linspace(-1,1,num=THETA.shape[0]),
                 np.linspace(-1,1,num=THETA.shape[1]))
-        
+
         ax = plt.subplot(rows,cols,i+1)
         beamcoll = make_polycoll(beam,cmap=cm.jet)
         beamcoll.set_clim(-60,0.1)
@@ -530,7 +531,7 @@ def healpix_grid(beams,title,subtitles,rows,cols):
         cb.locator = tick_locator
         cb.update_ticks()
         cb.set_label('dBi')
-        
+
 def plot_position_3d(xs, ys, zs, figsize=(5,5), *args, **kwargs):
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111, projection='3d')
@@ -546,7 +547,7 @@ def plot_efield(efield_beam):
 
 
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     ax2 = plt.subplot(122, sharey=ax1)
@@ -557,7 +558,7 @@ def plot_efield(efield_beam):
 
     plt.subplots_adjust(wspace=0)
     plt.suptitle('E-Field Linear', fontsize=14)
-    
+
     return
 
 def plot_efield_interp(efield_beam):
@@ -571,7 +572,7 @@ def plot_efield_interp(efield_beam):
     ax1 = plt.subplot(121)
     ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     az_array = np.ones(100)*89*np.pi/180
@@ -593,7 +594,7 @@ def plot_power(pow_beam):
     ax1 = plt.subplot(121)
     ax1.plot(pow_beam.axis2_array*180/np.pi, pow_beam.data_array[0, 0, 0, 0, :, 0],'.')
     ax1.set_title('Starts at +Z, ends at -Z')
-    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_xlabel('Zenith Angle / Theta')
     ax1.set_ylabel('Magnitude')
 
     ax2 = plt.subplot(122, sharey=ax1)
@@ -604,4 +605,117 @@ def plot_power(pow_beam):
 
     plt.subplots_adjust(wspace=0)
     plt.suptitle('Power Linear', fontsize=14)
+    return
+
+def plot_power_interp(pow_beam):
+    # plots the power beam slices using the .interp function
+    pow_beam.interpolation_function = 'az_za_simple'
+    az_array = np.zeros(100)
+    za_array = np.linspace(0,180,num=100)*np.pi/180
+    intbeam,intvector = pow_beam.interp(az_array=az_array,za_array=za_array)
+
+    plt.figure(figsize=(12,8), facecolor='w')
+    ax1 = plt.subplot(121)
+    ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax1.set_title('Starts at +Z, ends at -Z')
+    ax1.set_xlabel('Zenith Angle / Theta')
+    ax1.set_ylabel('Magnitude')
+
+    az_array = np.ones(100)*89*np.pi/180
+    intbeam,intvector = pow_beam.interp(az_array=az_array,za_array=za_array)
+
+    ax2 = plt.subplot(122, sharey=ax1)
+    ax2.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax2.set_title('Starts at +X, ends at +X')
+    ax2.set_xlabel('Azimuth Angle / Phi')
+    plt.setp(ax2.get_yticklabels(), visible=False)
+
+    plt.subplots_adjust(wspace=0)
+    plt.suptitle('Power Linear - Interpolated', fontsize=14)
+    return
+
+def plot_healpix_escatter(efield_beam):
+    # healpix scatter of the efield beam
+    efield_beam.interpolation_function = 'az_za_simple'
+    hpx_beam = efield_beam.to_healpix(inplace=False)
+    hpx_obj = HEALPix(nside=hpx_beam.nside, order=hpx_beam.ordering)
+    lon, lat = hpx_obj.healpix_to_lonlat(hpx_beam.pixel_array)
+
+    plt.figure(figsize=(12,8))
+    hpxplot = plt.scatter(lon, lat, c=np.abs(hpx_beam.data_array[1,0,0,0,:]), norm=colors.LogNorm())
+    plt.xlabel('Longitude (rads)')
+    plt.ylabel('Latitude (rads)')
+    plt.colorbar(hpxplot)
+    return
+
+def plot_healpix_powscatter(pow_beam):
+    # healpix scatter of the power beam
+    pow_beam.interpolation_function = 'az_za_simple'
+    hpxpow_beam = pow_beam.to_healpix(inplace=False)
+    hpxpow_obj = HEALPix(nside=hpxpow_beam.nside, order=hpxpow_beam.ordering)
+    lon, lat = hpxpow_obj.healpix_to_lonlat(hpxpow_beam.pixel_array)
+
+    plt.figure(figsize=(12,8))
+    plt.scatter(lon*180/np.pi, lat*180/np.pi, c=abs(hpxpow_beam.data_array[0,0,0,0,:]), norm=colors.LogNorm())
+    plt.xlabel('Longitude (rads)')
+    plt.ylabel('Latitude (rads)')
+    #plt.title()
+    return
+
+def plot_hp_escatter_interp(efield_beam):
+    # plots the healpix efield beam slices using the .interp function
+    efield_beam.interpolation_function = 'az_za_simple'
+    hpx_beam = efield_beam.to_healpix(inplace=False)
+    hpx_beam.interpolation_function = 'healpix_simple'
+    az_array = np.zeros(100)
+    za_array = np.linspace(0,180,num=100)*np.pi/180
+    intbeam,intvector = hpx_beam.interp(az_array=az_array,za_array=za_array)
+
+    plt.figure(figsize=(12,8))
+    ax1 = plt.subplot(121)
+    ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax1.set_title('Starts at +Z, ends at -Z')
+    ax1.set_xlabel('Zenith Angle / Theta')
+    ax1.set_ylabel('Magnitude')
+
+    az_array = np.ones(100)*89*np.pi/180
+    intbeam,intvector = hpx_beam.interp(az_array=az_array,za_array=za_array)
+
+    ax2 = plt.subplot(122, sharey=ax1)
+    ax2.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax2.set_title('Starts at +X, ends at +X')
+    ax2.set_xlabel('Azimuth Angle / Phi')
+    plt.setp(ax2.get_yticklabels(), visible=False)
+
+    plt.subplots_adjust(wspace=0)
+    plt.suptitle('Healpix Efield Interpolated', fontsize=14)
+    return
+
+def plot_hp_powscatter_interp(pow_beam):
+    # plots the healpix power beam slices using the .interp function
+    pow_beam.interpolation_function = 'az_za_simple'
+    hpxpow_beam = pow_beam.to_healpix(inplace=False)
+    hpxpow_beam.interpolation_function = 'healpix_simple'
+    az_array = np.zeros(100)
+    za_array = np.linspace(0,180,num=100)*np.pi/180
+    intbeam,intvector = hpxpow_beam.interp(az_array=az_array,za_array=za_array)
+
+    plt.figure(figsize=(12,8))
+    ax1 = plt.subplot(121)
+    ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax1.set_title('Starts at +Z, ends at -Z')
+    ax1.set_xlabel('Zenith Angle / Theta')
+    ax1.set_ylabel('Magnitude')
+
+    az_array = np.ones(100)*89*np.pi/180
+    intbeam,intvector = hpxpow_beam.interp(az_array=az_array,za_array=za_array)
+
+    ax2 = plt.subplot(122, sharey=ax1)
+    ax2.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax2.set_title('Starts at +X, ends at +X')
+    ax2.set_xlabel('Azimuth Angle / Phi')
+    plt.setp(ax2.get_yticklabels(), visible=False)
+
+    plt.subplots_adjust(wspace=0)
+    plt.suptitle('Healpix Power Interpolated', fontsize=14)
     return

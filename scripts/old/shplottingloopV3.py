@@ -31,7 +31,7 @@ def find_peak(f,x,fmin=0,fmax=500,freq=137.5):
     # x = spectrum
     # fmin,fmax range in which to search for peak
     fchans = np.argwhere(np.logical_and(f>fmin,f<fmax))
-    
+
     #peak = x[fchans].max()
     peak = x[freq_chan]
     #maxfreq = f[fchans[x[fchans].argmax()]]
