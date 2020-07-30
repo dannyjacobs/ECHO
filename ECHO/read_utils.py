@@ -292,8 +292,10 @@ def channel_select(freqs,rxspectrum,channel):
         freqs: measured frequences in MHz
         rxspectrum: power in volt^2 shape(len(times),len(freqs))
         channel: give a channel as an int or a float frequency in MHz
+
     return:
         a single vector ntimes long
+
     """
     if type(channel)==int:
         if channel>len(freqs):
@@ -315,10 +317,12 @@ def interp_rx(postimes,rxtimes,rx):
         rxtime: astropy.time.Time vector (input points)
         Assumes that both position and spectrum data have been properly flagged
         and that the flags match between the two
+
     return:
         interpolation of the rx power to the gps times
     Note: this is just a general interpolation function that uses astropy times
        and can be used for anything
+
     """
     power_interp_model = interp1d(rxtimes.gps,rx, bounds_error=False)
     rx_interp = power_interp_model(postimes.gps)
@@ -337,6 +341,7 @@ def flag_angles(angletimes,angles,sigma=2):
         angles: (1,len(angletimes))
 
         sigma: flag values more than this many sigmas above the mean
+
     return:
         mask
         times during which angles are bad
@@ -368,6 +373,7 @@ def flag_waypoints(postimes,waypoint_times):
     input:
         postimes: astropy.time.Time vector matching GPS solutions
         waypoint_times: astropy.time.Time entries matching times reached wypts
+
     return:
         flags on the postimes time base (ie matching len(postimes))
     """
