@@ -4,11 +4,15 @@ import numpy as np,healpy as hp
 import sys
 import glob
 from astropy.time import Time
+
 from scipy.interpolate import interp1d
 from .time_utils import flight_time_filter,waypt_time_filter, DatetimetoUnix
 from distutils.version import StrictVersion
 import pyulog.core as pyu
 import pyulog.ulog2csv as pyucsv
+from pyuvdata import UVBeam
+from pyuvdata.data import DATA_PATH
+import h5py
 
 SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
@@ -16,6 +20,7 @@ def dB(x):
     return 10*np.log10(x)
 def dB2(x): #this is the definition of dB for Voltages
     return 20*np.log10(x)
+
 def concat_times(Ts):
     "input a list of astropy time vectors"
     "return a single concatenated time vector"
@@ -315,7 +320,7 @@ def interp_rx(postimes,rxtimes,rx):
     Note: this is just a general interpolation function that uses astropy times
        and can be used for anything
     """
-    power_interp_model = interp1d(rxtimes.gps,rx)
+    power_interp_model = interp1d(rxtimes.gps,rx, bounds_error=False) 
     rx_interp = power_interp_model(postimes.gps)
     return rx_interp
 def flag_apm_pos(postimes,positions,waypoint_times=None):
@@ -377,22 +382,22 @@ def mission_endpoint_flagging(pos_data,wpt_data):
     Returns:
         flagged_array: array of flagged data.
         mission_data: array of valid mission data.
-    
+
     """
     flagged_indices = []
     mission_indices = []
     mission_start = 0
     mission_end = wpt_data[-1][0]
-    
+
     for row in wpt_data:
         if row[1] == 1:
             mission_start = row[0]
             break
-    
+
     for index,row in enumerate(pos_data):
         if row[0]<mission_start or row[0]>mission_end: flagged_indices.append(index)
         else: mission_indices.append(index)
-    
+
     flagged_data = np.delete(pos_data,mission_indices,0)
     mission_data = np.delete(pos_data,flagged_indices,0)
     return flagged_data, mission_data
@@ -574,8 +579,8 @@ def get_start_stop_times(infile):
         lines=open(apm_file).readlines()
         weektimes = []
         for line in lines:
-           if line.startswith('GPS'):
-              weektimes.append(map(float,line.split(',')[3:5]))
+            if line.startswith('GPS'):
+                weektimes.append(map(float,line.split(',')[3:5]))
         weektimes = np.array(weektimes)
         seconds = weektimes[:,1]*SEC_PER_WEEK + weektimes[:,0]/1000.
         times = Time(seconds, format='gps')
@@ -631,7 +636,7 @@ def get_filter_times(infile,first_waypt=3,waypts=False):
         return start_stop_times,waypoint_times
     else:
         return start_stop_times
-    
+
 def read_tlog_txt(tlog):
     """Read in text files converted from tlogs, put them into appropriate arrays.
 
@@ -649,7 +654,7 @@ def read_tlog_txt(tlog):
     local_data = []
     gps_data = []
     #att_data = []
-    
+
     lines = open(tlog).readlines()
     for line in lines:
 
@@ -668,13 +673,13 @@ def read_tlog_txt(tlog):
         #elif line.find('mavlink_attitude_t') != -1:
             #datapoints = line.split()
             #if datapoints[15]!='body_roll_rate' and datapoints[15]!='time_boot_ms': att_data.append([datapoints[1],datapoints[13],datapoints[15],datapoints[17],datapoints[19]])
-            
+
     wpt_data = DatetimetoUnix(wpt_data)
-    global_Data = DatetimetoUnix(global_data)
+    global_data = DatetimetoUnix(global_data)
     local_data = DatetimetoUnix(local_data)
     gps_data = DatetimetoUnix(gps_data)
     #DatetimetoUnix(att_data)
-    
+
     wpt_array = np.array(wpt_data,dtype='int')
     global_array = np.array(global_data,dtype='float')
     local_array = np.array(local_data,dtype='float')
@@ -685,10 +690,10 @@ def read_tlog_txt(tlog):
 def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local_position,vehicle_gps_position'):
     """Read in ulog file, put them into appropriate arrays, then save to .csv
 
-    Args:
+    Input:
         ulog (int): the ulog to be converted.
 
-    Returns:
+    Output:
         global_array: global position.
         local_array: local position.
         gps_array: gps raw data.
@@ -696,8 +701,8 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
     name = ulog[:-4]
     if output:
         pyucsv.convert_ulog2csv(ulog,messages=messages, output=output ,delimiter=',')
-    
-        global_data = np.genfromtxt(name+'_vehicle_global_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,9)) 
+
+        global_data = np.genfromtxt(name+'_vehicle_global_position_0.csv', delimiter=',',skip_header=1,usecols=(0,1,2,3,9))
         global_data[:,0] = global_data[:,0]/1e6
         global_data[:,3] = global_data[:,3]-1477.8
 
@@ -734,16 +739,101 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
                 local_data = biglist[i][1][:,[0,1,2,3,4,5,6,20,21]]
             if "gps" in biglist[i][0]:
                 gps_data = biglist[i][1][:,[0,1,2,3,4]]
-        
+
         global_data[:,0] = global_data[:,0]/1e6
         global_data[:,3] = global_data[:,3]-1477.8
-        
+
         local_data[:,0] = local_data[:,0]/1e6
         local_data[:,6] = local_data[:,6]*-1
-    
+
         gps_data[:,0] = gps_data[:,0]/1e6
         gps_data[:,1] = gps_data[:,1]/1e6
         gps_data[:,2] = gps_data[:,2]/1e7
         gps_data[:,3] = gps_data[:,3]/1e7
         gps_data[:,4] = gps_data[:,4]/1e3
+
+        #u_log_dict = {'global_position_u':,'local_position_u':,'gps_position_u':gps_data}
     return global_data, local_data, gps_data
+
+def read_h5(dataFile):
+    """
+    Read in ulog file, put them into appropriate arrays
+
+    Input:
+        target_data (HDF5 data file): the datafile for the received power for the target antenna, saved in in h5 format.
+
+    Output:
+        dataDict: A dictionary containing the observation data. Includes observations, tunings, times, XX and YY polarizations, frequencies
+    """
+
+    target_data = h5py.File(dataFile,'r')
+    keys = [key for key in target_data.keys()]
+    #obs_keys = [obsKey for key in keys]
+    dataDict = {}
+    for key in keys:
+        obsKeys = [obsKey for obsKey in target_data[key].keys()]
+        obsDict = {}
+        for obsKey in obsKeys:
+            if obsKey == 'time':
+                obsDict[obsKey] = np.asarray(target_data[key][obsKey])
+            if obsKey != 'time':
+                tuningKeys = [tunKey for tunKey in target_data[key][obsKey].keys()]
+                tunDict = {}
+                dataKeys = []
+                for tunKey in tuningKeys:
+                    #print(key, obsKey, tunKey)
+                    data = np.asarray(target_data[key][obsKey][tunKey])
+                    tunDict[tunKey] = data
+                obsDict[obsKey] = tunDict
+        dataDict[key] = obsDict   
+    return dataDict
+
+def CST_to_hp(beamfile,outfile,nside=8,rot=0,zflip=False):
+    '''
+    Reads in a ASCII formatted CST export file and returns a healpix map.
+    Also saves a .fits file to the current directory.
+    This function is an adaptation of CST_to_healpix.py in the ECHO github.
+    beamfile = CST export file
+    outfile = name of the generated fits file, string
+    nside = number of sides per healpix pixel, must be 2^n int, 8 is typical
+    rot = rotates around the pole by 90deg*rot
+    zflip = inverts the Z axis
+    '''
+    
+    raw_data = np.loadtxt(beamfile,skiprows=2,usecols=(0,1,2))
+    thetas = raw_data[:,0]*np.pi/180 #radians
+    phis = raw_data[:,1]*np.pi/180 #radians
+    gain = raw_data[:,2]
+    #account for stupid CST full circle cuts
+    phis[thetas<0] += np.pi
+    thetas[thetas<0] = np.abs(thetas[thetas<0])
+    
+    phis += rot*(np.pi/2)
+    if zflip==True: thetas = np.pi - thetas
+    
+    hp_indices = hp.ang2pix(nside,thetas,phis)
+    hp_map = np.zeros(hp.nside2npix(nside))
+    hp_map[hp_indices] = gain
+    hp_map -= hp_map.max()
+    hp.write_map(outfile,hp_map,fits_IDL=False,overwrite=True)
+    return hp_map
+
+def read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol):
+    '''
+    Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
+    
+    CST_txtfile = CST export file
+    beam_type (str): 
+    frequency (list, Hz): 
+    telescope_name (str): The instrument name 
+    feed_name (str): The name of the feed 
+    feed_version (str): The version of the feed
+    model_name (str): Name for the model 
+    model_version (str): version of the model
+    feed_pol (str): polarization of the feed ('x','y','xx','yy')
+    '''
+    beam = UVBeam()
+    beam.read_cst_beam(CST_txtfile, beam_type=beam_type, frequency=frequency, 
+                   telescope_name=telescope_name, feed_name=feed_name, feed_version=feed_version, 
+                   model_name = model_name, model_version=model_version, feed_pol=feed_pol)
+    return beam

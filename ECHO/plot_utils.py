@@ -5,12 +5,13 @@ import healpy as hp
 import math
 from healpy import _healpy_pixel_lib as pixlib
 from matplotlib.collections import PolyCollection
-from matplotlib import cm,colors
+from matplotlib import cm,colors,ticker
 import matplotlib.pyplot as plt
 from matplotlib._png import read_png
 
 from .position_utils import latlon2xy,to_spherical
 from .time_utils import gps_to_HMS,find_peak
+from .read_utils import dB
 
 def cmap_discretize(cmap, N):
     """Return a discrete colormap from the continuous colormap cmap.
@@ -442,7 +443,8 @@ def get_interp_val(m,theta,phi,nest=False):
     p = np.array(r[0:4])
     w = np.array(r[4:8])
     w = np.ma.array(w)
-    w.mask = m2[p].mask
+    if np.ma.is_masked(m2):
+        w.mask = m2[p].mask
     del r
     val = np.ma.sum(m2[p]*w/np.ma.sum(w,axis=0),axis=0)
     return val
@@ -491,3 +493,115 @@ def add_diagram(axs,xys,xytexts,colors,labels=None):
                                         alpha=0.0
                                         ),
                         size=16)
+
+def mollview(beam,title):
+    hp.mollview(beam,title=title,unit='dBi',coord=['C'])
+    hp.graticule(coord='C')
+    for ra_label in range(0,360,30):
+        hp.projtext(ra_label-0.01, 0, str(ra_label), lonlat=True, coord='C')
+    hp.projtext(180, 30, '+30', lonlat=True, coord='C')
+    hp.projtext(180, 60, '+60', lonlat=True, coord='C')
+    hp.projtext(180, -30, '-30', lonlat=True, coord='C')
+    hp.projtext(180, -60, '-60', lonlat=True, coord='C')
+
+def healpix_grid(beams,title,subtitles,rows,cols):
+    plt.figure()
+    plt.axis('equal')
+    plt.suptitle(title)
+    for i,beam in enumerate(beams):
+        THETA,PHI,IM = project_healpix(beam)
+        X,Y = np.meshgrid(
+                np.linspace(-1,1,num=THETA.shape[0]),
+                np.linspace(-1,1,num=THETA.shape[1]))
+        
+        ax = plt.subplot(rows,cols,i+1)
+        beamcoll = make_polycoll(beam,cmap=cm.jet)
+        beamcoll.set_clim(-60,0.1)
+        ax.add_collection(beamcoll)
+        CS = ax.contour(X,Y,THETA*180/np.pi,[20,40,60],colors='k')
+        CS.levels = [nf(val) for val in CS.levels]
+        plt.clabel(CS, inline=1, fontsize=10,fmt=fmt)
+        ax.autoscale_view()
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+        ax.set_title(subtitles[i])
+        cb = plt.colorbar(beamcoll,ax=ax,orientation='horizontal',pad=0.05)
+        tick_locator = ticker.MaxNLocator(nbins=5)
+        cb.locator = tick_locator
+        cb.update_ticks()
+        cb.set_label('dBi')
+        
+def plot_position_3d(xs, ys, zs, figsize=(5,5), *args, **kwargs):
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(xs, ys, zs, zdir='z', *args, **kwargs)
+    return fig
+
+def plot_efield(efield_beam):
+    # plots the efield beam slices using the default pyuvbeam tutorial method
+    plt.figure(figsize=(12,8), facecolor='w')
+    ax1 = plt.subplot(121)
+    ax1.plot(efield_beam.axis2_array*180/np.pi, efield_beam.data_array[0, 0, 0, 0, :, 0],'.')
+    #ax1.plot(beam.axis2_array*180/np.pi, np.sqrt(pow_beam.data_array[0, 0, 0, 0, :, 0]),'.')
+
+
+    ax1.set_title('Starts at +Z, ends at -Z')
+    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_ylabel('Magnitude')
+
+    ax2 = plt.subplot(122, sharey=ax1)
+    ax2.plot(efield_beam.axis1_array*180/np.pi, efield_beam.data_array[0, 0, 0, 0, 0, :],'.')
+    ax2.set_title('Starts at +X, ends at +X')
+    ax2.set_xlabel('Azimuth Angle / Phi')
+    plt.setp(ax2.get_yticklabels(), visible=False)
+
+    plt.subplots_adjust(wspace=0)
+    plt.suptitle('E-Field Linear', fontsize=14)
+    
+    return
+
+def plot_efield_interp(efield_beam):
+    # plots the efield beam slices using the .interp function
+    efield_beam.interpolation_function = 'az_za_simple'
+    az_array = np.zeros(100)
+    za_array = np.linspace(0,180,num=100)*np.pi/180
+    intbeam,intvector = efield_beam.interp(az_array=az_array,za_array=za_array)
+
+    plt.figure(figsize=(12,8), facecolor='w')
+    ax1 = plt.subplot(121)
+    ax1.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax1.set_title('Starts at +Z, ends at -Z')
+    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_ylabel('Magnitude')
+
+    az_array = np.ones(100)*89*np.pi/180
+    intbeam,intvector = efield_beam.interp(az_array=az_array,za_array=za_array)
+
+    ax2 = plt.subplot(122, sharey=ax1)
+    ax2.plot(za_array, dB(intbeam[0, 0, 0, 0, :]),'.')
+    ax2.set_title('Starts at +X, ends at +X')
+    ax2.set_xlabel('Azimuth Angle / Phi')
+    plt.setp(ax2.get_yticklabels(), visible=False)
+
+    plt.subplots_adjust(wspace=0)
+    plt.suptitle('Efield Linear - Interpolated', fontsize=14)
+    return
+
+def plot_power(pow_beam):
+    # plots the power beam slices using the default tutorial method
+    plt.figure(figsize=(12,8), facecolor='w')
+    ax1 = plt.subplot(121)
+    ax1.plot(pow_beam.axis2_array*180/np.pi, pow_beam.data_array[0, 0, 0, 0, :, 0],'.')
+    ax1.set_title('Starts at +Z, ends at -Z')
+    ax1.set_xlabel('Zenith Angle / Theta') 
+    ax1.set_ylabel('Magnitude')
+
+    ax2 = plt.subplot(122, sharey=ax1)
+    ax2.plot(pow_beam.axis1_array*180/np.pi, pow_beam.data_array[0, 0, 0, 0, 0, :],'.')
+    ax2.set_title('Starts at +X, ends at +X')
+    ax2.set_xlabel('Azimuth Angle / Phi')
+    plt.setp(ax2.get_yticklabels(), visible=False)
+
+    plt.subplots_adjust(wspace=0)
+    plt.suptitle('Power Linear', fontsize=14)
+    return
