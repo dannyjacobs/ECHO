@@ -18,8 +18,8 @@ sys.setrecursionlimit(1500)
 # -- Project information -----------------------------------------------------
 
 project = 'ECHO'
-copyright = '2020, Daniel C. Jacobs, Mickey Horn, Mrudala Gopalkrishna, David Lewis'
-author = 'Daniel C. Jacobs, Mickey Horn, Mrudala Gopalkrishna, David Lewis'
+copyright = '2020, Daniel C. Jacobs, Mickey Horn, Mrudula Gopalkrishna, David Lewis'
+author = 'Daniel C. Jacobs, Mickey Horn, Mrudula Gopalkrishna, David Lewis'
 
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
