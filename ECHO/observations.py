@@ -156,7 +156,7 @@ class Observation:
 
             #target_data = h5py.File(sortie.data,'r')
             target_data = sortie.data_dict
-            if tun = 'Tuning1':
+            if tun == 'Tuning1':
                 freqchan=sortie.freq_chan_t1
             else:
                 freqchan= sortie.freq_chan_t2
