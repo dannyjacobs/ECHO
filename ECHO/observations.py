@@ -66,8 +66,11 @@ class Observation:
         '''
         for sortie in self.sortie_list:
             sortie.read()
-            print('freq chan for tuning 1 is ', sortie.get_freq_chans(1))
-            print('freq chan for tuning 2 is ', sortie.get_freq_chans(2))
+
+        if len(self.sortie_list) != 0: 
+            print('freq chan for tuning 1 is ', self.sortie_list[0].get_freq_chans(1))
+            print('freq chan for tuning 2 is ', self.sortie_list[0].get_freq_chans(2))
+
         return
 
     def flagSorties(self):
@@ -130,10 +133,8 @@ class Observation:
         '''Takes position-times of the drone and interpolate the receiver data to the same dimensions as position data.
 
         Args:
-            frequency (float):, the frequency of the reference channel in Mhz
-            channel (int): the reference channel
             obsNum (int): the number of the observation to use
-            tuning (int): the number of the tuning to use
+            tuning (int): the number of the tuning to use, 1 or 2
             pol (str): which polarization to use ('XX', 'YY', 'YX', 'XY')
 
 
@@ -547,9 +548,8 @@ class Observation:
             "global_t" contains continuous position data from drone telemetry during the entire sortie.
             "waypoint_t" contains the position data for each navigational waypoint used to maneuver the drone.
 
-            Return:
-                flagged_data:
-                mission_data:
+            Updates flagged_data and mission_data properties for a sortie
+
             '''
 
             self.flagged_data, self.mission_data = read_utils.mission_endpoint_flagging(
@@ -602,28 +602,31 @@ class Observation:
             ax1.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,1],'b-')
             ax1.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,1],'r-',alpha=0.5)
             ax1.title.set_text('Global X')
+            ax1.set_ylabel('Latitude in deg')
             #plt.xticks(rotation=15)
-            ax1.axes.get_yaxis().set_visible(False)
+            #ax1.axes.get_yaxis().set_visible(False)
             #ax1.xaxis.set_major_formatter(date_formatter)
 
             ax2 = fig2.add_subplot(312)
             ax2.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,2],'b-')
             ax2.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,2],'r-',alpha=0.5)
             ax2.title.set_text('Global Y')
+            ax2.set_ylabel('Longitude in deg')
             #plt.xticks(rotation=15)
-            ax2.axes.get_yaxis().set_visible(False)
+            #ax2.axes.get_yaxis().set_visible(False)
             #ax2.xaxis.set_major_formatter(date_formatter)
 
             ax3 = fig2.add_subplot(313)
             ax3.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,3],'b-')
             ax3.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,3],'r-',alpha=0.5)
             ax3.title.set_text('Global Z')
+            ax3.set_ylabel('Alt in m')
             #plt.xticks(rotation=15)
-            ax3.axes.get_yaxis().set_visible(False)
+            #ax3.axes.get_yaxis().set_visible(False)
             #ax3.xaxis.set_major_formatter(date_formatter)
 
             #plt.legend(['Tlogs','Ulogs'],bbox_to_anchor=(1.25,7.5))
-            #fig.tight_layout()
+            fig2.tight_layout()
             #alt
 
             #position
