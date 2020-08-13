@@ -66,7 +66,8 @@ class Observation:
         '''
         for sortie in self.sortie_list:
             sortie.read()
-            sortie.get_freq_chans()
+            print('freq chan for tuning 1 is ', sortie.get_freq_chans(1))
+            print('freq chan for tuning 2 is ', sortie.get_freq_chans(2))
         return
 
     def flagSorties(self):
@@ -155,8 +156,10 @@ class Observation:
 
             #target_data = h5py.File(sortie.data,'r')
             target_data = sortie.data_dict
-            freqchan=sortie.freq_chan
-
+            if tun = 'Tuning1':
+                freqchan=sortie.freq_chan_t1
+            else:
+                freqchan= sortie.freq_chan_t2
             start_time, end_time = sortie.mission_data[0,0], sortie.mission_data[-1,0]
             pos_times.append(list(sortie.mission_data[:,0]))
 
@@ -472,7 +475,7 @@ class Observation:
 
             return
 
-        def get_freq_chans(self):
+        def get_freq_chans(self, tuning_num):
             '''Find the channel for our reference frequency.
 
             Args:
@@ -482,7 +485,7 @@ class Observation:
             '''
             frequency=self.ref_frequency
             obs='Observation1'
-            tun='Tuning1'
+            tun= 'Tuning'+str(tuning_num)
             target_data = self.data_dict
             center_freq = frequency*1e6 #into Hz
             freq_arr = target_data[obs][tun]['freq']
@@ -519,7 +522,9 @@ class Observation:
             }
             #TODO: Add data read instead of reading in interpolate_rx
             self.data_dict = read_utils.read_h5(self.data)
-            self.freq_chan = self.get_freq_chans()
+            self.freq_chan_t1 = self.get_freq_chans(1)
+            self.freq_chan_t2 = self.get_freq_chans(2)
+
 
             return
 
