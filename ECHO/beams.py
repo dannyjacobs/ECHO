@@ -17,6 +17,7 @@ class Beam:
         '''
         Initial function for the beam class.
         '''
+
         self.beam = None
         self.power_beam = None
         self.beam_type = self._valid_beamtype(beam_type)
@@ -131,7 +132,7 @@ class Beam:
 
         return
 
-    def diffrence_beams():
+    def difference_beams(self):
         '''Take the difference of healpix beams, plot. Requires multiple beams.
 
         '''
