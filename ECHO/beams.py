@@ -42,23 +42,24 @@ class Beam:
             feed_pol (str): polarization of the feed ('x','y','xx','yy')
         '''
         newbeam = read_utils.read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol)
-        #self.beamlist.append(newbeam)
         if beam_type == 'efield':
             self.beam = newbeam
         elif beam_type == 'power':
             self.power_beam = newbeam
         return newbeam
 
-    def make_power_beam(self, puvbeam, *args, **kwargs):
-        pow_beam = puvbeam.efield_to_power(inplace = False,*args, **kwargs)
+    def make_power_beam(self, puvbeam):
+        assert (self.beam!=None),"No efield beam found."
+        pow_beam = puvbeam.efield_to_power(inplace = False)
         self.power = pow_beam
         return pow_beam
 
     def plot_efield(self, *args, **kwargs):
-        plot_utils.plot_efield(self.efield,*args, **kwargs)
+        assert (self.beam!=None),"No efield beam found."
+        plot_utils.plot_efield(self.beam,*args, **kwargs)
         return
     def plot_efield_interp(self, *args, **kwargs):
-        plot_utils.plot_efield_interp(self.efield,*args, **kwargs)
+        plot_utils.plot_efield_interp(self.beam,*args, **kwargs)
         return
     def plot_power(self):
         assert (self.power!=None),"No power beam found."
@@ -72,22 +73,20 @@ class Beam:
             plot_utils.plot_power_interp(self.power)
         return
     def plot_escatter(self):
-        plot_utils.plot_healpix_escatter(self.efield)
+        assert (self.beam!=None),"No efield beam found."
+        plot_utils.plot_healpix_escatter(self.beam)
         return
     def plot_escatter_interp(self):
-        plot_utils.plot_hp_escatter_interp(self.efield)
+        assert (self.beam!=None),"No efield beam found."
+        plot_utils.plot_hp_escatter_interp(self.beam)
         return
     def plot_powscatter(self):
-        if self.power == None:
-            print('No existing power beam.')
-        else:
-            plot_utils.plot_healpix_powscatter(self.power)
+        assert (self.power!=None),"No power beam found."
+        plot_utils.plot_healpix_powscatter(self.power)
         return
     def plot_powscatter_interp(self):
-        if self.power == None:
-            print('No existing power beam.')
-        else:
-            plot_utils.plot_hp_powscatter_interp(self.power)
+        assert (self.power!=None),"No power beam found."
+        plot_utils.plot_hp_powscatter_interp(self.power)
         return
 
     def make_hpx_beam(self, data_array, lat=None, lon=None):
@@ -115,6 +114,7 @@ class Beam:
         self.hpx_beam = hpx_beam
         self.hpx_rms = hpx_rms
         self.hpx_counts = hpx_counts
+        self.power = hpx_beam
         return hpx_beam, hpx_rms, hpx_counts
 
     def write_beam(self, beam, rms, counts, prefix):
