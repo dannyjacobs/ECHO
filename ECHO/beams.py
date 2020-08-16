@@ -17,6 +17,7 @@ class Beam:
         '''
         Initial function for the beam class.
         '''
+
         self.beam = None
         self.power_beam = None
         self.beam_type = self._valid_beamtype(beam_type)
@@ -41,7 +42,7 @@ class Beam:
             feed_pol (str): polarization of the feed ('x','y','xx','yy')
         '''
         newbeam = read_utils.read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, feed_version, model_name, model_version, feed_pol)
-        self.beamlist.append(newbeam)
+        #self.beamlist.append(newbeam)
         if beam_type == 'efield':
             self.beam = newbeam
         elif beam_type == 'power':
@@ -131,7 +132,7 @@ class Beam:
 
         return
 
-    def diffrence_beams():
+    def difference_beams(self):
         '''Take the difference of healpix beams, plot. Requires multiple beams.
 
         '''
