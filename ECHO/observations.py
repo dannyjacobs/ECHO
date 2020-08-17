@@ -315,7 +315,7 @@ class Observation:
         ax1 = plt.subplot(111)
         ax1.axis('equal')
         beamcoll = plot_utils.make_polycoll(beam,cmap=matplotlib.cm.jet)
-        beamcoll.set_clim(-2.3,0)
+        beamcoll.set_clim(beam.min(),0)
         ax1.add_collection(beamcoll)
         CS = ax1.contour(X,Y,THETA*180/np.pi,[20,40,60],colors='k')
         CS.levels = [plot_utils.nf(val) for val in CS.levels]
