@@ -66,10 +66,9 @@ class Observation:
         '''
         for sortie in self.sortie_list:
             sortie.read()
+            print('Tuning1 freq chan for {} is {} \n'.format(sortie.title,sortie.get_freq_chans(1)))
+            print('Tuning2 freq chan for {} is {} \n'.format(sortie.title,sortie.get_freq_chans(2)))
 
-        if len(self.sortie_list) != 0: 
-            print('freq chan for tuning 1 is ', self.sortie_list[0].get_freq_chans(1))
-            print('freq chan for tuning 2 is ', self.sortie_list[0].get_freq_chans(2))
 
         return
 
@@ -240,7 +239,7 @@ class Observation:
 
         return
 
-    def diffrence_beams():
+    def difference_beams(self):
         '''Take the difference of healpix beams, plot. Requires multiple beams.
 
         '''
@@ -633,7 +632,7 @@ class Observation:
 
             return
 
-        def plot_flags():
+        def plot_flags(self):
             '''Creates a plot showing flagged positions for sortie.
 
             Return:
