@@ -13,3 +13,4 @@ flask
 pytest
 pytest-cases
 pre-commit
+flake8
