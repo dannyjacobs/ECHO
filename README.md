@@ -14,7 +14,7 @@ http://github.com/dannyjacobs/ECHO and cite [our 2017 paper](http://adsabs.harva
 
 * Mailing list:   https://groups.google.com/d/forum/astro_echo
 * ASU team blog:  http://danielcjacobs.com/ECHO
-* Documentation:  external-calibrator-for-hydrogen-arrays-echo.readthedocs.io
+* Documentation:  https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io
 
 ## Installation
 Install prerequisites. We recommend the anaconda package manager
