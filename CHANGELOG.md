@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - ReadTheDocs support, can now be read at: https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io
-- RtD tutorial fleshed out
-- Hardware RST files and logs
+- Initial RtD tutorial added
+- Added list of drone iterations with build logs and solid model files. Table in hardware/echo_hardware_summary.rst
 - Class created for Beams, allows reading and writing of both drone and instrument beams
 - Requirements.txt created, all modules now referenced there during setup
 - Additional plotting functions for beams: orthview, E and H slices, polar plots, mollview
@@ -19,10 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Observations and Beam functions split into separate files (observations.py, beams.py)
 - Beam functions now check for appropriate beam types
 - Bugfixes for beam functions
-- Massive editing to docstrings, placed in Google format
+- Editing to docstrings, placed in Google format (https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings)
 
 ### Removed
-- Python 2.7 no longer tested or supported
+- Python 2.7 support and testing (not compatible with astropy)
 
 
 ## [0.0.1] - 2020-02-03
