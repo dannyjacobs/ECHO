@@ -14,7 +14,7 @@ jobs:
                 command: |
                     flake8 .
                     flake8 . --exit-zero --select=E,F,W,C90 --max-complexity=10 --max-line-length=127
-                name: run pre-commit
+                name: run flake8
             - run:
                 command: |
                     pre-commit run --all-files
