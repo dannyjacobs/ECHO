@@ -12,6 +12,10 @@ jobs:
             - python/save-cache
             - run:
                 command: |
+                    pip install .
+                name: Install ECHO
+            - run:
+                command: |
                     flake8 .
                     flake8 . --exit-zero --select=E,F,W,C90 --max-complexity=10 --max-line-length=127
                 name: run flake8
