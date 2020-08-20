@@ -12,3 +12,4 @@ pyulog
 flask
 pytest
 pytest-cases
+pre-commit
