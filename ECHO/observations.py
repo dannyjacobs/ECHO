@@ -399,7 +399,7 @@ class Observation:
         ax.set_rmin(-10)
         ax.grid(True)
         plt.show()
-        plt.close()
+        #plt.close()
         return
 
     def plot_isometric(self, figsize=(5,5), *args, **kwargs):
