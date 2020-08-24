@@ -8,7 +8,7 @@ Welcome to ECHO's documentation!
 The External Calibrator for Hydrogen Observatories (ECHO) is a system for calibrating wide-field radio frequency arrays using a radio transmitter mounted on a drone. Primarily targeting (but not exclusively limited to) arrays operating in the sub-GHz band targeting highly redshifted 21cm radiation from the early universe.
 
 This repository contains software used to generate flight plans, program the calibrator, collect and reduce resulting data.
- 
+
 You can read about the first demonstration of ECHO(Jacobs et al. 2017) here_
 
 
