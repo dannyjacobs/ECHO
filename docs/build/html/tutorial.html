@@ -87,6 +87,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#working-with-sorties">Working with sorties</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualizing-data">Visualizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-cst-beams">Working with CST beams</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -176,7 +177,7 @@
 <h2>Working with sorties<a class="headerlink" href="#working-with-sorties" title="Permalink to this headline">¶</a></h2>
 <p>The hemispherical flight path is split into smaller chunks aka ‘sorties’ owing to the battery life of the drone.</p>
 <div class="figure align-center" id="id1">
-<a class="reference internal image-reference" href="_images/NS_sortie_colormap.png"><img alt="flight path" src="_images/NS_sortie_colormap.png" style="width: 500px; height: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/NS_sortie_colormap.png"><img alt="flight path" src="_images/NS_sortie_colormap.png" style="width: 400px; height: 300px;" /></a>
 <p class="caption"><span class="caption-text">2D plot of a hemispherical flight pattern.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 <p>Each sortie is associated with two types of drone logs and an antenna spectra file.</p>
@@ -237,6 +238,22 @@
 </div>
 <p>E and H planes of the beammap can be plotted by executing</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">NS_Obs</span><span class="o">.</span><span class="n">plot_slices</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="working-with-cst-beams">
+<h2>Working with CST beams<a class="headerlink" href="#working-with-cst-beams" title="Permalink to this headline">¶</a></h2>
+<p>ECHO uses pyuvbeam to read-in CST export files of the transmitter beam.
+To do so instantiate a Beam object with beam_type = ‘efield’ or ‘power’ and call the read_cst_beam():</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tx_beam</span> <span class="o">=</span> <span class="n">ECHO</span><span class="o">.</span><span class="n">Beam</span><span class="p">(</span><span class="n">beam_type</span><span class="o">=</span> <span class="s1">&#39;efield&#39;</span><span class="p">)</span>
+<span class="n">CST_file</span> <span class="o">=</span> <span class="s1">&#39;../Chiropter_NS_PECBico_ff70_ZupYnull.txt&#39;</span>
+<span class="n">tx_beam</span><span class="o">.</span><span class="n">read_cst_beam</span><span class="p">(</span><span class="n">CST_file</span><span class="p">,</span> <span class="n">beam_type</span><span class="o">=</span><span class="s1">&#39;efield&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="p">[</span><span class="mf">70e6</span><span class="p">],</span>
+               <span class="n">telescope_name</span><span class="o">=</span><span class="s1">&#39;Chiropter&#39;</span><span class="p">,</span> <span class="n">feed_name</span><span class="o">=</span><span class="s1">&#39;BicoLOG&#39;</span><span class="p">,</span> <span class="n">feed_version</span><span class="o">=</span><span class="s1">&#39;1.0&#39;</span><span class="p">,</span>
+               <span class="n">model_name</span> <span class="o">=</span> <span class="s1">&#39;Chiropter_NS_2019&#39;</span><span class="p">,</span> <span class="n">model_version</span><span class="o">=</span><span class="s1">&#39;1.0&#39;</span><span class="p">,</span> <span class="n">feed_pol</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To plot the cst beam:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tx_beam</span><span class="o">.</span><span class="n">plot_efield</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

@@ -25,9 +25,9 @@ Working with sorties
 The hemispherical flight path is split into smaller chunks aka 'sorties' owing to the battery life of the drone. 
 
 .. figure:: ../images/NS_sortie_colormap.png
-    :width: 500px
+    :width: 400px
     :align: center
-    :height: 400px
+    :height: 300px
     :alt: flight path
 
     2D plot of a hemispherical flight pattern.
@@ -95,3 +95,23 @@ Once the beam object is created, the healpix map can be visualised by executing 
 E and H planes of the beammap can be plotted by executing ::
 
     NS_Obs.plot_slices(figsize=(10,10))
+
+
+Working with CST beams
+-------------------------
+
+ECHO uses pyuvbeam to read-in CST export files of the transmitter beam. 
+To do so instantiate a Beam object with beam_type = 'efield' or 'power' and call the read_cst_beam()::
+
+    tx_beam = ECHO.Beam(beam_type= 'efield')
+    CST_file = '../Chiropter_NS_PECBico_ff70_ZupYnull.txt'
+    tx_beam.read_cst_beam(CST_file, beam_type='efield', frequency=[70e6], 
+                   telescope_name='Chiropter', feed_name='BicoLOG', feed_version='1.0', 
+                   model_name = 'Chiropter_NS_2019', model_version='1.0', feed_pol='y')
+
+To plot the cst beam: ::
+
+    tx_beam.plot_efield()
+
+    
+
