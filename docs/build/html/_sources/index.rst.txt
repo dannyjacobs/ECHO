@@ -36,9 +36,10 @@ Flight Path
 
 
 .. toctree::
-   :maxdepth: 2
    :caption: Contents:
+   
 
+   Installation <installation>
    Tutorial <tutorial>
    API Reference <api>
 
