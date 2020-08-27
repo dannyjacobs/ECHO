@@ -14,7 +14,7 @@ You can read about the first demonstration of ECHO(Jacobs et al. 2017) here_
 
 .. _here: https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract
 
-ECHO setup 
+ECHO setup
 ------------
 
 .. image:: ../images/ECHO_setup.png
@@ -37,7 +37,7 @@ Flight Path
 
 .. toctree::
    :caption: Contents:
-   
+
 
    Installation <installation>
    Tutorial <tutorial>

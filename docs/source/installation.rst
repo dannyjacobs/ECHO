@@ -15,9 +15,9 @@ To install ECHO, clone the repository ::
 Naviagte to the to the ECHO folder ::
 
     cd ECHO
-    pip install . 
+    pip install .
 
-Dependencies 
+Dependencies
 --------------
 
 we recommend the anaconda package manager.
@@ -26,5 +26,4 @@ we recommend the anaconda package manager.
 - numpy
 - scipy
 - astropy
-- matplotlib 
-
+- matplotlib

@@ -7,11 +7,11 @@
 
 Tutorial
 ================================
-The ECHO repository is used to analyze data from a calibration run. Files generated in a typical calibration run are: 
+The ECHO repository is used to analyze data from a calibration run. Files generated in a typical calibration run are:
  1. Two types of drone log files- tlogs(Qgroundcontrol logs) and ulogs (PX4 logs)
  2. Response of antenna under test(AUT) (hdf5 file format, usually spectra vs time)
  3. Simulated transmitter beam  (CST export text)
- 4. Electromagnetic models of antenna under test (numpy NPZ file) 
+ 4. Electromagnetic models of antenna under test (numpy NPZ file)
 
 To begin with, we make an Observation Object, passing in latitude and longitude of AUT, transmitter frequency and short description of the AUT ::
 
@@ -22,7 +22,7 @@ To begin with, we make an Observation Object, passing in latitude and longitude 
 Working with sorties
 --------------------
 
-The hemispherical flight path is split into smaller chunks aka 'sorties' owing to the battery life of the drone. 
+The hemispherical flight path is split into smaller chunks aka 'sorties' owing to the battery life of the drone.
 
 .. figure:: ../images/NS_sortie_colormap.png
     :width: 400px
@@ -81,9 +81,9 @@ Additional sorties can be added to a single observation::
 
 
 
-Visualizing Data 
+Visualizing Data
 -------------------
- 
+
 Now, we create a Beam object to visualise the antenna response ::
 
     NS_Obs.make_beam()
@@ -100,18 +100,15 @@ E and H planes of the beammap can be plotted by executing ::
 Working with CST beams
 -------------------------
 
-ECHO uses pyuvbeam to read-in CST export files of the transmitter beam. 
+ECHO uses pyuvbeam to read-in CST export files of the transmitter beam.
 To do so instantiate a Beam object with beam_type = 'efield' or 'power' and call the read_cst_beam()::
 
     tx_beam = ECHO.Beam(beam_type= 'efield')
     CST_file = '../Chiropter_NS_PECBico_ff70_ZupYnull.txt'
-    tx_beam.read_cst_beam(CST_file, beam_type='efield', frequency=[70e6], 
-                   telescope_name='Chiropter', feed_name='BicoLOG', feed_version='1.0', 
+    tx_beam.read_cst_beam(CST_file, beam_type='efield', frequency=[70e6],
+                   telescope_name='Chiropter', feed_name='BicoLOG', feed_version='1.0',
                    model_name = 'Chiropter_NS_2019', model_version='1.0', feed_pol='y')
 
 To plot the cst beam: ::
 
     tx_beam.plot_efield()
-
-    
-
