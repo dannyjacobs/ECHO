@@ -10,6 +10,6 @@
    "6", "Steadidrone Vader", "X8", "Vader", "`Vader_Mount <https://github.com/dannyjacobs/ECHO/tree/master/hardware/STLs/06_Vader_Mount>`_", "Blackbox", "BicoLOG 5070", "PX4"
    "7", "Yuneec", "Octo H520", "Yuneec", "`Yuneec_Mount <https://github.com/dannyjacobs/ECHO/tree/master/hardware/STLs/07_Yuneec_Mount>`_", "Valon 5009", "BicoLOG 5070", "Yuneec"
    "8", "3D-Robotics", "X8", "Killer", "`X8_Mount_v2 <https://github.com/dannyjacobs/ECHO/tree/master/hardware/STLs/08_X8_Mount_v2>`_", "Valon 5009", "BicoLOG 5070", "PX4"
-   "9", "in house (`bom <https://github.com/dannyjacobs/ECHO/blob/master/hardware/Chiropter%20BoM%20-%20Revised%20Build%20Sheet.pdf>`_, 
+   "9", "in house (`bom <https://github.com/dannyjacobs/ECHO/blob/master/hardware/Chiropter%20BoM%20-%20Revised%20Build%20Sheet.pdf>`_,
    `build log <https://github.com/dannyjacobs/ECHO/blob/master/hardware/Chiropter%20Build%20Log.pdf>`_) ", "Hex F550", "Chiropter", "`Chiropter_Mount_v1 <https://github.com/dannyjacobs/ECHO/tree/master/hardware/STLs/09_Chiropter_Mount_v1>`_", "Valon 5009", "BicoLOG 5070", "PX4"
    "10", "in house (`bom <https://github.com/dannyjacobs/ECHO/blob/master/hardware/Chiropter%20BoM%20-%20Revised%20Build%20Sheet.pdf>`_, `build log <https://github.com/dannyjacobs/ECHO/blob/master/hardware/Chiropter%20Build%20Log.pdf>`_)", "Hex F550", "Chiropter", "`Chiropter_Mount_v2 <https://github.com/dannyjacobs/ECHO/tree/master/hardware/STLs/10_Chiropter_Mount_v2>`_", "TituTx V1", "BicoLOG 5070", "PX4"
