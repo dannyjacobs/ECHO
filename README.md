@@ -1,5 +1,6 @@
 ![](https://github.com/dannyjacobs/ECHO/workflows/Run%20Tests/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/external-calibrator-for-hydrogen-arrays-echo/badge/?version=latest)](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/en/latest/?badge=latest)
+[![dannyjacobs](https://circleci.com/gh/dannyjacobs/ECHO.svg?style=shield)](https://circleci.com/gh/dannyjacobs/ECHO)
 
 
 The External Calibrator for Hydrogen Arrays (ECHO) is a system for calibrating wide-field radio frequency arrays using a radio transmitter mounted on a drone.
@@ -14,7 +15,7 @@ http://github.com/dannyjacobs/ECHO and cite [our 2017 paper](http://adsabs.harva
 
 * Mailing list:   https://groups.google.com/d/forum/astro_echo
 * ASU team blog:  http://danielcjacobs.com/ECHO
-* Documentation:  external-calibrator-for-hydrogen-arrays-echo.readthedocs.io
+* Documentation:  https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io
 
 ## Installation
 Install prerequisites. We recommend the anaconda package manager
