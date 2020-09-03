@@ -8,7 +8,7 @@
 Tutorial
 ================================
 
-Workflow 
+Workflow
 -----------
 .. image:: ../images/workflow.png
     :width: 500px
@@ -21,7 +21,7 @@ Drone data
 -------------
 Here, drone data refers to files describing the location of the drone. Each drone flight, also referred to as a ‘sortie’, generates two types of log files, namely, the tlog file and the ulog file.
 
-* Tlogs are telemetry logs recorded by the ground station when the drone is armed and connected. 
+* Tlogs are telemetry logs recorded by the ground station when the drone is armed and connected.
 * Ulogs are logs saved on the SD card present on the drone’s flight computer.
 
 From these log files, we need to extract time and gps coordinates- latitude, longitude, and altitude corresponding to each waypoint_.
@@ -30,13 +30,13 @@ From these log files, we need to extract time and gps coordinates- latitude, lon
 
 Telescope data
 -----------------
-Datafiles obtained from a radio telescope may vary with the observatory but usually, it is a hdf5 file containing spectra vs time. 
+Datafiles obtained from a radio telescope may vary with the observatory but usually, it is a hdf5 file containing spectra vs time.
 
 
 Extracting relevant data
 ----------------------------
 
-The hemispherical flight path is split into smaller chunks of flight aka 'sorties' owing to the battery life of the drone. Each of these sorties is associated with drone data files and a telescope data file. 
+The hemispherical flight path is split into smaller chunks of flight aka 'sorties' owing to the battery life of the drone. Each of these sorties is associated with drone data files and a telescope data file.
 
 .. figure:: ../images/NS_sortie_colormap.png
     :width: 400px
@@ -102,10 +102,10 @@ Additional sorties can be added to a single observation using the addSortie() fu
     NS_Obs.combine_sorties()
 
 
-Matching up telescope data to drone positions 
+Matching up telescope data to drone positions
 -------------------------------------------------
 
-Telescopes record data at a higher rate than a gps module on the drone. To match up the telescope data to the drone positions, we downselect and interpolate telescope data. 
+Telescopes record data at a higher rate than a gps module on the drone. To match up the telescope data to the drone positions, we downselect and interpolate telescope data.
 ::
 
 
@@ -114,10 +114,10 @@ Telescopes record data at a higher rate than a gps module on the drone. To match
 
 
 
-Gridding data 
+Gridding data
 -------------------------------
 
-A common way to store beam models in 21cm pipelines is to use the HEALPix pixelization scheme. Hence, we'll be gridding our data onto a healpix map. 
+A common way to store beam models in 21cm pipelines is to use the HEALPix pixelization scheme. Hence, we'll be gridding our data onto a healpix map.
 
 To do so, we create a Beam object ::
 
@@ -128,7 +128,7 @@ Once the beam object is created, the healpix map can be visualised by executing 
     NS_Obs.plot_beam()
 
 
-Analysis 
+Analysis
 -----------
 
 * E and H planes of the beammap can be plotted by executing ::

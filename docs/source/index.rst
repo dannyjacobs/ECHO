@@ -9,7 +9,7 @@ ECHO is a system for calibrating wide-field radio arrays targeting highly redshi
 For more details you can read the first demonstration of ECHO paper by Jacobs et al. 2017 here_
 
 
-This repository contains software used to generate flight plans, collect and reduce resulting data from a calibration run. 
+This repository contains software used to generate flight plans, collect and reduce resulting data from a calibration run.
 
 
 
@@ -24,7 +24,7 @@ Workflow
     :height: 600px
     :alt: workflow
 
-ECHO setup 
+ECHO setup
 ------------
 
 .. image:: ../images/ECHO_setup.png
@@ -37,7 +37,7 @@ ECHO setup
 Flight Path
 -----------------
 
-ECHO follows a spherical shell flight pattern centered around the antenna under test as shown in the figure. 
+ECHO follows a spherical shell flight pattern centered around the antenna under test as shown in the figure.
 
 .. image:: ../images/flightpath.png
     :width: 300px
@@ -48,8 +48,8 @@ ECHO follows a spherical shell flight pattern centered around the antenna under 
 
 .. toctree::
    :caption: Contents:
-   
-   
+
+
    Installation <installation>
    Tutorial <tutorial>
    API Reference <api>
