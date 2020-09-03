@@ -7,22 +7,36 @@
 
 Tutorial
 ================================
-The ECHO repository is used to analyze data from a calibration run. Files generated in a typical calibration run are:
- 1. Two types of drone log files- tlogs(Qgroundcontrol logs) and ulogs (PX4 logs)
- 2. Response of antenna under test(AUT) (hdf5 file format, usually spectra vs time)
- 3. Simulated transmitter beam  (CST export text)
- 4. Electromagnetic models of antenna under test (numpy NPZ file)
 
-To begin with, we make an Observation Object, passing in latitude and longitude of AUT, transmitter frequency and short description of the AUT ::
+Workflow 
+-----------
+.. image:: ../images/workflow.png
+    :width: 500px
+    :align: center
+    :height: 600px
+    :alt: workflow
 
-    import ECHO
 
-    NS_Obs = ECHO.Observation(lat=34.3486, lon=-106.8857, frequency=70, description='LWA Observation')
+Drone data
+-------------
+Here, drone data refers to files describing the location of the drone. Each drone flight, also referred to as a ‘sortie’, generates two types of log files, namely, the tlog file and the ulog file.
 
-Working with sorties
---------------------
+* Tlogs are telemetry logs recorded by the ground station when the drone is armed and connected. 
+* Ulogs are logs saved on the SD card present on the drone’s flight computer.
 
-The hemispherical flight path is split into smaller chunks aka 'sorties' owing to the battery life of the drone.
+From these log files, we need to extract time and gps coordinates- latitude, longitude, and altitude corresponding to each waypoint_.
+
+.. _waypoint: https://en.wikipedia.org/wiki/Waypoint
+
+Telescope data
+-----------------
+Datafiles obtained from a radio telescope may vary with the observatory but usually, it is a hdf5 file containing spectra vs time. 
+
+
+Extracting relevant data
+----------------------------
+
+The hemispherical flight path is split into smaller chunks of flight aka 'sorties' owing to the battery life of the drone. Each of these sorties is associated with drone data files and a telescope data file. 
 
 .. figure:: ../images/NS_sortie_colormap.png
     :width: 400px
@@ -33,7 +47,16 @@ The hemispherical flight path is split into smaller chunks aka 'sorties' owing t
     2D plot of a hemispherical flight pattern.
 
 
-Each sortie is associated with two types of drone logs and an antenna spectra file. ::
+
+To extract data, we begin with instantiating an Observation Object. Pass in coordinates of antenna under test(AUT), set frequency of transmitter and short description of AUT ::
+
+    import ECHO
+
+    NS_Obs = ECHO.Observation(lat=34.3486, lon=-106.8857, frequency=70, description='LWA Observation')
+
+We define paths to the files associated with each sortie :
+
+::
 
     datadir = '/LWA_October_2019/data/'
 
@@ -44,15 +67,17 @@ Each sortie is associated with two types of drone logs and an antenna spectra fi
         sortie_title="NS Mid"
         )
 
+To read these files, we call the read_sorties() function ::
+
     NS_Obs.read_sorties()
 
-The data is placed in dicts within the object. ::
+The data is stored in dictionaries and can be accessed as : ::
 
     print(NS_Obs.sortie_list[0].t_dict.keys())
     print(NS_Obs.sortie_list[0].u_dict.keys())
 
 
-Additional sorties can be added to a single observation::
+Additional sorties can be added to a single observation using the addSortie() function ::
 
     #add two additional sorties
     NS_Obs.addSortie(
@@ -76,15 +101,25 @@ Additional sorties can be added to a single observation::
     #takes the data from all sorties, sorts them by time, and combines them into a single array
     NS_Obs.combine_sorties()
 
+
+Matching up telescope data to drone positions 
+-------------------------------------------------
+
+Telescopes record data at a higher rate than a gps module on the drone. To match up the telescope data to the drone positions, we downselect and interpolate telescope data. 
+::
+
+
     #combine the drone position data with the intrument response
     NS_Obs.interpolate_rx(1,1,'XX')
 
 
 
-Visualizing Data
--------------------
+Gridding data 
+-------------------------------
 
-Now, we create a Beam object to visualise the antenna response ::
+A common way to store beam models in 21cm pipelines is to use the HEALPix pixelization scheme. Hence, we'll be gridding our data onto a healpix map. 
+
+To do so, we create a Beam object ::
 
     NS_Obs.make_beam()
 
@@ -92,15 +127,16 @@ Once the beam object is created, the healpix map can be visualised by executing 
 
     NS_Obs.plot_beam()
 
-E and H planes of the beammap can be plotted by executing ::
+
+Analysis 
+-----------
+
+* E and H planes of the beammap can be plotted by executing ::
 
     NS_Obs.plot_slices(figsize=(10,10))
 
+* ECHO uses pyuvbeam to read-in CST export files of the transmitter beam.
 
-Working with CST beams
--------------------------
-
-ECHO uses pyuvbeam to read-in CST export files of the transmitter beam.
 To do so instantiate a Beam object with beam_type = 'efield' or 'power' and call the read_cst_beam()::
 
     tx_beam = ECHO.Beam(beam_type= 'efield')

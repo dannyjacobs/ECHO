@@ -5,16 +5,26 @@
 
 Welcome to ECHO's documentation!
 ================================
-The External Calibrator for Hydrogen Observatories (ECHO) is a system for calibrating wide-field radio frequency arrays using a radio transmitter mounted on a drone. Primarily targeting (but not exclusively limited to) arrays operating in the sub-GHz band targeting highly redshifted 21cm radiation from the early universe.
+ECHO is a system for calibrating wide-field radio arrays targeting highly redshifted 21cm radiation from the early universe using a radio transmitter mounted on a drone.
+For more details you can read the first demonstration of ECHO paper by Jacobs et al. 2017 here_
 
-This repository contains software used to generate flight plans, program the calibrator, collect and reduce resulting data.
 
-You can read about the first demonstration of ECHO(Jacobs et al. 2017) here_
+This repository contains software used to generate flight plans, collect and reduce resulting data from a calibration run. 
+
 
 
 .. _here: https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract
 
-ECHO setup
+Workflow
+----------
+
+.. image:: ../images/workflow.png
+    :width: 500px
+    :align: center
+    :height: 600px
+    :alt: workflow
+
+ECHO setup 
 ------------
 
 .. image:: ../images/ECHO_setup.png
@@ -24,9 +34,11 @@ ECHO setup
     :alt: LWA-SV '19 setup
 
 
-
 Flight Path
 -----------------
+
+ECHO follows a spherical shell flight pattern centered around the antenna under test as shown in the figure. 
+
 .. image:: ../images/flightpath.png
     :width: 300px
     :align: center
@@ -34,11 +46,10 @@ Flight Path
     :alt: flight path
 
 
-
 .. toctree::
    :caption: Contents:
-
-
+   
+   
    Installation <installation>
    Tutorial <tutorial>
    API Reference <api>
