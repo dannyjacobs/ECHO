@@ -7,36 +7,14 @@
 
 Tutorial
 ================================
+Analysis of data from a calibration run involves three main steps:
 
-Workflow
------------
-.. image:: ../images/workflow.png
-    :width: 500px
-    :align: center
-    :height: 600px
-    :alt: workflow
+* Reading in transmitter position data and receiver spectrum
+* Interpolating receiver spectrum to drone flight times
+* Gridding data onto a healpix map
 
 
-Drone data
--------------
-Here, drone data refers to files describing the location of the drone. Each drone flight, also referred to as a ‘sortie’, generates two types of log files, namely, the tlog file and the ulog file.
-
-* Tlogs are telemetry logs recorded by the ground station when the drone is armed and connected.
-* Ulogs are logs saved on the SD card present on the drone’s flight computer.
-
-From these log files, we need to extract time and gps coordinates- latitude, longitude, and altitude corresponding to each waypoint_.
-
-.. _waypoint: https://en.wikipedia.org/wiki/Waypoint
-
-Telescope data
------------------
-Datafiles obtained from a radio telescope may vary with the observatory but usually, it is a hdf5 file containing spectra vs time.
-
-
-Extracting relevant data
-----------------------------
-
-The hemispherical flight path is split into smaller chunks of flight aka 'sorties' owing to the battery life of the drone. Each of these sorties is associated with drone data files and a telescope data file.
+A mapping run is split into smaller chunks of flight aka 'sorties' owing to the battery life of the drone. Each of these sorties is associated with a transmitter position file and a receiver spectrum.
 
 .. figure:: ../images/NS_sortie_colormap.png
     :width: 400px
@@ -46,13 +24,35 @@ The hemispherical flight path is split into smaller chunks of flight aka 'sortie
 
     2D plot of a hemispherical flight pattern.
 
+Reading in transmitter position data
+---------------------------------------
+Transmitter position is derived from drone logs. These logs come in two data formats: tlog and ulog format.
+
+* Tlogs are telemetry logs recorded by the ground station when the drone is powered on and connected.
+* Ulogs are position logs saved on the drone's SD card.
+
+Two functions read_tlog_txt_ and read_ulog_ are available on ECHO.readutils to extract transmitter position data from these log files.
+
+.. _read_tlog_txt: api.html#ECHO.read_utils.read_tlog_txt
+.. _read_ulog: api.html#ECHO.read_utils.read_ulog
+
+Reading in receiver spectrum
+------------------------------
+Data formats of receiver spectrum files  may vary with the telescope but usually, it is a hdf5 file containing spectra vs time.
+
+Receiver spectrum files can be read-in using read_h5_ function from ECHO.readutils.
+
+.. _read_h5: api.html#ECHO.read_utils.read_h5
 
 
-To extract data, we begin with instantiating an Observation Object. Pass in coordinates of antenna under test(AUT), set frequency of transmitter and short description of AUT ::
+Matching up receiver spectrum with drone flight times
+-------------------------------------------------------
+
+We begin with instantiating an Observation Object and pass in coordinates of antenna under test (AUT), programmed frequency of transmitter in MHz and a short description of AUT ::
 
     import ECHO
 
-    NS_Obs = ECHO.Observation(lat=34.3486, lon=-106.8857, frequency=70, description='LWA Observation')
+    NS_Obs = ECHO.Observation(lat=34.3486, lon=-106.8857, frequency=70, description='LWA Antenna 137')
 
 We define paths to the files associated with each sortie :
 
