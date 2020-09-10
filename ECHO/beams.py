@@ -58,15 +58,16 @@ class Beam:
         plot_utils.plot_efield(self.beam,*args, **kwargs)
         return
     def plot_efield_interp(self, *args, **kwargs):
+        assert (self.beam!=None),"No efield beam found."
         plot_utils.plot_efield_interp(self.beam,*args, **kwargs)
         return
     def plot_power(self):
-        assert (self.power!=None),"No power beam found."
+        assert (self.power_beam!=None),"No power beam found."
         plot_utils.plot_power(self.power)
 
         return
     def plot_power_interp(self):
-        if self.power == None:
+        if self.power_beam == None:
             print('No existing power beam.')
         else:
             plot_utils.plot_power_interp(self.power)
@@ -80,11 +81,11 @@ class Beam:
         plot_utils.plot_hp_escatter_interp(self.beam)
         return
     def plot_powscatter(self):
-        assert (self.power!=None),"No power beam found."
+        assert (self.power_beam!=None),"No power beam found."
         plot_utils.plot_healpix_powscatter(self.power)
         return
     def plot_powscatter_interp(self):
-        assert (self.power!=None),"No power beam found."
+        assert (self.power_beam!=None),"No power beam found."
         plot_utils.plot_hp_powscatter_interp(self.power)
         return
 
@@ -102,10 +103,10 @@ class Beam:
         targetLon=lon
 
         hpx_beam,hpx_rms,hpx_counts = plot_utils.grid_to_healpix(
-            data_array[1:,1],
-            data_array[1:,2],
-            data_array[1:,3],
-            data_array[1:,5],
+            data_array[1:,1], #lats
+            data_array[1:,2], #lons
+            data_array[1:,3], #alts
+            data_array[1:,5], #data
             lat0 = targetLat, #self.refined_array[0,1],
             lon0 = targetLon, #self.refined_array[0,2],
             nside = 8
@@ -113,7 +114,6 @@ class Beam:
         self.hpx_beam = hpx_beam
         self.hpx_rms = hpx_rms
         self.hpx_counts = hpx_counts
-        self.power = hpx_beam
         return hpx_beam, hpx_rms, hpx_counts
 
     def write_beam(self, beam, rms, counts, prefix):
@@ -130,12 +130,6 @@ class Beam:
         hp.write_map(prefix+'_counts.fits',self.hpx_counts, overwrite=True)
 
         return
-
-    def diffrence_beams():
-        '''Take the difference of healpix beams, plot. Requires multiple beams.
-
-        '''
-        pass
 
     def _valid_beamtype(self, beam_type):
         valid_beamtype = ['healpy', 'efield','power']

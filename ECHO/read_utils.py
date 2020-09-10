@@ -357,6 +357,7 @@ def flag_angles(angletimes,angles,sigma=2):
     yawmask = np.abs(yawcos-mean_yawcos)/std_yawcos>sigma
     badyaw_indices = np.where(yawmask)[0]
     return yawmask,angletimes[badyaw_indices]
+
 def apply_flagtimes(datatimes,flagtimes,dt):
     #generate a mask for postimes (astropy.time.Time)
     #given a list of times which are bad (astropy.time.Time)
@@ -380,10 +381,11 @@ def flag_waypoints(postimes,waypoint_times):
     return np.zeros(len(postimes))
 
 def mission_endpoint_flagging(pos_data,wpt_data):
-    """Read in position and waypoint array, flag all waypoints
+    """Read in position and waypoint array, flag mission endpoints and return valid mission data.
 
     Args:
-        ulog (int): the ulog to be converted.
+        pos_data: the ulog to be converted.
+        wpt_data:
 
     Returns:
         flagged_array: array of flagged data.
@@ -828,15 +830,16 @@ def read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, f
     '''
     Reads in a ASCII formatted CST export file and returns a beam model using pyuvbeam.
 
-    CST_txtfile: CST export file
-    beam_type (str): efield or power
-    frequency (list, Hz): our reference frequency
-    telescope_name (str): The instrument name
-    feed_name (str): The name of the feed
-    feed_version (str): The version of the feed
-    model_name (str): Name for the model
-    model_version (str): version of the model
-    feed_pol (str): polarization of the feed ('x','y','xx','yy')
+    Inputs:
+        CST_txtfile: CST export file
+        beam_type (str): efield or power
+        frequency (list, Hz): our reference frequency
+        telescope_name (str): The instrument name
+        feed_name (str): The name of the feed
+        feed_version (str): The version of the feed
+        model_name (str): Name for the model
+        model_version (str): version of the model
+        feed_pol (str): polarization of the feed ('x','y','xx','yy')
     '''
     beam = UVBeam()
     beam.read_cst_beam(CST_txtfile, beam_type=beam_type, frequency=frequency,
