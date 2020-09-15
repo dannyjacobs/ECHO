@@ -239,7 +239,7 @@ class Observation:
 
         return
 
-    def difference_beams(self):
+    def diffrence_beams():
         '''Take the difference of healpix beams, plot. Requires multiple beams.
 
         '''
