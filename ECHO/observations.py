@@ -67,8 +67,6 @@ class Observation:
         for sortie in self.sortie_list:
             sortie.read()
             sortie.get_freq_chans()
-
-
         return
 
     def flagSorties(self):
@@ -155,7 +153,7 @@ class Observation:
 
             #target_data = h5py.File(sortie.data,'r')
             target_data = sortie.data_dict
-            freqchan = sortie.freq_chan
+            freqchan=sortie.freq_chan
             start_time, end_time = sortie.mission_data[0,0], sortie.mission_data[-1,0]
             pos_times.append(list(sortie.mission_data[:,0]))
 
@@ -481,7 +479,7 @@ class Observation:
             '''
             frequency=self.ref_frequency
             obs='Observation1'
-            tun= 'Tuning1'
+            tun='Tuning1'
             target_data = self.data_dict
             center_freq = frequency*1e6 #into Hz
             freq_arr = target_data[obs][tun]['freq']
@@ -519,9 +517,6 @@ class Observation:
             #TODO: Add data read instead of reading in interpolate_rx
             self.data_dict = read_utils.read_h5(self.data)
             self.freq_chan = self.get_freq_chans()
-           
-
-
             return
 
         #function to adjust gain?
@@ -597,7 +592,6 @@ class Observation:
             ax1.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,1],'b-')
             ax1.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,1],'r-',alpha=0.5)
             ax1.title.set_text('Global X')
-            ax1.set_ylabel('Latitude in deg')
             #plt.xticks(rotation=15)
             ax1.axes.get_yaxis().set_visible(False)
             #ax1.xaxis.set_major_formatter(date_formatter)
@@ -606,7 +600,6 @@ class Observation:
             ax2.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,2],'b-')
             ax2.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,2],'r-',alpha=0.5)
             ax2.title.set_text('Global Y')
-            ax2.set_ylabel('Longitude in deg')
             #plt.xticks(rotation=15)
             ax2.axes.get_yaxis().set_visible(False)
             #ax2.xaxis.set_major_formatter(date_formatter)
@@ -615,13 +608,12 @@ class Observation:
             ax3.plot(self.t_dict['global_t'][:,0],self.t_dict['global_t'][:,3],'b-')
             ax3.plot(self.u_dict['global_position_u'][:,0],self.u_dict['global_position_u'][:,3],'r-',alpha=0.5)
             ax3.title.set_text('Global Z')
-            ax3.set_ylabel('Alt in m')
             #plt.xticks(rotation=15)
             ax3.axes.get_yaxis().set_visible(False)
             #ax3.xaxis.set_major_formatter(date_formatter)
 
             #plt.legend(['Tlogs','Ulogs'],bbox_to_anchor=(1.25,7.5))
-            #fig2.tight_layout()
+            #fig.tight_layout()
             #alt
 
             #position
