@@ -66,8 +66,7 @@ class Observation:
         '''
         for sortie in self.sortie_list:
             sortie.read()
-            print('Tuning1 freq chan for {} is {} \n'.format(sortie.title,sortie.get_freq_chans(1)))
-            print('Tuning2 freq chan for {} is {} \n'.format(sortie.title,sortie.get_freq_chans(2)))
+            sortie.get_freq_chans()
 
 
         return
@@ -156,10 +155,7 @@ class Observation:
 
             #target_data = h5py.File(sortie.data,'r')
             target_data = sortie.data_dict
-            if tun == 'Tuning1':
-                freqchan=sortie.freq_chan_t1
-            else:
-                freqchan= sortie.freq_chan_t2
+            freqchan = sortie.freq_chan
             start_time, end_time = sortie.mission_data[0,0], sortie.mission_data[-1,0]
             pos_times.append(list(sortie.mission_data[:,0]))
 
@@ -315,7 +311,7 @@ class Observation:
         ax1 = plt.subplot(111)
         ax1.axis('equal')
         beamcoll = plot_utils.make_polycoll(beam,cmap=matplotlib.cm.jet)
-        beamcoll.set_clim(beam.min(),0)
+        beamcoll.set_clim(-2.3,0)
         ax1.add_collection(beamcoll)
         CS = ax1.contour(X,Y,THETA*180/np.pi,[20,40,60],colors='k')
         CS.levels = [plot_utils.nf(val) for val in CS.levels]
@@ -399,7 +395,7 @@ class Observation:
         ax.set_rmin(-10)
         ax.grid(True)
         plt.show()
-        #plt.close()
+        plt.close()
         return
 
     def plot_isometric(self, figsize=(5,5), *args, **kwargs):
@@ -475,7 +471,7 @@ class Observation:
 
             return
 
-        def get_freq_chans(self, tuning_num):
+        def get_freq_chans(self):
             '''Find the channel for our reference frequency.
 
             Args:
@@ -485,7 +481,7 @@ class Observation:
             '''
             frequency=self.ref_frequency
             obs='Observation1'
-            tun= 'Tuning'+str(tuning_num)
+            tun= 'Tuning1'
             target_data = self.data_dict
             center_freq = frequency*1e6 #into Hz
             freq_arr = target_data[obs][tun]['freq']
@@ -522,8 +518,8 @@ class Observation:
             }
             #TODO: Add data read instead of reading in interpolate_rx
             self.data_dict = read_utils.read_h5(self.data)
-            self.freq_chan_t1 = self.get_freq_chans(1)
-            self.freq_chan_t2 = self.get_freq_chans(2)
+            self.freq_chan = self.get_freq_chans()
+           
 
 
             return
@@ -603,7 +599,7 @@ class Observation:
             ax1.title.set_text('Global X')
             ax1.set_ylabel('Latitude in deg')
             #plt.xticks(rotation=15)
-            #ax1.axes.get_yaxis().set_visible(False)
+            ax1.axes.get_yaxis().set_visible(False)
             #ax1.xaxis.set_major_formatter(date_formatter)
 
             ax2 = fig2.add_subplot(312)
@@ -612,7 +608,7 @@ class Observation:
             ax2.title.set_text('Global Y')
             ax2.set_ylabel('Longitude in deg')
             #plt.xticks(rotation=15)
-            #ax2.axes.get_yaxis().set_visible(False)
+            ax2.axes.get_yaxis().set_visible(False)
             #ax2.xaxis.set_major_formatter(date_formatter)
 
             ax3 = fig2.add_subplot(313)
@@ -621,18 +617,18 @@ class Observation:
             ax3.title.set_text('Global Z')
             ax3.set_ylabel('Alt in m')
             #plt.xticks(rotation=15)
-            #ax3.axes.get_yaxis().set_visible(False)
+            ax3.axes.get_yaxis().set_visible(False)
             #ax3.xaxis.set_major_formatter(date_formatter)
 
             #plt.legend(['Tlogs','Ulogs'],bbox_to_anchor=(1.25,7.5))
-            fig2.tight_layout()
+            #fig2.tight_layout()
             #alt
 
             #position
 
             return
 
-        def plot_flags(self):
+        def plot_flags():
             '''Creates a plot showing flagged positions for sortie.
 
             Return:
