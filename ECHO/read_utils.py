@@ -772,9 +772,6 @@ def read_h5(dataFile):
         dataDict: A dictionary containing the observation data. Includes observations, tunings, times, XX and YY polarizations, frequencies
     """
 
-    def dB(x):
-        return 10*np.log10(x)
-
     target_data = h5py.File(dataFile,'r')
     keys = [key for key in target_data.keys()]
     #obs_keys = [obsKey for key in keys]
@@ -792,8 +789,6 @@ def read_h5(dataFile):
                 for tunKey in tuningKeys:
                     #print(key, obsKey, tunKey)
                     data = np.asarray(target_data[key][obsKey][tunKey])
-                    if tunKey == 'XX' or tunKey == 'YY':
-                        data = dB(data)
                     tunDict[tunKey] = data
                 obsDict[obsKey] = tunDict
         dataDict[key] = obsDict
