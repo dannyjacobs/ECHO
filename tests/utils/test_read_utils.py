@@ -17,11 +17,6 @@ test_tlog = os.path.abspath('.') +'/tests/data/Shortened_NSTop_tlog.txt'
 test_cst = os.path.abspath('.') +'/tests/data/Chiropter_NS_cst.txt'
 test_rx = os.path.abspath('.') +'/tests/data/NSTop_rxdata.hdf5'
 
-def test_os():
-    print('/nTest Directory: ' + os.getenv('PYTEST_CURRENT_TEST'))
-    print('/nrootdir: ' + os.path.abspath('.'))
-    return
-
 def test_tlog_read():
     wpt_array, global_array, local_array, gps_array = ECHO.read_utils.read_tlog_txt(test_tlog)
     #assert
@@ -45,9 +40,20 @@ def test_read_h5():
     return
 
 def test_cst_to_hp():
-
+    testhpmap = ECHO.read_utils.CST_to_hp(test_cst, outfile=os.path.abspath('.') +'/tests/data/Chiropter_NS_cst.fits')
+    assert(testhpmap.shape == (768,))
     return
 
-def test_read_cst_puv():
-    testhpmap = ECHO.read_utils.CST_to_hp(test_cst, outfile=os.path.abspath('.') +'/tests/data/Chiropter_NS_cst.fits')
+def test_read_CST_puv():
+    testcstpuv = ECHO.read_utils.read_CST_puv(
+        test_cst,
+        beam_type='efield',
+        frequency=[70e6],
+        telescope_name='Chiropter',
+        feed_name='BicoLOG',
+        feed_version='1.0',
+        model_name = 'Chiropter_NS_2019',
+        model_version='1.0',
+        feed_pol='y')
+    assert(testcstpuv.data_array.shape == (2, 1, 2, 1, 37, 72))
     return

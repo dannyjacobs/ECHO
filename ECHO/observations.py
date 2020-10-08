@@ -2,7 +2,6 @@ from . import read_utils
 from . import plot_utils
 from . import position_utils
 from . import time_utils
-from . import server_utils
 from . import beams
 
 import numpy as np

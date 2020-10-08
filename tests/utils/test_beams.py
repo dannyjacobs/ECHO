@@ -3,6 +3,7 @@ import pytest
 import ECHO
 import numpy as np
 from scipy.interpolate import interp1d
+import os
 
 
 '''
@@ -13,6 +14,7 @@ Tests to make:
 
 Beams use pyuvdata and/or healpy
 '''
+test_cst = os.path.abspath('.') +'/tests/data/Chiropter_NS_cst.txt'
 
 def test_createBeam():
     #test that beams can't be made with invalid beam types
@@ -38,4 +40,11 @@ def test_beamplots():
         testbeam.plot_powscatter()
         testbeam.plot_powscatter_interp()
 
+    return
+def test_read_cst_beam():
+    testbeam = ECHO.Beam(beam_type='efield')
+    testbeam.read_cst_beam(test_cst, beam_type='efield', frequency=[70e6],
+                   telescope_name='Chiropter', feed_name='BicoLOG', feed_version='1.0',
+                   model_name = 'Chiropter_NS_2019', model_version='1.0', feed_pol='y')
+    assert(testbeam.beam.data_array.shape == (2, 1, 2, 1, 37, 72))
     return
