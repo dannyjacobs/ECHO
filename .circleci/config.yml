@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
     python: circleci/python@0.3.2
+    codecov: codecov/codecov@1.0.2
 
 jobs:
     build:
@@ -25,8 +26,9 @@ jobs:
                 name: run pre-commit
             - run:
                 command: |
-                    pytest ./tests -v
-
+                    pytest ./tests -v --cov=./ --cov-report xml
+            - codecov/upload:
+                file: coverage.xml
 
 #Build our module, flake8, run tests
 workflows:
