@@ -386,7 +386,7 @@ def mission_endpoint_flagging(pos_data,wpt_data):
         ulog (int): the ulog to be converted.
 
     Returns:
-        flagged_array: array of flagged data.
+        flagged_data: array of flagged data.
         mission_data: array of valid mission data.
 
     """
@@ -763,7 +763,7 @@ def read_ulog(ulog, output=None, messages='vehicle_global_position,vehicle_local
 
 def read_h5(dataFile):
     """
-    Read in ulog file, put them into appropriate arrays
+    Read in receiver data file, put them into appropriate arrays
 
     Input:
         target_data (HDF5 data file): the datafile for the received power for the target antenna, saved in in h5 format.

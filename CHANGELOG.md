@@ -39,3 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Drone RFI report
 - ECHO Reduction
+
+## [0.0.1] - 2020-10-08
+### Added
+- Documentation and Tutorial for usage

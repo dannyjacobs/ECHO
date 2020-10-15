@@ -129,10 +129,8 @@ class Observation:
         '''Takes position-times of the drone and interpolate the receiver data to the same dimensions as position data.
 
         Args:
-            frequency (float):, the frequency of the reference channel in Mhz
-            channel (int): the reference channel
             obsNum (int): the number of the observation to use
-            tuning (int): the number of the tuning to use
+            tuning (int): the number of the tuning to use, 1 or 2
             pol (str): which polarization to use ('XX', 'YY', 'YX', 'XY')
 
 
@@ -156,7 +154,6 @@ class Observation:
             #target_data = h5py.File(sortie.data,'r')
             target_data = sortie.data_dict
             freqchan=sortie.freq_chan
-
             start_time, end_time = sortie.mission_data[0,0], sortie.mission_data[-1,0]
             pos_times.append(list(sortie.mission_data[:,0]))
 
@@ -520,7 +517,6 @@ class Observation:
             #TODO: Add data read instead of reading in interpolate_rx
             self.data_dict = read_utils.read_h5(self.data)
             self.freq_chan = self.get_freq_chans()
-
             return
 
         #function to adjust gain?
@@ -542,9 +538,8 @@ class Observation:
             "global_t" contains continuous position data from drone telemetry during the entire sortie.
             "waypoint_t" contains the position data for each navigational waypoint used to maneuver the drone.
 
-            Return:
-                flagged_data:
-                mission_data:
+            Updates flagged_data and mission_data properties for a sortie
+
             '''
 
             self.flagged_data, self.mission_data = read_utils.mission_endpoint_flagging(

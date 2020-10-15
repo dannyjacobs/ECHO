@@ -17,6 +17,7 @@ class Beam:
         '''
         Initial function for the beam class.
         '''
+
         self.beam = None
         self.power_beam = None
         self.beam_type = self._valid_beamtype(beam_type)
@@ -31,8 +32,8 @@ class Beam:
 
         Args:
             CST_txtfile: CST export file
-            beam_type (str):
-            frequency (list, Hz):
+            beam_type (str): 'efield' or 'power'
+            frequency (float or list of float, Hz): freq corresponding to CST sim
             telescope_name (str): The instrument name
             feed_name (str): The name of the feed
             feed_version (str): The version of the feed
