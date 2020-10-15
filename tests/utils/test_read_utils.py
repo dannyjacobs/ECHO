@@ -15,7 +15,7 @@ Tests to make:
 '''
 test_tlog = os.path.abspath('.') +'/tests/data/Shortened_NSTop_tlog.txt'
 test_cst = os.path.abspath('.') +'/tests/data/Chiropter_NS_cst.txt'
-test_rx = os.path.abspath('.') +'/tests/data/NSTop_rxdata.hdf5'
+test_rx = os.path.abspath('.') +'/tests/data/Shortened_NS_Top_rxdata.hdf5'
 
 def test_tlog_read():
     wpt_array, global_array, local_array, gps_array = ECHO.read_utils.read_tlog_txt(test_tlog)
