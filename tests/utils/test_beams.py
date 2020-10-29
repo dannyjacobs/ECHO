@@ -25,7 +25,6 @@ def test_createBeam():
     testbeam=ECHO.Beam(beam_type='healpy')
     testbeam=ECHO.Beam(beam_type='efield')
     testbeam=ECHO.Beam(beam_type='power')
-
     return
 
 def test_beamplots():
@@ -39,8 +38,8 @@ def test_beamplots():
         testbeam.plot_escatter_interp()
         testbeam.plot_powscatter()
         testbeam.plot_powscatter_interp()
-
     return
+
 def test_read_cst_beam():
     testbeam = ECHO.Beam(beam_type='efield')
     testbeam.read_cst_beam(test_cst, beam_type='efield', frequency=[70e6],
