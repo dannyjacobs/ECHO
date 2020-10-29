@@ -26,7 +26,7 @@ jobs:
                 name: run pre-commit
             - run:
                 command: |
-                    pytest ./tests -v --cov=./ --cov-report xml
+                    pytest -v --cov=./ --cov-report xml
             - codecov/upload:
                 file: coverage.xml
                 token: d4e7e70e-d786-412a-8299-ec9cf91eba01
