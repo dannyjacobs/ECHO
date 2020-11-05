@@ -1,0 +1,126 @@
+10/25/2019 11:55:02 AM FD  1  0  0 12  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:02 AM FD 2A  0  0 13  1  1     41 mavlink_rc_channels_t time_boot_ms 3883 chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 chan9_raw 1494 chan10_raw 1494 chan11_raw 1494 chan12_raw 1494 chan13_raw 1494 chan14_raw 1494 chan15_raw 1494 chan16_raw 1494 chan17_raw 998 chan18_raw 998 chancount 18 rssi 42  sig  Len 54
+10/25/2019 11:55:02 AM FD 11  0  0 14  1  1     46 mavlink_rc_channels_override_t chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 target_system 1 target_component 0 chan9_raw 0 chan10_raw 0 chan11_raw 0 chan12_raw 0 chan13_raw 0 chan14_raw 0 chan15_raw 0 chan16_raw 0 chan17_raw 0 chan18_raw 0  sig  Len 29
+10/25/2019 11:55:02 AM FD  1  0  0 15  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:02 AM FD  9  0  0 1F 33 44     6D mavlink_radio_status_t rxerrors 0 fixed 0 rssi 114 remrssi 123 txbuf 100 noise 48 remnoise 32  sig  Len 21
+10/25/2019 11:55:02 AM FD 3E  0  0 16  1  1     69 mavlink_highres_imu_t time_usec 4018693 xacc -0.2914654 yacc -0.3416615 zacc -9.631323 xgyro -0.005254092 ygyro 0.01666313 zgyro -0.01355121 xmag 0.1840025 ymag 0.05753169 zmag 0.370221 abs_pressure 86196 diff_pressure 0 pressure_alt 1343.387 temperature 24.64 fields_updated 7167  sig  Len 74
+10/25/2019 11:55:02 AM FD  1  0  0 17  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:02 AM FD 19  0  0 18  1  1     16 mavlink_param_value_t param_value 2.417587E+14 param_count 771 param_index 65535 param_id _HASH_CHECK param_type 5  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 19  1  1     16 mavlink_param_value_t param_value NaN param_count 771 param_index 0 param_id BAT_ADC_CHANNEL param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 1A  1  1     16 mavlink_param_value_t param_value 61.2893 param_count 771 param_index 1 param_id BAT_A_PER_V param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM 10/25/2019 11:55:02 AM FD 19  0  0 1C  1  1     16 mavlink_param_value_t param_value -1 param_count 771 param_index 2 param_id BAT_CAPACITY param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 1D  1  1     16 mavlink_param_value_t param_value 0.0008056641 param_count 771 param_index 3 param_id BAT_CNT_V_CURR param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 1E  1  1     16 mavlink_param_value_t param_value 0.0008056641 param_count 771 param_index 4 param_id BAT_CNT_V_VOLT param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 1F  1  1     16 mavlink_param_value_t param_value 0.1 param_count 771 param_index 5 param_id BAT_CRIT_THR param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 20  1  1     16 mavlink_param_value_t param_value 0.05 param_count 771 param_index 6 param_id BAT_EMERGEN_THR param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 21  1  1     16 mavlink_param_value_t param_value 0.15 param_count 771 param_index 7 param_id BAT_LOW_THR param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 22  1  1     16 mavlink_param_value_t param_value 8.407791E-45 param_count 771 param_index 8 param_id BAT_N_CELLS param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 23  1  1     16 mavlink_param_value_t param_value -1 param_count 771 param_index 9 param_id BAT_R_INTERNAL param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 24  1  1     16 mavlink_param_value_t param_value 0 param_count 771 param_index 10 param_id BAT_SOURCE param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 25  1  1     16 mavlink_param_value_t param_value 4.2 param_count 771 param_index 11 param_id BAT_V_CHARGED param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 26  1  1     16 mavlink_param_value_t param_value 26.61719 param_count 771 param_index 12 param_id BAT_V_DIV param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 27  1  1     16 mavlink_param_value_t param_value 3.6 param_count 771 param_index 13 param_id BAT_V_EMPTY param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD  1  0  0 28  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:02 AM FD 19  0  0 29  1  1     16 mavlink_param_value_t param_value 0.3 param_count 771 param_index 14 param_id BAT_V_LOAD_DROP param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 2A  1  1     16 mavlink_param_value_t param_value 0 param_count 771 param_index 15 param_id BAT_V_OFFS_CURR param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 2B  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 16 param_id CAL_ACC0_EN param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 2C  1  1     16 mavlink_param_value_t param_value 2.021863E-39 param_count 771 param_index 17 param_id CAL_ACC0_ID param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 2D  1  1     16 mavlink_param_value_t param_value -0.09019995 param_count 771 param_index 18 param_id CAL_ACC0_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 2E  1  1     16 mavlink_param_value_t param_value 1.002087 param_count 771 param_index 19 param_id CAL_ACC0_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 2F  1  1     16 mavlink_param_value_t param_value 0.2018766 param_count 771 param_index 20 param_id CAL_ACC0_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 30  1  1     16 mavlink_param_value_t param_value 0.9960182 param_count 771 param_index 21 param_id CAL_ACC0_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 31  1  1     16 mavlink_param_value_t param_value 0.4345889 param_count 771 param_index 22 param_id CAL_ACC0_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 32  1  1     16 mavlink_param_value_t param_value 0.9947247 param_count 771 param_index 23 param_id CAL_ACC0_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 33  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 24 param_id CAL_ACC1_EN param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 34  1  1     16 mavlink_param_value_t param_value 1.561969E-39 param_count 771 param_index 25 param_id CAL_ACC1_ID param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 35  1  1     16 mavlink_param_value_t param_value 3.312921 param_count 771 param_index 26 param_id CAL_ACC1_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 36  1  1     16 mavlink_param_value_t param_value 1.033735 param_count 771 param_index 27 param_id CAL_ACC1_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 37  1  1     16 mavlink_param_value_t param_value -3.195769 param_count 771 param_index 28 param_id CAL_ACC1_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 38  1  1     16 mavlink_param_value_t param_value 1.043576 param_count 771 param_index 29 param_id CAL_ACC1_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 39  1  1     16 mavlink_param_value_t param_value 2.778539 param_count 771 param_index 30 param_id CAL_ACC1_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 3A  1  1     16 mavlink_param_value_t param_value 1.034636 param_count 771 param_index 31 param_id CAL_ACC1_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 3B  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 32 param_id CAL_ACC2_EN param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 3C  1  1     16 mavlink_param_value_t param_value 2.02183E-39 param_count 771 param_index 33 param_id CAL_ACC2_ID param_type 6  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 3D  1  1     16 mavlink_param_value_t param_value 0.0903616 param_count 771 param_index 34 param_id CAL_ACC2_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 3E  1  1     16 mavlink_param_value_t param_value 1.006154 param_count 771 param_index 35 param_id CAL_ACC2_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 3F  1  1     16 mavlink_param_value_t param_value -0.1838055 param_count 771 param_index 36 param_id CAL_ACC2_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 40  1  1     16 mavlink_param_value_t param_value 0.9968151 param_count 771 param_index 37 param_id CAL_ACC2_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 41  1  1     16 mavlink_param_value_t param_value -0.3327317 param_count 771 param_index 38 param_id CAL_ACC2_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:02 AM FD 19  0  0 42  1  1     16 mavlink_param_value_t param_value 0.9974211 param_count 771 param_index 39 param_id CAL_ACC2_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 43  1  1     16 mavlink_param_value_t param_value 2.021863E-39 param_count 771 param_index 40 param_id CAL_ACC_PRIME param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD  1  0  0 44  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD 19  0  0 45  1  1     16 mavlink_param_value_t param_value 0 param_count 771 param_index 41 param_id CAL_AIR_CMODEL param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 46  1  1     16 mavlink_param_value_t param_value 1.5 param_count 771 param_index 42 param_id CAL_AIR_TUBED_MM param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 47  1  1     16 mavlink_param_value_t param_value 0.2 param_count 771 param_index 43 param_id CAL_AIR_TUBELEN param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 48  1  1     16 mavlink_param_value_t param_value 0 param_count 771 param_index 44 param_id CAL_BARO_PRIME param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 49  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 45 param_id CAL_GYRO0_EN param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 4A  1  1     16 mavlink_param_value_t param_value 3.30756E-39 param_count 771 param_index 46 param_id CAL_GYRO0_ID param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 2A  0  0 4B  1  1     41 mavlink_rc_channels_t time_boot_ms 4251 chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 chan9_raw 1494 chan10_raw 1494 chan11_raw 1494 chan12_raw 1494 chan13_raw 1494 chan14_raw 1494 chan15_raw 1494 chan16_raw 1494 chan17_raw 998 chan18_raw 998 chancount 18 rssi 42  sig  Len 54
+10/25/2019 11:55:03 AM FD 11  0  0 4C  1  1     46 mavlink_rc_channels_override_t chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 target_system 1 target_component 0 chan9_raw 0 chan10_raw 0 chan11_raw 0 chan12_raw 0 chan13_raw 0 chan14_raw 0 chan15_raw 0 chan16_raw 0 chan17_raw 0 chan18_raw 0  sig  Len 29
+10/25/2019 11:55:03 AM FD 19  0  0 4D  1  1     16 mavlink_param_value_t param_value -0.01704673 param_count 771 param_index 47 param_id CAL_GYRO0_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 4E  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 48 param_id CAL_GYRO0_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 4F  1  1     16 mavlink_param_value_t param_value -0.0109667 param_count 771 param_index 49 param_id CAL_GYRO0_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 50  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 50 param_id CAL_GYRO0_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 51  1  1     16 mavlink_param_value_t param_value -0.001744639 param_count 771 param_index 51 param_id CAL_GYRO0_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 52  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 52 param_id CAL_GYRO0_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 53  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 53 param_id CAL_GYRO1_EN param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 54  1  1     16 mavlink_param_value_t param_value 3.122813E-39 param_count 771 param_index 54 param_id CAL_GYRO1_ID param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD  9  0  0 55  1  1     4D mavlink_command_ack_t command 519 result 0  sig  Len 21
+10/25/2019 11:55:03 AM FD  9  0  0 20 33 44     6D mavlink_radio_status_t rxerrors 0 fixed 0 rssi 115 remrssi 122 txbuf 100 noise 39 remnoise 35  sig  Len 21
+10/25/2019 11:55:03 AM FD 19  0  0 56  1  1     16 mavlink_param_value_t param_value -0.03174415 param_count 771 param_index 55 param_id CAL_GYRO1_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 57  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 56 param_id CAL_GYRO1_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 58  1  1     16 mavlink_param_value_t param_value -0.02338369 param_count 771 param_index 57 param_id CAL_GYRO1_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 59  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 58 param_id CAL_GYRO1_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 5A  1  1     16 mavlink_param_value_t param_value -0.01060801 param_count 771 param_index 59 param_id CAL_GYRO1_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 5B  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 60 param_id CAL_GYRO1_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 5C  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 61 param_id CAL_GYRO2_EN param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD  1  0  0 5D  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD 19  0  0 5E  1  1     16 mavlink_param_value_t param_value 3.307527E-39 param_count 771 param_index 62 param_id CAL_GYRO2_ID param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 5F  1  1     16 mavlink_param_value_t param_value -0.02716721 param_count 771 param_index 63 param_id CAL_GYRO2_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 60  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 64 param_id CAL_GYRO2_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 61  1  1     16 mavlink_param_value_t param_value -0.007886789 param_count 771 param_index 65 param_id CAL_GYRO2_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 62  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 66 param_id CAL_GYRO2_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 63  1  1     16 mavlink_param_value_t param_value 0.003320602 param_count 771 param_index 67 param_id CAL_GYRO2_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 64  1  1     16 mavlink_param_value_t param_value 1 param_count 771 param_index 68 param_id CAL_GYRO2_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 65  1  1     16 mavlink_param_value_t param_value 3.30756E-39 param_count 771 param_index 69 param_id CAL_GYRO_PRIME param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 66  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 70 param_id CAL_MAG0_EN param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 67  1  1     16 mavlink_param_value_t param_value 3.688246E-40 param_count 771 param_index 71 param_id CAL_MAG0_ID param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 68  1  1     16 mavlink_param_value_t param_value NaN param_count 771 param_index 72 param_id CAL_MAG0_ROT param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 69  1  1     16 mavlink_param_value_t param_value -0.3354649 param_count 771 param_index 73 param_id CAL_MAG0_XOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 6A  1  1     16 mavlink_param_value_t param_value 1.014362 param_count 771 param_index 74 param_id CAL_MAG0_XSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 6B  1  1     16 mavlink_param_value_t param_value -0.02167681 param_count 771 param_index 75 param_id CAL_MAG0_YOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 6C  1  1     16 mavlink_param_value_t param_value 1.031992 param_count 771 param_index 76 param_id CAL_MAG0_YSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 6D  1  1     16 mavlink_param_value_t param_value 0.1838588 param_count 771 param_index 77 param_id CAL_MAG0_ZOFF param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD 19  0  0 6E  1  1     16 mavlink_param_value_t param_value 0.966336 param_count 771 param_index 78 param_id CAL_MAG0_ZSCALE param_type 9  sig  Len 37
+10/25/2019 11:55:03 AM FD  1  0  0 6F  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD 19  0  0 70  1  1     16 mavlink_param_value_t param_value 1.401298E-45 param_count 771 param_index 79 param_id CAL_MAG1_EN param_type 6  sig  Len 37
+10/25/2019 11:55:03 AM FD  1  0  0 71  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD  C  0  0 72  1  1     4A mavlink_vfr_hud_t airspeed 0 groundspeed 0 alt 1343.009 climb 0 heading 0 throttle 0  sig  Len 24
+10/25/2019 11:55:03 AM FD 1F  0  0 73  1  1      1 mavlink_sys_status_t onboard_control_sensors_present 983087 onboard_control_sensors_enabled 2162703 onboard_control_sensors_health 983087 load 501 voltage_battery 25138 current_battery 48 drop_rate_comm 0 errors_comm 0 errors_count1 0 errors_count2 0 errors_count3 0 errors_count4 0 battery_remaining 99  sig  Len 43
+10/25/2019 11:55:03 AM FD 24  0  0 74  1  1     93 mavlink_battery_status_t current_consumed 0 energy_consumed -1 temperature 0 voltages  current_battery 48 id 0 battery_function 1 type 1 battery_remaining 99 time_remaining 0 charge_state 0  sig  Len 48
+10/25/2019 11:55:03 AM FD 14  0  0 75  1  1     24 mavlink_servo_output_raw_t time_usec 4623219 servo1_raw 900 servo2_raw 900 servo3_raw 900 servo4_raw 900 servo5_raw 900 servo6_raw 900 servo7_raw 900 servo8_raw 900 port 0 servo9_raw 0 servo10_raw 0 servo11_raw 0 servo12_raw 0 servo13_raw 0 servo14_raw 0 servo15_raw 0 servo16_raw 0  sig  Len 32
+10/25/2019 11:55:03 AM FD 2A  0  0 76  1  1     41 mavlink_rc_channels_t time_boot_ms 4646 chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 chan9_raw 1494 chan10_raw 1494 chan11_raw 1494 chan12_raw 1494 chan13_raw 1494 chan14_raw 1494 chan15_raw 1494 chan16_raw 1494 chan17_raw 998 chan18_raw 998 chancount 18 rssi 42  sig  Len 54
+10/25/2019 11:55:03 AM FD 11  0  0 77  1  1     46 mavlink_rc_channels_override_t chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 target_system 1 target_component 0 chan9_raw 0 chan10_raw 0 chan11_raw 0 chan12_raw 0 chan13_raw 0 chan14_raw 0 chan15_raw 0 chan16_raw 0 chan17_raw 0 chan18_raw 0  sig  Len 29
+10/25/2019 11:55:03 AM FD  2  0  0 78  1  1     F5 mavlink_extended_sys_state_t vtol_state 0 landed_state 1  sig  Len 14
+10/25/2019 11:55:03 AM FD 20  0  0 79  1  1     8D mavlink_altitude_t time_usec 4647903 altitude_monotonic 1343.009 altitude_amsl NaN altitude_local NaN altitude_relative NaN altitude_terrain NaN bottom_clearance NaN  sig  Len 44
+10/25/2019 11:55:03 AM FD  1  0  0 7A  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM 10/25/2019 11:55:03 AM FD  9  0  0 7C  1  1      0 mavlink_heartbeat_t custom_mode 65536 type 13 autopilot 12 base_mode 81 system_status 3 mavlink_version 3  sig  Len 21
+10/25/2019 11:55:03 AM FD  1  0  0 7D  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD  1  0  0 7E  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD  1  0  0 7F  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD 2A  0  0 80  1  1     41 mavlink_rc_channels_t time_boot_ms 5022 chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 chan9_raw 1494 chan10_raw 1494 chan11_raw 1494 chan12_raw 1494 chan13_raw 1494 chan14_raw 1494 chan15_raw 1494 chan16_raw 1494 chan17_raw 998 chan18_raw 998 chancount 18 rssi 43  sig  Len 54
+10/25/2019 11:55:03 AM FD 11  0  0 81  1  1     46 mavlink_rc_channels_override_t chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 target_system 1 target_component 0 chan9_raw 0 chan10_raw 0 chan11_raw 0 chan12_raw 0 chan13_raw 0 chan14_raw 0 chan15_raw 0 chan16_raw 0 chan17_raw 0 chan18_raw 0  sig  Len 29
+10/25/2019 11:55:03 AM FD  1  0  0 82  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD 4E  0  0 83  1  1     94 mavlink_autopilot_version_t capabilities 58607 uid 3546673823723435569 flight_sw_version 17367807 middleware_sw_version 17367807 os_sw_version 119275775 board_version 17 vendor_id 9900 product_id 17 flight_custom_version  middleware_custom_version  os_custom_version r.ÔÇq3B uid2   sig  Len 90
+10/25/2019 11:55:03 AM FD  9  0  0 84  1  1     4D mavlink_command_ack_t command 520 result 0  sig  Len 21
+10/25/2019 11:55:03 AM FD  1  0  0 85  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD 31  0  0 86  1  1     18 mavlink_gps_raw_int_t time_usec 5208140 lat 343492506 lon -1068858159 alt 1476153 eph 78 epv 118 vel 4 cog 0 fix_type 3 satellites_visible 14 alt_ellipsoid 1451656 h_acc 3410 v_acc 4816 vel_acc 250 hdg_acc 15286301  sig  Len 61
+10/25/2019 11:55:03 AM FD 3E  0  0 87  1  1     69 mavlink_highres_imu_t time_usec 5269077 xacc 0.02147292 yacc -0.3488134 zacc -9.69892 xgyro -0.01363625 ygyro 0.09724566 zgyro 0.0112367 xmag 0.1840025 ymag 0.06197927 zmag 0.3642503 abs_pressure 86200 diff_pressure 0 pressure_alt 1343.009 temperature 24.66 fields_updated 7167  sig  Len 74
+10/25/2019 11:55:03 AM FD  1  0  0 88  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD  3  0  0 89  1  1     2C mavlink_mission_count_t count 54 target_system 255 target_component 0 mission_type 0  sig  Len 15
+10/25/2019 11:55:03 AM FD 2A  0  0 8A  1  1     41 mavlink_rc_channels_t time_boot_ms 5402 chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 chan9_raw 1494 chan10_raw 1494 chan11_raw 1494 chan12_raw 1494 chan13_raw 1494 chan14_raw 1494 chan15_raw 1494 chan16_raw 1494 chan17_raw 998 chan18_raw 998 chancount 18 rssi 43  sig  Len 54
+10/25/2019 11:55:03 AM FD 11  0  0 8B  1  1     46 mavlink_rc_channels_override_t chan1_raw 982 chan2_raw 1494 chan3_raw 1545 chan4_raw 1538 chan5_raw 1366 chan6_raw 2006 chan7_raw 1494 chan8_raw 1494 target_system 1 target_component 0 chan9_raw 0 chan10_raw 0 chan11_raw 0 chan12_raw 0 chan13_raw 0 chan14_raw 0 chan15_raw 0 chan16_raw 0 chan17_raw 0 chan18_raw 0  sig  Len 29
+10/25/2019 11:55:03 AM FD  1  0  0 8C  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD  1  0  0 8D  1  1     2A mavlink_mission_current_t seq 0  sig  Len 13
+10/25/2019 11:55:03 AM FD  9  0  0 21 33 44     6D mavlink_radio_status_t rxerrors 0 fixed 0 rssi 117 remrssi 123 txbuf 100 noise 40 remnoise 31  sig  Len 21
+10/25/2019 11:55:03 AM FD 25  0  0 8E  1  1     49 mavlink_mission_item_int_t param1 1 param2 2 param3 -1 param4 0 x 0 y 0 z 0 seq 0 command 178 target_system 255 target_component 0 frame 2 current 1 autocontinue 1 mission_type 0  sig  Len 49

@@ -12,5 +12,7 @@ pyulog
 flask
 pytest
 pytest-cases
+pytest-cov
 pre-commit
 flake8
+coverage

@@ -105,6 +105,7 @@ def project_healpix(M,rotate_angle=0):
     IM = get_interp_val(M,THETA,PHI).T
     IM = np.ma.masked_where(R>1,IM)
     return THETA,PHI,IM
+
 def grid_theta_phi_to_healpix(theta,phi,inbeam):
     """
     inputs:
@@ -130,6 +131,7 @@ def grid_theta_phi_to_healpix(theta,phi,inbeam):
     counts[counts==0] = hp.UNSEEN
     rms[counts==0] = hp.UNSEEN
     return beam,rms,counts
+
 def grid_to_healpix(lats,lons,alts,rx,lat0,lon0,nside=8):
     """
     input:

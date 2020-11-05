@@ -2,7 +2,6 @@ from . import read_utils
 from . import plot_utils
 from . import position_utils
 from . import time_utils
-from . import server_utils
 from . import beams
 
 import numpy as np
@@ -233,12 +232,6 @@ class Observation:
 
         return
 
-    def diffrence_beams():
-        '''Take the difference of healpix beams, plot. Requires multiple beams.
-
-        '''
-        pass
-
     def plot_mollview(self, *args, **kwargs):
         '''Plot a mollview of the beam using
 
@@ -367,6 +360,7 @@ class Observation:
         '''Plot polar diagrams of the received beam.
 
         Args:
+            altitude: angle from zenith in degrees
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
@@ -374,7 +368,7 @@ class Observation:
         radPhi=np.pi
         az=np.linspace(0, 2*radPhi,360)
         alt=np.zeros_like(az)
-        alt[:]=altitude*np.pi/2
+        alt[:]=altitude*np.pi/180
 
         M = np.ma.array(self.hpx_beam,fill_value=hp.UNSEEN)
         M = np.ma.masked_where(hp.UNSEEN==M,M)
