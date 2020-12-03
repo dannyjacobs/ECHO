@@ -118,7 +118,8 @@ class Observation:
                     print("Unable to combine: " +sortie.name + " mission data not flagged")
                     break
                 combined_arr = np.vstack((combined_arr, sortie.mission_data))
-            self.dataproduct = np.sort(combined_arr, axis=0)  #remove after rewrite
+            #self.dataproduct = np.sort(combined_arr, axis=0)  #old block, broken
+            self.dataproduct = combined_arr[combined_arr[:,0].argsort()]  #fixed sort
         else:
             print("Unable to combine: " +self.sortie_list[0].name + " mission data not flagged")
 
