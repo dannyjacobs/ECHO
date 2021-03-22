@@ -27,7 +27,7 @@ Install prerequisites. We recommend the anaconda package manager
 * scipy
 
 Get this repo
-`git clone https:github.com/dannyjacobs/ECHO`
+`git clone https://github.com/dannyjacobs/ECHO.git`
 
 Install using pip
 ```
