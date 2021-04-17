@@ -36,6 +36,14 @@ Notes:
 1. Not all numbers in the sequence are posted here. Usually because they were used for internal purposes.
 2. Memos have been added to the series as necessary from document archives; though mostly they are numbered in time order there are some notable exceptions.
 
+## Presentations
+Presentations etc
+“External Calibration of Hydrogen Arrays” M. Gopalkrishna, URSI-NRSM
+“Drone-based Beam Mapping of the LWA.”, D. Jacobs, University of New Mexico, LWA Users Meeting, July 2020 ([pptx](http://danielcjacobs.com/uploads/ECHO_LWAUM_2020.pptx))
+“The Airborne External Calibration for Precision Low Frequency Instrumentation”, D. Jacobs, Cal Tech, March 2019 ([pdf](http://danielcjacobs.com/uploads/ECHO_March2019_small.pdf))
+“The External Calibrator for Hydrogen Observatories”, D. Jacobs, URSI Boulder, January, 2016 (slides lost to ravages of time etc etc)
+
+
 <!---
 Todo:
 Add sidebar
