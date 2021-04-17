@@ -31,6 +31,11 @@ The aim of the ECHO project is high precision calibration of wide-field radio in
  * \#[051](http://danielcjacobs.com/echo/echo-memos/ECHO051_Chiropter_Build_Log.pdf) 19/1/2019 Chiropter (ECHO Mk 7) build log M. Horn
  * \#[052](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO052_Drone_Evaluation_2020.pdf) 24/03/2021 Evaluation of Drone Options D. Jacobs
 
+
+Notes:
+1. Not all numbers in the sequence are posted here. Usually because they were used for internal purposes.
+2. Memos have been added to the series as necessary from document archives; though mostly they are numbered in time order there are some notable exceptions.
+
 <!---
 Todo:
 Add sidebar
