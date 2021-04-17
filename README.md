@@ -9,15 +9,16 @@ The External Calibrator for Hydrogen Arrays (ECHO) is a system for calibrating w
 Primarily targeting (but not exclusively limited to) arrays operating in the sub-GHz band targeting highly redshifted
 21cm radiation from the early universe.
 
-This repository contains software used to operate drone mounted calibrator sources and then collect and reduce the
-resulting data.
+This repository contains software for planning missions and analyzing data. It also contains hardware designs for drones and mounts.
 
-ECHO is an open source project. Use and reuse is encouraged.  If you use this code in published work please reference the github repo.
-http://github.com/dannyjacobs/ECHO and cite [our 2017 paper](http://adsabs.harvard.edu/abs/2017PASP..129c5002J).
+This is an open source project. Use and reuse is encouraged.  If you use this code or hardware designs please reference the github repo.
+http://github.com/dannyjacobs/ECHO and cite [our 2017 paper](http://adsabs.harvard.edu/abs/2017PASP..129c5002J).  If you have improvements please fork and send a PR!
 
-* Mailing list:   https://groups.google.com/d/forum/astro_echo
-* ASU team blog:  http://danielcjacobs.com/ECHO
-* Documentation:  https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io
+## Community
+* We have an active "Slack Connect" channel, accessible to anyone with a Slack account.  To be invited, email [Danny Jacobs](dcjacob2@asu.edu)
+* Project [Web page](http://danielcjacobs.com/ECHO)
+* [Code Documentation](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io)
+* A [mailing list](https://groups.google.com/d/forum/astro_echo) exists
 
 ## Installation
 Install prerequisites. We recommend the anaconda package manager
@@ -49,7 +50,7 @@ The code is organized into a few modules. The beam mapping pipeline steps are
   4. plot drone events and dynamics
   5. difference beams
 ### Modules
-NB: If a function is not mentioned here, it is because I don't think it matters any more. Such things will probably be culled in a future cleanup.
+
  #### `plot_utils.py`
  Functions for plotting, but also all functions relating to healpix gridding
  and manipulation including gridding.
