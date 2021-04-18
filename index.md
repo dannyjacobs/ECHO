@@ -1,12 +1,18 @@
 ## External Calibrator for Hydrogen Observatories
 
-The aim of the ECHO project is high precision calibration of wide-field radio instruments. A transmitter mounted to a drone provides a known signal at a known location.  The goal is to make full sky maps of antenna beams accurate with variation everywhere less than 1%.  A secondary goal is to build an open source project useful as a community resource.
+The aim of the ECHO project is high precision calibration of wide-field radio instruments. A transmitter mounted to a drone provides a known signal at a known location.  The goal for 21cm experiments is to make full sky maps of antenna beams accurate to 1% across the instrument bandwidth. Measured effects include reflections, fringing, and cable cross-talk.  A secondary goal is to compile the useful elements of this unusual drone application into an open source project useful as a community resource.
 
- * Codes for generating flight paths, combining standard drone logs and spectrometer outputs, and producing beam maps are on [github](https://github.com/dannyjacobs/echo)
+
+ * The method paper Jacobs et al 2017 answers many frequently asked questions [pasp](https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract) [arxiv](https://arxiv.org/abs/1610.02607)
+
+## Project organization
+The ECHO project is led by [Professor Daniel Jacobs](danielcjacobs.com) in the Low frequency Cosmology Lab at Arizona State University.
+
+ * We have an active "Slack Connect" channel, accessible to anyone with a Slack account. To be invited, email Danny
+ * Code on [github](https://github.com/dannyjacobs/echo). Generate flight paths. Combine drone logs with spectrometer outputs to make beam maps.
  * Documentation on [readthedocs](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/)
- * [Memo series]( covers flights, build logs, and whatever else is worth reporting.
- * The method paper (Jacobs et al 2017) answers many frequently asked questions [pasp](https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract) [arxiv](https://arxiv.org/abs/1610.02607)
-
+ * A [mailing list](https://groups.google.com/d/forum/astro_echo) exists.
+ 
 ## Memos
  * \#[000](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO000_Memo_template.pdf) 26/01/2020 Template, How To Write A Good Memo, D. Jacobs
  * \#[001](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO001_First_field_test_2014.pdf) 29/11/2014 First Field Test, M. Denny and M. Busch
