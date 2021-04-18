@@ -69,8 +69,9 @@ Presentations etc
 
 <!---
 Todo:
-Add sidebar
-Add memos page
+Add sidebar links to header items
+add some pictures and results
+I added a header image, why didn't it work?
 
 ASU team
 photos, people
