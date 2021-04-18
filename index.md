@@ -1,3 +1,6 @@
+---
+classes:wide
+---
 ## External Calibrator for Hydrogen Observatories
 
 The aim of the ECHO project is high precision calibration of wide-field radio instruments. A transmitter mounted to a drone provides a known signal at a known location.  The goal for 21cm experiments is to make full sky maps of antenna beams accurate to 1% across the instrument bandwidth. Measured effects include reflections, fringing, and cable cross-talk.  A secondary goal is to compile the useful elements of this unusual drone application into an open source project useful as a community resource.
