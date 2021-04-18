@@ -1,12 +1,18 @@
 ## External Calibrator for Hydrogen Observatories
 
-The aim of the ECHO project is high precision calibration of wide-field radio instruments. A transmitter mounted to a drone provides a known signal at a known location.  The goal is to make full sky maps of antenna beams accurate with variation everywhere less than 1%.  A secondary goal is to build an open source project useful as a community resource.
+The aim of the ECHO project is high precision calibration of wide-field radio instruments. A transmitter mounted to a drone provides a known signal at a known location.  The goal for 21cm experiments is to make full sky maps of antenna beams accurate to 1% across the instrument bandwidth. Measured effects include reflections, fringing, and cable cross-talk.  A secondary goal is to compile the useful elements of this unusual drone application into an open source project useful as a community resource.
 
- * Codes for generating flight paths, combining standard drone logs and spectrometer outputs, and producing beam maps are on [github](https://github.com/dannyjacobs/echo)
+
+ * The method paper Jacobs et al 2017 answers many frequently asked questions [pasp](https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract) [arxiv](https://arxiv.org/abs/1610.02607)
+
+## Project organization
+The ECHO project is led by [Professor Daniel Jacobs](danielcjacobs.com) in the Low frequency Cosmology Lab at Arizona State University.
+
+ * We have an active "Slack Connect" channel, accessible to anyone with a Slack account. To be invited, email Danny
+ * Code on [github](https://github.com/dannyjacobs/echo). Generate flight paths. Combine drone logs with spectrometer outputs to make beam maps.
  * Documentation on [readthedocs](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/)
- * [Memo series]( covers flights, build logs, and whatever else is worth reporting.
- * The method paper (Jacobs et al 2017) answers many frequently asked questions [pasp](https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract) [arxiv](https://arxiv.org/abs/1610.02607)
-
+ * A [mailing list](https://groups.google.com/d/forum/astro_echo) exists.
+ 
 ## Memos
  * \#[000](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO000_Memo_template.pdf) 26/01/2020 Template, How To Write A Good Memo, D. Jacobs
  * \#[001](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO001_First_field_test_2014.pdf) 29/11/2014 First Field Test, M. Denny and M. Busch
@@ -30,6 +36,19 @@ The aim of the ECHO project is high precision calibration of wide-field radio in
  * \#[050](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO050_Drone_History_Table.pdf) 1/10/2020 Tabular summary of drone requirements and testing M. Horn, D. Jacobs
  * \#[051](http://danielcjacobs.com/echo/echo-memos/ECHO051_Chiropter_Build_Log.pdf) 19/1/2019 Chiropter (ECHO Mk 7) build log M. Horn
  * \#[052](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO052_Drone_Evaluation_2020.pdf) 24/03/2021 Evaluation of Drone Options D. Jacobs
+
+
+Notes:
+1. Not all numbers in the sequence are posted here. Usually because they were used for internal purposes.
+2. Memos have been added to the series as necessary from document archives; though mostly they are numbered in time order there are some notable exceptions.
+
+## Presentations
+Presentations etc
+ * “External Calibration of Hydrogen Arrays” M. Gopalkrishna, URSI-NRSM
+ * “Drone-based Beam Mapping of the LWA.”, D. Jacobs, University of New Mexico, LWA Users Meeting, July 2020 ([pptx](http://danielcjacobs.com/uploads/ECHO_LWAUM_2020.pptx))
+ * “The Airborne External Calibration for Precision Low Frequency Instrumentation”, D. Jacobs, Caltech, March 2019 ([pdf](http://danielcjacobs.com/uploads/ECHO_March2019_small.pdf))
+ * “The External Calibrator for Hydrogen Observatories”, D. Jacobs, URSI Boulder, January, 2016 (slides lost to ravages of time etc etc)
+
 
 <!---
 Todo:
