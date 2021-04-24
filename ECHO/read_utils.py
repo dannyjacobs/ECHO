@@ -13,6 +13,8 @@ import pyulog.ulog2csv as pyucsv
 from pyuvdata import UVBeam
 from pyuvdata.data import DATA_PATH
 import h5py
+import os
+import pandas as pd
 
 SEC_PER_WEEK = 604800
 APMLOG_SEC_PER_TICK = 1.0e-6
@@ -364,3 +366,113 @@ def read_CST_puv(CST_txtfile, beam_type, frequency, telescope_name, feed_name, f
                    telescope_name=telescope_name, feed_name=feed_name, feed_version=feed_version,
                    model_name = model_name, model_version=model_version, feed_pol=feed_pol)
     return beam
+
+def read_cst_efield_slice(cstfile):
+    h5_exts = ['.h5, .hdf5']
+    req_keys = ['E-Field', 'Position']
+    file_name, file_ext = os.path.splitext(cstfile)
+    efield = None
+    if file_ext=='.txt':
+        #stuff here
+        print('txtfile')
+    elif file_ext in h5_exts:
+        slice_obj = h5py.File(cstfile, 'r')
+        for key in req_keys:
+            if key not in slice_obj.keys():
+                print('{0} key not found in file.'.format(key))
+                return efield
+        efield_l=np.zeros(slice_obj['Position'].shape[0])
+        zfield=[]
+        x_arr = np.zeros(slice_obj['Position'].shape[0])
+        y_arr = np.zeros(slice_obj['Position'].shape[0])
+        z_arr = np.zeros(slice_obj['Position'].shape[0])
+
+        for i,field in enumerate(fa['E-Field'][:]):
+            x = slice_obj['x']['re']+field['x']['im']*1j
+            y = slice_obj['y']['re']+field['y']['im']*1j
+            z = slice_obj['z']['re']+field['z']['im']*1j
+            e_amp=np.sqrt(np.abs(x)**2 + np.abs(y)**2 + np.abs(z)**2)
+            efield_l[i] = e_amp
+            x_arr[i] = np.abs(x)
+            y_arr[i] = np.abs(y)
+            z_arr[i] = np.abs(z)
+        eshape = efield_l.reshape((10,10))
+        xshape = x_arr.reshape((10,10))
+        yshape =  y_arr.reshape((10,10))
+        zshape =  z_arr.reshape((10,10))
+
+        x_pos, y_pos, z_pos = np.zeros(100),np.zeros(100),np.zeros(100)
+        fig=plt.figure(facecolor='w')
+        ax=fig.add_subplot(111,projection='3d')
+        for i,(xpos,ypos,zpos) in enumerate(fa['Position']):
+            x_pos[i] = xpos
+            y_pos[i] = ypos
+            z_pos[i] = zpos
+    return eshape
+
+def read_csv(filename):
+    """
+    Read in receiver data file, put them into appropriate arrays.
+
+    Input:
+        :filename (HDF5 data file): the datafile for the fieldfox, saved in CSV format.
+
+    Output:
+        dataDict: A dictionary containing the observation data. Includes observations, tunings, times, XX and YY polarizations, frequencies
+    """
+    #find trace line
+    file=open(filename)
+    flag=0
+    index=0
+    while True:
+        line = file.readline()
+        index += 1
+        if 'Trace #' in line:
+            flag=1
+            break
+        if not line:
+            break
+    if flag==0:
+        print('No Trace header found')
+    else:
+        #print('Trace found on line ' + str(index))
+    #skip to line above trace line
+    header_idx=index-2
+    #read in csv as dataframe
+    data=pd.read_csv(filename, skiprows=header_idx)
+    #edit column names to use proper headers on the next line, copies freqs from line above
+    for i in range(5):
+        data.rename(columns={data.columns[i]:data.iloc[0,i]}, inplace=True)
+    #remove first erroneous line containing headers
+    data.drop([0], inplace=True)
+    data.drop([data.shape[0]], inplace=True)
+    #convert times to unix
+    months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    datetime_txt=data.iloc[:,1].values
+    times=[]
+    for i,row in enumerate(datetime_txt):
+        mon=months.index(row[0:3])
+        if row[25:14] == 'PM' and row[12:14]<12:
+            hr = 12 + int(row[12:14])
+        else:
+            hr=int(row[12:14])
+        t = Time({'year': int(row[7:11]), 'month': int(mon)+1, 'day': int(row[4:6]), 'hour': hr, 'minute': int(row[15:17]), 'second':float(row[18:25])},scale='utc').unix
+        times.append(t)
+    time_arr = np.array(times)
+
+    #change to dict (use same format as h5 reads)
+    dataDict = {}
+    obsDict = {}
+    obsDict['time'] = time_arr
+    tunDict = {}
+    freqs = data.columns[5:].values #frequency table
+    tunDict['freqs'] = freqs
+    data_arr = data.iloc[:,5:].values
+    tunDict['XX'] = data_arr
+    nanArray = np.empty((data_arr.shape))
+    nanArray[:] = np.nan
+    tunDict['Saturation'] = nanArray
+    obsDict['Tuning1'] = tunDict
+    dataDict['Observation1'] = obsDict
+
+    return dataDict
