@@ -434,8 +434,7 @@ def read_csv(filename):
             break
     if flag==0:
         print('No Trace header found')
-    else:
-        #print('Trace found on line ' + str(index))
+        break
     #skip to line above trace line
     header_idx=index-2
     #read in csv as dataframe
