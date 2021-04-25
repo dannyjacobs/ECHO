@@ -1,4 +1,5 @@
-theme: jekyll-theme-minimal
+theme: minimal-mistakes-jekyll
 title: ECHO
 description: External Calibrator for Hydrogen Observatories
 header: ECHO_page_header4.png
+minimal_mistakes_skin: "air"
