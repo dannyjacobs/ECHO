@@ -26,11 +26,11 @@ The ECHO project is led by [Professor Daniel Jacobs](danielcjacobs.com) in the L
  * Frequency Coverage: 50-250MHz (not all at once)
  * Position Accuracy: 8cm rms using RTK GPS and base station* 
  * Transmitters:  TX V1 used dual tone Valon 5009 VCO (23 - 6GHz) on an independent battery. TX V2 will add chopping. TX V3 will add 20MHz band limited noise
- * Safety: Part 107 certified pilot with 7 years experience, 45 hours, 100+ flights 
- * Kit Contents: 3 spare drones (essential!), 2 spare antennas, SAS542 folding bicone + stand for auxiliary receiver. 
+ * Safety: Part 107 certified pilot with 7 years experience, 45 hours, 100+ flights
+ * Kit Contents: 3 spare drones (essential!), 2 spare antennas, SAS542 folding bicone + stand for auxiliary receiver.
  * Flight time: 45min hover, 30 minute mapping sorties
  * Drone built cost: ~$1200
- 
+
 ## Memos
  * \#[000](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO000_Memo_template.pdf) 26/01/2020 Template, How To Write A Good Memo, D. Jacobs
  * \#[001](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO001_First_field_test_2014.pdf) 29/11/2014 First Field Test, M. Denny and M. Busch
