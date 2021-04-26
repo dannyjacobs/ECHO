@@ -1,5 +1,4 @@
 ---
-classes:wide
 ---
 ## External Calibrator for Hydrogen Observatories
 
@@ -9,14 +8,14 @@ The aim of the ECHO project is high precision calibration of wide-field radio in
  * The method paper Jacobs et al 2017 answers many frequently asked questions [pasp](https://ui.adsabs.harvard.edu/abs/2017PASP..129c5002J/abstract) [arxiv](https://arxiv.org/abs/1610.02607)
 
 ## Project organization
-The ECHO project is led by [Professor Daniel Jacobs](danielcjacobs.com) in the Low frequency Cosmology Lab at Arizona State University.
+The ECHO project is organized by [Professor Daniel Jacobs](danielcjacobs.com) in the Low frequency Cosmology Lab at Arizona State University.
 
  * We have an active "Slack Connect" channel, accessible to anyone with a Slack account. To be invited, email Danny
  * Code on [github](https://github.com/dannyjacobs/echo). Generate flight paths. Combine drone logs with spectrometer outputs to make beam maps.
  * Documentation on [readthedocs](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/)
  * A [mailing list](https://groups.google.com/d/forum/astro_echo) exists.
 
-## ECHO @ ASU Notes 
+## ECHO @ ASU Notes
  * The project began in 2012 at Arizona State University as a student powered instrumentation development. It has been supported by the National Science Foundation (AST-1407646, AST-1711179)
  * We have used both Commercial drones and custom builds. The current Mark 7 platform (ca 2019) is a custom build using kit parts. (build log in memo 51)
  * Antenna: [Aaronia Bicolog 5070](https://aaronia.com/antennas/bicolog-series-biconical)
