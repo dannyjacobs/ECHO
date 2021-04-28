@@ -1,0 +1,17 @@
+main:
+  - title: "Memos"
+    url: /memos/
+  - title: "Hardware"
+    url: /hardware.html
+  - title: "Software"
+    url: /software.html
+  - title: "Community"
+    url: /community.html
+links:
+  - title: Resources
+    children:
+      - title: "ECHO on Github"
+        url: https://github.com/dannyjacobs/echo
+        icon: "fab fa-fw fa-github"
+      - title: "ReadTheDocs"
+        url: "https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/"
