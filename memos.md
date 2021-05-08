@@ -4,11 +4,12 @@ permalink: /memos/
 ---
 
 ECHO Project Memo Series (2014 - present)
-Notes:
-1. Not all numbers in the sequence are posted here. Usually because they were used for internal purposes.
-2. Memos have been added to the series as necessary from document archives; though mostly they are numbered in time order there are some notable exceptions.
-3. Other interesting memo series: [LoCo@ASU](http://loco.lab.asu.edu/loco-group-memoranda/), [HERA](https://reionization.org/science/memos), [EDGES](http://loco.lab.asu.edu/memos/), [VLA](https://library.nrao.edu/vla.shtml), [Lightwork](https://github.com/WVURAIL/lightwork)
 
+
+1. Not all numbers in the sequence are posted here. Usually because they were used for internal purposes.
+2. Other interesting memo series: [LoCo@ASU](http://loco.lab.asu.edu/loco-group-memoranda/), [HERA](https://reionization.org/science/memos), [EDGES](http://loco.lab.asu.edu/memos/), [VLA](https://library.nrao.edu/vla.shtml), [Lightwork](https://github.com/WVURAIL/lightwork)
+3. Add your contribution! Send submissions to [Danny](danielcjacobs.com) or [submit a PR on Github](https://github.com/dannyjacobs/ECHO)
+{: .notice--info}
 
 * \#[000](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO000_Memo_template.pdf) 26/01/2020 Template, How To Write A Good Memo, D. Jacobs
 * \#[001](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO001_First_field_test_2014.pdf) 29/11/2014 First Field Test, M. Denny and M. Busch
