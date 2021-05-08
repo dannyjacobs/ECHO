@@ -4,15 +4,25 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+The ECHO project is an open source hardware/software project.  Community development is encouraged!
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+ * We have an active "Slack Connect" channel, accessible to anyone with a Slack account. To be invited, email Danny
+ * Analysis code on [<i class="fab fa-fw fa-github" aria-hidden="true"></i> Github](https://github.com/dannyjacobs/echo)
+ * Code documentation on [ReadTheDocs](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/)
+  * Hardware also on [<i class="fab fa-fw fa-github" aria-hidden="true"></i> Github](https://github.com/dannyjacobs/ECHO/tree/master/hardware)
+  * Build logs, flight reports, and other topics are covered in the [Memo series](/memos/)
+  * ECHO is organized by [Professor Daniel Jacobs](https://danielcjacobs.com) in the [Low frequency Cosmology Lab](https://loco.lab.asu.edu) at Arizona State University.
+ <!-- * A [mailing list](https://groups.google.com/d/forum/astro_echo) exists -->
+
+
+
+# Presentations
+Presentations etc
+ * “External Calibration of Hydrogen Arrays” M. Gopalkrishna, URSI-NRSM
+ * “Drone-based Beam Mapping of the LWA.”, D. Jacobs, University of New Mexico, LWA Users Meeting, July 2020 ([pptx](http://danielcjacobs.com/uploads/ECHO_LWAUM_2020.pptx))
+ * “The Airborne External Calibration for Precision Low Frequency Instrumentation”, D. Jacobs, Caltech, March 2019 ([pdf](http://danielcjacobs.com/uploads/ECHO_March2019_small.pdf))
+ * “The External Calibrator for Hydrogen Observatories”, D. Jacobs, URSI Boulder, January, 2016 (slides lost to ravages of time etc etc)
 
 
 [jekyll-organization]: https://github.com/jekyll
