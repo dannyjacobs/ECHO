@@ -8,6 +8,7 @@ The ECHO project is an open source hardware/software project.  Community develop
 
 
  * We have an active "Slack Connect" channel, accessible to anyone with a Slack account. To be invited, email Danny
+ * Ask questions on [Github Discussions](https://github.com/dannyjacobs/ECHO/discussions)
  * Analysis code on [<i class="fab fa-fw fa-github" aria-hidden="true"></i> Github](https://github.com/dannyjacobs/echo)
  * Code documentation on [ReadTheDocs](https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/)
   * Hardware also on [<i class="fab fa-fw fa-github" aria-hidden="true"></i> Github](https://github.com/dannyjacobs/ECHO/tree/master/hardware)
