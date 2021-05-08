@@ -68,7 +68,7 @@ defaults:
          image: /assets/images/ECHO_page_header4.png
 font-awesome:
   assets: true
-baseurl:"/ECHO"
+baseurl: "/ECHO"
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
