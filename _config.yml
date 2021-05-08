@@ -37,7 +37,8 @@ plugins:
 #theme: minimal-mistakes-jekyll
 title: ECHO
 description: External Calibrator for Hydrogen Observatories
-header: ECHO_page_header4.png
+#header: ECHO_page_header4.png
+#header: Mk7_header.JPG
 
 
 defaults:
@@ -65,7 +66,8 @@ defaults:
       sidebar:
         nav: "links"
       header:
-         image: /assets/images/ECHO_page_header4.png
+         #image: /assets/images/ECHO_page_header4.png
+         image: /assets/images/Mk7_header.JPG
 font-awesome:
   assets: true
 baseurl: "/ECHO"
