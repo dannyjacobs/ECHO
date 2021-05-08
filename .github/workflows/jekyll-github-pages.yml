@@ -1,7 +1,7 @@
 name: Build and deploy Jekyll Site to GH pages
 on:
-   push
-     branches:gh-pages-local-dev
+   push:
+     branches: gh-pages-local-dev
 jobs:
   jekyll:
     runs-on: macos-latest
