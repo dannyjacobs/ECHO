@@ -1,1 +1,1 @@
-Sitemap: /sitemap.xml
+Sitemap: /ECHO/sitemap.xml
