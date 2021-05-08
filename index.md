@@ -1,7 +1,5 @@
 ---
 layout: single
-header:
-   image: /assets/images/ECHO_page_header4.png
 #toc: true
 #toc_label: "On this page"
 #toc_icon: "gear"
@@ -15,7 +13,7 @@ gallery:
    alt: "ECHO at HERA GB"
    title: "above HERA dish at Green Bank, WV"
  - url: /assets/images/mk7_chiropter.jpg
-   image_path: /assets/images/mk7_chiropter.jpg
+   image_path: /assets/images/mk7_chiropter.JPG
    alt: "mk7 chiropter"
    title: "chiropter (ECHO mk 7)"
  - url: /assets/images/beam_2017_cropped.jpg
