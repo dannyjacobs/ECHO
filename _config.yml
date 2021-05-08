@@ -32,6 +32,7 @@ minimal_mistakes_skin: "air"
 
 plugins:
   - jekyll-feed
+  - jekyll-font-awesome-sass
 
 #theme: minimal-mistakes-jekyll
 title: ECHO
@@ -57,7 +58,16 @@ defaults:
     values:
       sidebar:
         nav: "links"
-
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      sidebar:
+        nav: "links"
+      header:
+         image: /assets/images/ECHO_page_header4.png
+font-awesome:
+  assets: true
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
