@@ -7,7 +7,7 @@ permalink: /hardware/
 ![image-right](/assets/images/GB_2015_1.jpg){: .align-left}
 # Drones
 We have built and bought different drone platforms since 2012. Much has changed in
-that time as companies come and go, new capabilities emerge, .  Currently we are using drone Mark 7, a custom build hexacopter based on power and frame kits from DJI. In testing drones Mk 1-6 we developed a set of requirements
+that time as companies come and go, new capabilities emerge, and our techniques improve.  Currently we are on Mark 7, a custom build hexacopter based on power and frame kits from DJI. In testing drones Mk 1-6 we developed a set of requirements
   which are described in [memo 40](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO040_ECHO_Drone_Requirements.pdf).
 
 
