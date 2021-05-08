@@ -4,7 +4,7 @@ on:
      branches: gh-pages-local-dev
 jobs:
   jekyll:
-    runs-on: x64-mingw
+    runs-on: windows-latest
     steps:
       - name: 📂 setup
         uses: actions/checkout@v2
