@@ -66,8 +66,8 @@ defaults:
       sidebar:
         nav: "links"
       header:
-         #image: /assets/images/ECHO_page_header4.png
-         image: /assets/images/Mk7_header.JPG
+         image: /assets/images/ECHO_page_header5.png
+         #image: /assets/images/Mk7_header.JPG
 font-awesome:
   assets: true
 baseurl: "/ECHO"
