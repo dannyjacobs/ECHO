@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-The ECHO project is an open source hardware/software project.  Community development is encouraged!
+The ECHO project is an open source hardware/software project.  Join us!
 
 
  * We have an active "Slack Connect" channel, accessible to anyone with a Slack account. To be invited, email Danny
@@ -16,7 +16,9 @@ The ECHO project is an open source hardware/software project.  Community develop
   * ECHO is organized by [Professor Daniel Jacobs](https://danielcjacobs.com) in the [Low frequency Cosmology Lab](https://loco.lab.asu.edu) at Arizona State University.
  <!-- * A [mailing list](https://groups.google.com/d/forum/astro_echo) exists -->
 
+<!-- {% include figure image_path='/assets/images/LWASV_2019.JPG' caption='[<i class="fa fa-picture-o" aria-hidden="true"></i> Field Work album](https://photos.app.goo.gl/FhfUff5KtNi9NXTG2)'%} -->
 
+[![Field Work Photo Album](/ECHO/assets/images/photo_stream.JPG "Photo album")](https://photos.app.goo.gl/FhfUff5KtNi9NXTG2)
 
 # Presentations
 Presentations etc
