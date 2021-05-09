@@ -8,7 +8,7 @@ ECHO Project Memo Series (2014 - present)
 
 1. Not all numbers in the sequence are posted here. Usually because they were used for internal purposes.
 2. Other interesting memo series: [LoCo@ASU](http://loco.lab.asu.edu/loco-group-memoranda/), [HERA](https://reionization.org/science/memos), [EDGES](http://loco.lab.asu.edu/memos/), [VLA](https://library.nrao.edu/vla.shtml), [Lightwork](https://github.com/WVURAIL/lightwork)
-3. Add your contribution! Send submissions to [Danny](danielcjacobs.com) or [submit a PR on Github](https://github.com/dannyjacobs/ECHO)
+3. Add your contribution! Send submissions to [Danny](https://danielcjacobs.com) or [submit a PR on Github](https://github.com/dannyjacobs/ECHO)
 {: .notice--info}
 
 * \#[000](http://danielcjacobs.com/uploads/ECHO_Memos/ECHO000_Memo_template.pdf) 26/01/2020 Template, How To Write A Good Memo, D. Jacobs
