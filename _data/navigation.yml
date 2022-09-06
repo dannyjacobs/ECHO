@@ -1,0 +1,20 @@
+main:
+  - title: "About"
+    url: /about/
+  - title: "Memos"
+    url: /memos/
+  - title: "FAQ"
+    url: /faqs/
+  - title: "Hardware"
+    url: /hardware/
+  # - title: "Software"
+  #   url: /software.html
+  # - title: "Community"
+  #   url: /community.html
+links:
+  - title: Resources
+    children:
+      - title: "<i class=\"fab fa-fw fa-github\" aria-hidden=\"true\"></i> Github"
+        url: https://github.com/dannyjacobs/echo
+      - title: "<i class=\"fa fa-book\" aria-hidden=\"true\"></i> ReadTheDocs"
+        url: "https://external-calibrator-for-hydrogen-arrays-echo.readthedocs.io/"
