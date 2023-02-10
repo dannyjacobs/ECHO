@@ -1,4 +1,3 @@
-## We have tried several drone makes over the years. Here
 .. csv-table:: ECHO Version Summary
    :header: "Version", "Drone Make", "Drone Frame", "Drone Name", "Tx Mount", "Transmitter", "Antenna", "Flight Software"
    :widths: auto
