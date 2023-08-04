@@ -77,7 +77,7 @@ show()
 #estimate total flying distance
 flight_distance = 0
 distances = []
-for i in xrange(1,len(coords)):
+for i in range(1,len(coords)):
     distances.append(length(coords[i]-coords[i-1])) #distance between each waypoint
     flight_distance += length(coords[i]-coords[i-1]) #running total of distance
 print("total flight distance = {dist} [m]".format(dist=flight_distance))
